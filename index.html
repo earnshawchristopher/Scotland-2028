@@ -229,16 +229,44 @@
   .banner{background:var(--pressed);border:1px solid var(--heather);border-radius:3px;padding:12px 14px;margin-bottom:16px;display:flex;gap:10px 14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
   .banner p{flex:1 1 220px;font-size:15px}
   .banner .btn{margin-top:0}
-  .lockbar{display:flex;gap:10px 14px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 14px;margin-bottom:22px}
-  .lockbar p{flex:1 1 200px;font-size:15px}
-  .lockbar .btn{margin-top:0}
+  /* the progress bar that follows the reader down the Decisions tab */
+  .prog:empty{display:none}
+  .prog{position:sticky;top:0;z-index:9;background:var(--sea);color:#eef2f0;border-radius:3px;padding:11px 14px 10px;margin:0 -6px 22px;box-shadow:0 6px 18px rgba(5,12,18,.28)}
+  @media(min-width:760px){.prog{top:50px}}
+  .prog .pt{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .prog .pt b{font-family:var(--display);font-weight:400;font-size:21px;color:var(--leaf)}
+  .prog .pt span{font-size:14px;color:#c8d0d4;white-space:nowrap}
+  .prog .pm{height:5px;border-radius:3px;background:#2b4152;margin:8px 0;overflow:hidden}
+  .prog .pm i{display:block;height:100%;background:var(--leaf);border-radius:3px;transition:width .2s}
+  .prog .pa{display:flex;justify-content:space-between;align-items:center;gap:8px 12px;flex-wrap:wrap;font-size:14px;color:#c8d0d4}
+  .prog .pb{display:flex;gap:8px;margin-left:auto}
+  .prog button{min-height:40px;padding:0 13px;border-radius:3px;border:1px solid #4a6375;background:none;color:#eef2f0;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}
+  .prog button.go{background:var(--leaf);border-color:var(--leaf);color:#0e1e2b}
+  .prog button[disabled]{opacity:.5}
+  .prog.short{box-shadow:0 6px 18px rgba(5,12,18,.28),inset 4px 0 0 #cfa9d2}
+  .prog.short .pa>span:first-child{color:#e6c9e8;font-weight:600}
+  .prog.done .pt b{color:#9ad4b8}
+  .prog.done .pm i{background:#9ad4b8}
+  [id^="q-"],#lock{scroll-margin-top:160px}
+  @media(min-width:760px){[id^="q-"],#lock{scroll-margin-top:212px}}
+  .badge{position:absolute;top:6px;left:calc(50% + 8px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--leaf);color:#0e1e2b;font-size:11px;font-weight:700;font-style:normal;line-height:18px;text-align:center}
+  /* dated steps: Why these dates, and the Old Course plan */
+  .tl{padding:14px 16px;border-top:1px solid var(--rule)}
+  .tl:first-child{border-top:0}
+  .tl .when{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .tl b{display:block;font-weight:600}
+  .tl span{display:block;font-size:14px;color:var(--muted);margin-top:3px}
+  .tl em{font-style:normal;font-weight:600;color:var(--ink)}
+  .tl.step{display:flex;gap:12px}
+  .tl.step>i{flex:none;width:26px;height:26px;border-radius:50%;background:var(--sea);color:var(--leaf);font-style:normal;font-family:var(--display);display:grid;place-items:center;margin-top:1px}
+  .tl.step>div{min-width:0}
   #staleToast{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:24px;z-index:17;background:var(--leaf);color:#0e1e2b;border:0;border-radius:99px;
     padding:0 18px;min-height:44px;font-weight:600;font-size:14px;box-shadow:0 6px 22px rgba(0,0,0,.3);cursor:pointer;white-space:nowrap}
   body.stale:not([data-view=decisions]) #staleToast{display:block}
   @media(max-width:759.98px){#staleToast{bottom:calc(70px + env(safe-area-inset-bottom))}}
   body.stale .tab[data-tab=decisions]::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--leaf);margin-left:6px;vertical-align:middle}
   .bar button{position:relative}
-  body.stale .bar button[data-more]::after{content:"";position:absolute;top:9px;left:calc(50% + 10px);width:8px;height:8px;border-radius:50%;background:var(--leaf)}
+  body.stale .bar button[data-tab=decisions]::before{content:"";position:absolute;top:9px;left:calc(50% - 18px);width:8px;height:8px;border-radius:50%;background:var(--leaf)}
 
   .check{display:flex;gap:12px;padding:12px 16px;border-top:1px solid var(--rule);align-items:flex-start}
   .check:first-child{border-top:0}
@@ -250,7 +278,19 @@
 
   .field{display:block;margin-bottom:12px}
   .field>span{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
-  input,select{font:inherit;width:100%;min-height:46px;padding:10px 12px;border:1px solid var(--rule);border-radius:3px;background:var(--field);color:var(--ink)}
+  input,select,textarea{font:inherit;width:100%;min-height:46px;padding:10px 12px;border:1px solid var(--rule);border-radius:3px;background:var(--field);color:var(--ink)}
+  textarea{resize:vertical;line-height:1.4}
+  input[type=file]{padding:9px 10px;font-size:15px}
+  input[disabled],textarea[disabled]{opacity:.6}
+  .flag{font-size:14px;color:var(--muted);margin-top:-4px;min-height:1px}
+  .flag .pos,.flag .neg{font-weight:600}
+  .howto{margin-top:16px;border-top:1px solid var(--rule);padding-top:4px}
+  .howto summary{cursor:pointer;font-weight:600;min-height:44px;display:flex;align-items:center;color:var(--heather);text-decoration:underline;text-underline-offset:3px;list-style:none}
+  .howto summary::-webkit-details-marker{display:none}
+  .howto ol{margin:4px 0 0;padding-left:20px;font-size:15px}
+  .howto li{margin:8px 0;color:var(--muted)}
+  .howto li b{color:var(--ink);font-weight:600}
+  .howto a{color:inherit}
   .btn{background:var(--btn);color:var(--btnink);border:0;border-radius:3px;min-height:46px;padding:11px 18px;font-weight:600;cursor:pointer}
   .btn.ghost{background:none;color:var(--ink);border:1px solid var(--rule)}
   .btn.sm{min-height:44px;padding:0 14px;margin-top:8px}
@@ -309,10 +349,12 @@ const TRIP = {
   vanHire: 840,               // group estimate: 9-seater, 6 days at about 140/day
   vanFuel: 200,               // group placeholder
   arrivalWindow: "",          // e.g. "Land at Edinburgh by 11:00 AM on Sat, Sep 9"
-  departWindow: ""            // e.g. "No flights before 1:00 PM on Fri, Sep 15"
+  departWindow: "",           // e.g. "No flights before 1:00 PM on Fri, Sep 15"
+  passportMin: "2029-03-15"   // passports must run to this date: six months after we fly home.
+                              // The same date is written into supabase-decisions.sql.
 };
 
-/* How we get on the Old Course, and what each route costs per golfer.
+/* How we get on the Old Course, and what it costs per golfer.
    route "package" = the St Andrews Links advance application (Swilcan Package), which sells
    the Old Course and a second Links course together. Its price replaces the two separate
    green fees, so the budget carries the difference as a premium. Change route to "ballot"
@@ -321,23 +363,21 @@ const OLD_COURSE = {
   route: "package",
   packageGBP: 782.25,         // 2028 estimate: the 2027 high-season price of 745, plus 5%
   package2027: 745,
-  credits: 105,               // food (75) and shop (30) credit included in the 2027 package
-  providerLow: 2734,          // 2027 authorised-provider guaranteed packages, per person,
-  providerHigh: 3350          //   lowest published "from" prices; they include hotel nights
+  credits: 105                // food (75) and shop (30) credit included in the 2027 package
 };
 
 /* One entry per golfer. This drives each person's "My trip" tab.
-   Votes, caddie choices and driver volunteers are NOT kept here any more: each golfer
-   enters them on the Decisions tab and they are stored in the database.                       */
+   Votes, caddie choices, drivers, handicap, passport and flight details are NOT kept here:
+   each golfer enters them on the Decisions tab and they are stored in the database.           */
 const GOLFERS = [
-  {id:"rich",    name:"Rich",    home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, roomFife:"", roomAyr:"", paidUSD:0},
-  {id:"chris",   name:"Chris",   home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, roomFife:"", roomAyr:"", paidUSD:0},
-  {id:"brandon", name:"Brandon", home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, roomFife:"", roomAyr:"", paidUSD:0},
-  {id:"jack",    name:"Jack",    home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, roomFife:"", roomAyr:"", paidUSD:0},
-  {id:"mike",    name:"Mike",    home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, roomFife:"", roomAyr:"", paidUSD:0},
-  {id:"cam",     name:"Cam",     home:"Chicago",     airport:"ORD", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, roomFife:"", roomAyr:"", paidUSD:0},
-  {id:"jackson", name:"Jackson", home:"Chicago",     airport:"ORD", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, roomFife:"", roomAyr:"", paidUSD:0},
-  {id:"russ",    name:"Russ",    home:"Bend, OR",    airport:"RDM", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, roomFife:"", roomAyr:"", paidUSD:0}
+  {id:"rich",    name:"Rich",    home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"chris",   name:"Chris",   home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"brandon", name:"Brandon", home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"jack",    name:"Jack",    home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"mike",    name:"Mike",    home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"cam",     name:"Cam",     home:"Chicago",     airport:"ORD", flightOut:"", flightBack:"", roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"jackson", name:"Jackson", home:"Chicago",     airport:"ORD", flightOut:"", flightBack:"", roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"russ",    name:"Russ",    home:"Bend, OR",    airport:"RDM", flightOut:"", flightBack:"", roomFife:"", roomAyr:"", paidUSD:0}
 ];
 
 /* green = estimated 2028 green fee. caddie/tip = per bag. trolley = hire if no caddie.
@@ -417,12 +457,6 @@ const VOTES = [
     text:"The biggest swing in cost. Western Gailes books by enquiry with a 50% non-refundable deposit, and Turnberry opens about a year out, so we settle this with Thursday's round and enquire straight away."},
   {id:"thu", kind:"poll", slot:"thu", title:"Thursday's round, Sep 14", by:"2027-01-31",
     text:"The earliest booking window of the trip. Royal Troon's 2028 visitor diary should open in March or April 2027 and most times go within a month, so our request has to be ready before it opens."},
-  {id:"guarantee", kind:"poll", title:"Old Course: lottery or a paid guarantee", by:"2027-01-31", closed:false, pick:"", outcome:"",
-    text:"There is no way to buy just a guaranteed tee time. Guaranteed times are sold only by authorised providers as hotel packages, and September dates sell out more than a year ahead, so this can't wait to see whether our application wins.",
-    options:[
-      {id:"lottery",  label:"Lottery routes only", note:"Advance application in September 2027 for Jubilee and the Old Course together (already in the budget), then the daily ballot if that fails. No extra cost, no guarantee."},
-      {id:"provider", label:"Pay for a guaranteed time", note:"A provider package with three to five hotel nights and extra rounds. PROVIDER_COST It would duplicate the St Andrews house we have booked."}
-    ]},
   {id:"rules", kind:"poll", title:"Drop-out and cost-sharing rules", by:"2027-01-31", closed:false, pick:"", outcome:"",
     text:"Proposal: houses and van are split equally by eight, golf is paid per player, and anyone who drops out covers their own non-refundable costs unless a replacement takes the spot. Needs settling before the first non-refundable golf deposit.",
     options:[
@@ -437,36 +471,75 @@ const VOTES = [
     options:[
       {id:"yes", label:"I'll drive", note:""},
       {id:"no",  label:"Not driving", note:""}
+    ]},
+  {id:"flights", kind:"own", title:"Flights: on your own or with the group", by:"2027-09-01", closed:false,
+    text:"Book your own flights to the arrival window, or have Chris book you with the group. Fares for September 2028 go on sale in mid-October 2027, so the group booking needs everyone's details before then.",
+    options:[
+      {id:"own",   label:"I'll book my own", note:""},
+      {id:"group", label:"Book me with the group", note:""}
     ]}
 ];
+/* Deadlines for the personal details each golfer sends on the Decisions tab.                  */
+const DETAILS = { handicap:"2027-01-31", passport:"2027-09-01" };
 
 /* Decisions the organiser makes and reports. by = YYYY-MM-DD. status: "Open" or "Decided".  */
 const DECISIONS = [
   {title:"Tee time targets", text:"Morning at Balcomie before the drive west; after 1 PM at Turnberry if it is chosen.", by:"2027-01-31", status:"Open", outcome:""},
   {title:"Deposits and paying back", text:"One person fronts the bookings; a reimbursement schedule and method will follow before the first golf deposit.", by:"2027-01-31", status:"Open", outcome:""},
-  {title:"Old Course booking route", text:"Two applications of four in the September 2027 window, daily ballot as backup, unless the group votes for a paid guarantee.", by:"2027-08-15", status:"Open", outcome:""},
+  {title:"Old Course booking route", text:"Two applications of four in the autumn 2027 window, then the daily ballot and the singles draw. The step-by-step plan is under Why these dates.", by:"2027-08-15", status:"Open", outcome:""},
+  {title:"Old Course fourballs", text:"The application takes four golfers at a time, so one four could win and the other miss. How the two fours are picked, and what we do if only one gets a time, will be set before we apply.", by:"2027-08-15", status:"Open", outcome:""},
   {title:"Airports and arrival window", text:"An arrive-by time on Sep 9 and a not-before departure on Sep 15. Edinburgh both ways, or home from Glasgow.", by:"2027-09-01", status:"Open", outcome:""},
-  {title:"Who books flights", text:"Everyone books their own to the target window.", by:"2027-09-01", status:"Open", outcome:""},
+  {title:"Who books flights", text:"Each golfer chooses on this tab: book their own to the target window, or have Chris book them with the group.", by:"2027-09-01", status:"Open", outcome:""},
   {title:"Vehicle setup", text:"Everyone is bringing their own clubs, so eight golfers and eight bags need a nine-seater plus a second vehicle. National preferred.", by:"2027-09-30", status:"Open", outcome:""},
   {title:"Room assignments", text:"Assigned or drawn for each house.", by:"2028-07-01", status:"Open", outcome:""},
   {title:"Foursomes and games", text:"Pairings rotate daily, with one trip-long game.", by:"2028-08-01", status:"Open", outcome:""},
   {title:"Arrival-day par 3", text:"Balgove is pencilled in. It needs no season-ahead booking, just a call a few days before.", by:"2028-09-01", status:"Open", outcome:""}
 ];
 
-/* When each booking window opens. None of the clubs has published 2028 dates yet, so every
-   line is projected from the pattern each club followed for 2026 and 2027. Update as they
-   announce. when = what the club does; act = what we do about it.                             */
-const BOOKING = [
-  {what:"Royal Troon", when:"2028 visitor diary projected to open late March to late April 2027. Most times go within a month.", act:"Ask for the date in Feb 2027; request in opening week"},
-  {what:"Western Gailes", when:"Books by enquiry, no published opening date. 50% non-refundable deposit within three weeks of a provisional booking.", act:"Enquire Feb 2027 if chosen"},
-  {what:"Dundonald Links", when:"Online about 12 months ahead; reservations take earlier requests by email.", act:"Email Feb 2027 if chosen"},
-  {what:"Prestwick", when:"2028 times likely on sale by mid-2027. Paid in full at booking.", act:"Email spring 2027 if chosen"},
-  {what:"Old Course and Jubilee", when:"Advance application window projected for September 2027 (the 2027-season window ran Sep 23 to Oct 6, 2026). It is a draw, with results by the end of October and payment in full soon after.", act:"Watch from Aug 2027; apply as two fourballs"},
-  {what:"Turnberry", when:"About 12 months ahead, so around September 2027. Hotel guests get priority.", act:"Enquire Sep 2027 if chosen"},
-  {what:"Gailes Links", when:"No published opening date. Paid in full at booking.", act:"Enquire autumn 2027 if chosen"},
-  {what:"Balcomie Links, Crail", when:"Next season is on sale by the autumn before. Groups of five or more book by email and pay within five days.", act:"Email autumn 2027"},
-  {what:"Van and flights", when:"Hire desks and airlines open about 11 to 12 months out.", act:"Book Sep to Oct 2027"},
-  {what:"Caddies", when:"Requested through each club after the tee time is confirmed.", act:"Request Nov 2027"}
+/* WHY THESE DATES: the booking calendar, in order. No club has published 2028 dates yet, so
+   anything marked est:true is projected from what that club did for 2026 and 2027. Replace
+   the dates and set est:false as each club announces.
+   when = the day or date range. who = who has to act. what = the action. why = the reason.    */
+const TIMELINE = [
+  {when:"By Jan 31, 2027", who:"Everyone", est:false, what:"Lock in your votes on both Ayrshire rounds and the drop-out rules, and enter your handicap index.",
+    why:"Royal Troon is the first tee sheet to open, and its limit of 20 means we need every index before choosing it. Chris needs the group's Thursday choice, and agreed rules on who covers what, before paying any deposit we can't get back."},
+  {when:"Feb 1 to Feb 12, 2027", who:"Chris", est:false, what:"Email the two Ayrshire clubs the group chose.",
+    why:"Royal Troon is asked for the exact day its 2028 visitor diary opens. Western Gailes and Dundonald have no opening day and take requests by email, so asking early gets the best pick of times. Western Gailes then wants a 50% non-refundable deposit within three weeks of holding a time."},
+  {when:"Mar 22 to Apr 30, 2027", who:"Chris", est:true, what:"Book Thursday's round on the day the tee sheet opens.",
+    why:"Royal Troon has opened the following year's diary between late March and late April, and most times are gone within a month. If the group picks Prestwick instead, the same window is used; it is paid in full at booking."},
+  {when:"By Aug 1, 2027", who:"Everyone", est:false, what:"Check that the handicap index, home club and certificate you entered on this tab are current.",
+    why:"The Old Course application needs an index and home club for every golfer, the window lasts about two weeks, and its dates are only announced a few weeks ahead."},
+  {when:"By Aug 31, 2027", who:"Everyone", est:false, what:"Answer the driver question.",
+    why:"Van hire opens about a year out. The number of named drivers decides whether we book one vehicle or two."},
+  {when:"By Sep 1, 2027", who:"Everyone", est:false, what:"Choose your own flights or the group booking, and enter your passport expiry date.",
+    why:"Chris sets the arrival window and books the group in mid-October. A passport that runs out before March 15, 2029 needs renewing first, because the ticket has to match the passport you travel on."},
+  {when:"Aug 23 to Oct 6, 2027", who:"Chris", est:true, what:"Submit two Old Course applications of four golfers each.",
+    why:"The window has moved later each year: Aug 26 to Sep 4 in 2024, Sep 10 to 22 in 2025, Sep 23 to Oct 6 in 2026. It is a draw, so being first earns nothing, but an entry after the closing minute is not counted."},
+  {when:"Sep 9 to Sep 30, 2027", who:"Chris", est:true, what:"Book Wednesday's round, Balcomie and the van.",
+    why:"Turnberry and van hire open about twelve months before the date. Crail has the next season on sale by autumn; groups over four book by email and pay within five days."},
+  {when:"By Oct 31, 2027", who:"St Andrews Links", est:true, what:"Application results arrive by email. Winners pay in full within about two weeks.",
+    why:"A missed payment loses the tee time. This is also the day we know whether anyone needs the ballot plan below."},
+  {when:"Oct 10 to Oct 31, 2027", who:"Everyone", est:true, what:"Flights are booked: your own, or by Chris for the group.",
+    why:"Airlines release seats about 330 days out, so flights for early September 2028 go on sale in mid-October 2027."},
+  {when:"By Nov 15, 2027", who:"Everyone", est:false, what:"Lock in caddie or no caddie for each round.",
+    why:"Every tee time is confirmed by now. Caddies are requested through each club and are limited at the Old Course and Turnberry."},
+  {when:"Jul 11 and Jul 14, 2028", who:"Automatic", est:false, what:"The two house balances are charged.",
+    why:"These are also the last days to cancel either house for a full refund."},
+  {when:"Sep 7 to Sep 10, 2028", who:"Chris", est:false, what:"Daily ballot entries, only for golfers still without an Old Course time.",
+    why:"The ballot closes at 2 PM UK time two days before play. The exact days are in the plan below."}
+];
+/* HOW WE GET ON THE OLD COURSE: the steps, in order. when = the day or range for that step.  */
+const OLD_PLAN = [
+  {when:"Before Aug 1, 2027", what:"Make all eight of us eligible.",
+    how:"Every golfer needs an official handicap index of 36 or better and the certificate to prove it at the starter. Enter your index and home club and upload your certificate on this tab. One missing golfer holds up a whole fourball's entry."},
+  {when:"Aug 23 to Oct 6, 2027 (projected)", what:"Enter the advance draw twice, as two fourballs.",
+    how:"An application takes four golfers at most, so eight of us means two separate entries, each asking for Jubilee on Sunday, Sep 10 and the Old Course on Monday, Sep 11. Both go in during the first days of the window so there is time to fix a rejected detail. The draw happens after the window closes."},
+  {when:"By Oct 31, 2027", what:"Act on the result the same week.",
+    how:"Both fours win: we pay and the Old Course is done. One four wins: they pay, and the other four move to the ballot. Neither wins: all eight move to the ballot, and Chris books Jubilee for Sunday directly. The budget assumes the application succeeds; a ballot time costs about £220 less per golfer."},
+  {when:"Sep 7, 9 and 10, 2028, by 2 PM UK time (8 AM Central)", what:"Enter the daily ballot for every day we could play.",
+    how:"Entries close two days before play and results post after 4:30 PM. Thursday, Sep 7 is for Saturday, Sep 9, entered online from home and only if flights land early enough. Saturday, Sep 9 is for Monday, Sep 11, the day we keep clear. Sunday, Sep 10 is for Tuesday, Sep 12, which would replace Balcomie. Each fourball without a time enters separately. About one entry in ten won on an average day in 2024, so three tries give a fourball a little better than one chance in four."},
+  {when:"Sep 10 and 11, 2028, 9 AM to 4 PM", what:"Last resort: the singles draw, in person.",
+    how:"Anyone still without a time takes their certificate to the Old Pavilion or the Links Clubhouse the day before they want to play. Singles are drawn into leftover gaps and go out with other groups, so we would not play together."}
 ];
 
 /* EXPENSES
@@ -496,10 +569,10 @@ const BAR = [
   ["home","My trip",   svg('<circle cx="12" cy="8" r="3.6"/><path d="M4.8 20c0-3.8 3.2-6.3 7.2-6.3s7.2 2.5 7.2 6.3"/>')],
   ["itinerary","Itinerary", svg('<rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10.2h16M8.5 3.5v4M15.5 3.5v4"/>')],
   ["golf","Golf",      svg('<path d="M9.5 20V4l8 3.4-8 3.4"/><path d="M5.5 20h9"/>')],
-  ["costs","Costs",    svg('<circle cx="12" cy="12" r="8.6"/><path d="M14.6 9.3c-.4-1-1.3-1.7-2.4-1.7-1.4 0-2.4 1-2.4 2.4 0 1.2.6 2 .6 3.2 0 1-.5 1.9-1.1 2.4h5.6M9 12.6h4.4"/>')]
+  ["decisions","Decisions", svg('<rect x="4.5" y="4.5" width="15" height="15" rx="2.5"/><path d="M8.3 12.3l2.6 2.6 4.8-5.4"/>')]
 ];
 const MORE = [
-  ["decisions","Decisions","Vote, see the results, lock in your answers"],
+  ["costs","Costs","The full budget, round by round"],
   ["travel","Travel and houses","Flights, the van and both houses"],
   ["expenses","Expenses","What's been fronted and who owes whom"],
   ["guide","Field guide","Packing, weather, money and etiquette"]
@@ -507,8 +580,9 @@ const MORE = [
 const MORE_ICON = svg('<circle cx="5.5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="18.5" cy="12" r="1.3" fill="currentColor"/>');
 const S = {tab:"home", who:null, more:false, wed:SLOTS.wed.pick, thu:SLOTS.thu.pick, touched:{},
   x:{rows:[], loaded:false, error:"", code:"", role:"", form:false, edit:null, msg:"", busy:false},
-  v:{rows:[], loaded:false, error:"", draft:{}, stale:[], fresh:[], note:"", msg:"", busy:false, checking:false}};
-const V = S.v;
+  v:{rows:[], loaded:false, error:"", draft:{}, stale:[], fresh:[], note:"", msg:"", busy:false, checking:false},
+  d:{status:{}, mine:{}, draft:{}, err:"", up:"", busy:false, admin:null, adminMsg:""}};
+const V = S.v, D = S.d;
 
 const usd = gbp => gbp * TRIP.rate;
 const $u = n => "$" + Math.round(n).toLocaleString("en-US");
@@ -545,8 +619,7 @@ const sharedUSD = () => usd((HOUSES[0].total + HOUSES[1].total + TRIP.vanHire + 
 function voteOptions(v){
   if(v.slot) return SLOTS[v.slot].options.map(id => { const c = COURSES[id];
     return {id, label:c.name, note:c.about + (c.rules ? " "+c.rules : ""), price:$u(usd(allIn(c, wantsCaddie(me(), id))))}; });
-  return (v.options || []).map(o => Object.assign({}, o, {note:o.note.replace("PROVIDER_COST",
-    "From about "+$g(OLD_COURSE.providerLow)+" to "+$g(OLD_COURSE.providerHigh)+" each at 2027 prices, so at least "+$u(usd(OLD_COURSE.providerLow - OLD_COURSE.packageGBP))+" to "+$u(usd(OLD_COURSE.providerHigh - OLD_COURSE.packageGBP))+" more per person than this budget.")}));
+  return v.options || [];
 }
 /* submitted answers only; unsaved edits never count */
 function tally(key){
@@ -579,6 +652,47 @@ function syncSlots(){
   Object.keys(SLOTS).forEach(k => { const p = slotPick(k);
     S[k] = p || (S.touched[k] ? S[k] : (V.draft[k] && SLOTS[k].options.includes(V.draft[k]) ? V.draft[k] : SLOTS[k].pick)); });
 }
+/* ---------- personal details: handicap, certificate, passport, flight numbers ----------
+   These go to a separate table that the website cannot read back, because they include a
+   passport date and traveller numbers. This device keeps its own copy of what it sent
+   (D.mine); the group only ever sees D.status: each golfer's index, and yes/no for the rest.  */
+const DFIELDS = ["hcp","club","cert","passport","ktn","airlines"];
+const DCOUNT = ["hcp","cert","passport"];                         // the three that count as questions
+const detKey = () => "scot28details:" + S.who;
+const stat = id => D.status[id] || {};
+function loadDetails(){
+  D.mine = {}; D.draft = {}; D.up = "";
+  if(S.who){ try{ const d = JSON.parse(localStorage.getItem(detKey()) || "null"); if(d){ D.mine = d.mine || {}; D.draft = Object.assign({}, D.mine, d.draft || {}); } }catch(_){} }
+  DFIELDS.forEach(f => { if(D.draft[f] == null) D.draft[f] = D.mine[f] || ""; });
+}
+function keepDetails(){ try{ localStorage.setItem(detKey(), JSON.stringify({mine:D.mine, draft:D.draft})); }catch(_){} }
+const dirtyDetails = () => S.who ? DFIELDS.filter(f => (D.draft[f] || "").trim() !== (D.mine[f] || "").trim()) : [];
+const allDirty = () => dirtyKeys().length + dirtyDetails().length;
+const onFile = f => { const st = stat(S.who); return f === "hcp" ? st.handicap_index != null : f === "cert" ? !!st.has_certificate : f === "passport" ? !!st.has_passport : false; };
+const hasDetail = f => !!(D.draft[f] || "").trim() || ((D.mine[f] || "") === "" && onFile(f));
+const parseIndex = t => { t = String(t || "").trim(); if(!t) return null; const n = parseFloat(t.replace(/^\+/, "-")); return isFinite(n) && n >= -10 && n <= 54 ? Math.round(n * 10) / 10 : NaN; };
+const myIndex = () => { const n = parseIndex(D.draft.hcp); return n !== null && !isNaN(n) ? n : (stat(S.who).handicap_index != null ? Number(stat(S.who).handicap_index) : null); };
+function hcpFlag(){
+  const raw = (D.draft.hcp || "").trim(), n = parseIndex(raw);
+  if(!raw) return onFile("hcp") ? `<span class="pos">On file: ${stat(S.who).handicap_index}. Type a new number to replace it.</span>` : "";
+  if(isNaN(n)) return `<span class="neg">Enter a number, like 12.4.</span>`;
+  if(n > 36) return `<span class="neg">Above the Old Course limit of 36. Tell ${TRIP.organiser}.</span>`;
+  if(n > 24) return `<span class="neg">Fine for the Old Course, but above Western Gailes (24) and Royal Troon (20). Keep that in mind when you vote.</span>`;
+  if(n > 20) return `<span class="neg">Fine everywhere except Royal Troon, which caps men at 20. Keep that in mind for Thursday's vote.</span>`;
+  return `<span class="pos">Within the limit at every course on the list.</span>`;
+}
+function passportFlag(){
+  const v = D.draft.passport || "";
+  if(!v) return onFile("passport") ? (stat(S.who).passport_ok ? `<span class="pos">On file, and it runs long enough.</span>` : `<span class="neg">On file, but it expires before ${fmtDay(TRIP.passportMin)}. Renew it, then enter the new date.</span>`) : "";
+  if(v < TRIP.passportMin) return `<span class="neg">That expires before ${fmtDay(TRIP.passportMin)}, six months after we fly home. Renew it before flights are booked, then enter the new date here.</span>`;
+  return `<span class="pos">Good. It runs past ${fmtDay(TRIP.passportMin)}.</span>`;
+}
+/* How far through the questions this golfer is. Counts what is on screen (including answers
+   not locked in yet); anything already closed and never answered is left out of the total.   */
+function progress(){
+  const keys = KEYS.filter(k => !frozen(voteById(k)) || V.draft[k]), made = keys.filter(k => V.draft[k]).length + DCOUNT.filter(hasDetail).length, total = keys.length + DCOUNT.length;
+  return {total, made, left:total - made, dirty:allDirty(), locked:!!myRow() || !!stat(S.who).golfer_id, next:keys.find(k => !V.draft[k]) || DCOUNT.find(f => !hasDetail(f)) || ""};
+}
 function labelOf(key, val){
   if(!val) return "";
   if(key.startsWith("cad_")) return val === "yes" ? "Caddie" : "No caddie";
@@ -609,7 +723,7 @@ function home(){
     <p class="lede">Pick your name to see your own flights, rounds, costs and what's still needed from you. Your phone will remember.</p>
     <div class="pick">${GOLFERS.map(x => `<button data-who="${x.id}"><b>${x.name}</b><span>${x.home}</span></button>`).join("")}</div>`;
 
-  const sub = submitted(), dirty = dirtyKeys().length;
+  const sub = submitted(), dirty = allDirty(), st = stat(g.id), idx = myIndex();
   const polls = VOTES.filter(v => v.kind === "poll"), openPolls = polls.filter(v => !frozen(v));
   const pollsDone = openPolls.every(v => sub[v.id]) && !dirty;
   const nextDue = openPolls.map(v => v.by).sort()[0];
@@ -618,21 +732,22 @@ function home(){
     [pollsDone, "Vote on the group decisions and lock in", dirty ? "You have "+dirty+" change"+(dirty>1?"s":"")+" not locked in yet. Nobody else can see them until you do." : pollsDone ? "Locked in. You can change your answers until each deadline." : "Due "+(nextDue ? fmtDay(nextDue) : "soon")+". "+openPolls.filter(v => !sub[v.id]).length+" of "+openPolls.length+" still to answer."],
     [cad.keys.every(k => sub[k]), "Choose caddie or no caddie for each round", "Due "+fmtDay(cad.by)+". Your picks set your golf estimate below."],
     [!!sub.driver, "Say whether you'll drive", sub.driver ? (sub.driver === "yes" ? "You're a volunteer driver." : "You're not driving.") : "Due "+fmtDay(drv.by)+". We need at least two volunteers for a large van on the left."],
-    [g.handicap !== null && g.certificate, "Send your handicap index and certificate", g.handicap !== null ? "Index on file: "+g.handicap+"." : "The Old Course needs 36 or better; Royal Troon caps men at 20."],
-    [g.passportOK, "Confirm your passport runs past March 2029", "Six months beyond the trip is the safe margin."],
-    [!!g.flightOut && !!g.flightBack, "Book your flights", TRIP.arrivalWindow ? TRIP.arrivalWindow+"." : "Not yet. Wait for the arrival window; fares open around autumn 2027."]
+    [st.handicap_index != null && st.has_certificate, "Enter your handicap index and upload your certificate", st.handicap_index != null ? "Index on file: "+st.handicap_index+"."+(st.has_certificate ? "" : " Certificate still to upload.") : "Due "+fmtDay(DETAILS.handicap)+". The Old Course needs 36 or better; Royal Troon caps men at 20."],
+    [!!st.passport_ok, "Enter your passport expiry date", st.has_passport && !st.passport_ok ? "The date on file is before "+fmtDay(TRIP.passportMin)+". Renew it, then enter the new date." : st.passport_ok ? "On file, and it runs long enough." : "Due "+fmtDay(DETAILS.passport)+". It has to run past "+fmtDay(TRIP.passportMin)+"."],
+    [sub.flights === "group" || (!!g.flightOut && !!g.flightBack), "Flights", sub.flights === "group" ? TRIP.organiser+" is booking you with the group, around mid-October 2027." : sub.flights === "own" ? (TRIP.arrivalWindow ? "You're booking your own. "+TRIP.arrivalWindow+"." : "You're booking your own. Wait for the arrival window; fares open around mid-October 2027.") : "Due "+fmtDay(VOTES.find(v => v.id === "flights").by)+". Choose to book your own or with the group."]
   ];
   const open = todo.filter(t => !t[0]).length;
   const golf = usd(golfGBP(g)), total = TRIP.flightUSD + sharedUSD() + golf;
-  const warn = (g.handicap !== null && g.handicap > 20 && S.thu === "troon")
+  const warn = (idx !== null && idx > 20 && S.thu === "troon")
     ? `<p class="note" style="color:var(--heather)">Your index is above Royal Troon's limit of 20. Tell ${TRIP.organiser} before the Ayrshire vote.</p>` : "";
 
-  return slimBoard() + `<h2>${g.name}'s trip</h2>
+  const pr = progress(), ask = V.loaded && !V.error && (pr.left || pr.dirty);
+  return slimBoard() + (ask ? `<div class="banner"><p><b>${pr.left ? pr.left+" decision"+(pr.left>1?"s":"")+" still need"+(pr.left>1?"":"s")+" your answer." : "Your answers aren't locked in yet."}</b> ${pr.made} of ${pr.total} answered${pr.dirty ? ", "+pr.dirty+" not locked in" : ""}.${nextDue ? " First deadline "+fmtDay(nextDue)+"." : ""}</p><button class="btn sm" data-tab="decisions">Answer now</button></div>` : "") + `<h2>${g.name}'s trip</h2>
     <p class="lede">${open ? open+" thing"+(open>1?"s":"")+" still needed from you." : "Nothing needed from you right now."}</p>
 
     <div class="block" style="margin-top:0"><h3>Needed from you</h3><div class="sheet">
       ${todo.map(t => `<div class="check ${t[0]?"done":""}"><i>${t[0]?"✓":""}</i><div><b>${t[1]}</b><span>${t[2]}</span></div></div>`).join("")}
-    </div><p class="note"><button class="btn sm" data-tab="decisions">Open Decisions</button></p></div>
+    </div></div>
 
     <div class="block"><h3>Your travel</h3><div class="sheet">
       <div class="row stack"><div class="l"><b>Outbound</b><span>From ${g.airport}, ${g.home}</span></div><div class="r">${g.flightOut || "Not booked"}</div></div>
@@ -683,7 +798,6 @@ function oldCourseRoutes(){
   return `<div class="sheet">
     <div class="row stack"><div class="l"><b>Advance application ${o.route === "package" ? "(our plan, in the budget)" : ""}</b><span>St Andrews Links sells the Old Course and a second course on consecutive days as one package, by a draw each autumn for the following year. ${$g(o.package2027)} each in 2027, including ${$g(o.credits)} of food and shop credit. Four golfers per application, so we enter as two fourballs and could win one, both or neither.</span></div><div class="r num">${$g(o.packageGBP)}<small>${$u(usd(o.packageGBP))} for Jubilee and Old</small></div></div>
     <div class="row stack"><div class="l"><b>Daily ballot (the backup)</b><span>Drawn two days ahead, in groups of two to four, at the standard green fee. Roughly one in ten entries succeeded on an average day in 2024.</span></div><div class="r num">${$g(COURSES.old.green)}<small>${$u(usd(COURSES.old.green))} green fee</small></div></div>
-    <div class="row stack"><div class="l"><b>Guaranteed, through a provider</b><span>The only true guarantee. Sold as packages with three to five hotel nights and other rounds; a tee time on its own is not offered. September dates sell out more than a year ahead.</span></div><div class="r num">${$g(o.providerLow)} to ${$g(o.providerHigh)}<small>${$u(usd(o.providerLow))} to ${$u(usd(o.providerHigh))} and up, 2027 prices</small></div></div>
   </div>`;
 }
 function golf(){
@@ -703,9 +817,9 @@ function golf(){
   <p class="note"><button class="btn sm" data-tab="decisions">Vote on the Decisions tab</button></p></div>
 
   <div class="block"><h3>Getting on the Old Course</h3>
-  <p class="lede" style="margin-bottom:14px">There is no ordinary booking for the Old Course. These are the three ways on and what each costs per golfer.</p>
+  <p class="lede" style="margin-bottom:14px">There is no ordinary booking for the Old Course. These are the two ways on and what each costs per golfer.</p>
   ${oldCourseRoutes()}
-  <p class="note">2028 figures are 2027 prices plus 5%. Whether to pay for a guarantee is a group vote on the Decisions tab.</p></div>
+  <p class="note">2028 figures are 2027 prices plus 5%. The step-by-step plan, with dates, is on the Decisions tab under Why these dates.</p></div>
 
   <div class="block"><h3>Handicaps</h3><div class="sheet">
     <div class="row"><div class="l"><b>Old Course</b><span>Certificate required at the starter</span></div><div class="r">36 or better</div></div>
@@ -758,8 +872,7 @@ function costs(){
     ${prem ? `<div class="row"><div class="l"><b>Old Course advance package</b><span>The application sells Jubilee and the Old Course together for about ${$g(OLD_COURSE.packageGBP)}. This is the amount over the two standard green fees above. It drops out if we end up in the daily ballot.</span></div><div class="r num">${$u(usd(prem))}<small>${$g(prem)}</small></div></div>` : ""}
   </div></div>
 
-  <div class="block"><h3>What an Old Course time costs</h3>${oldCourseRoutes()}
-  <p class="note">A provider guarantee would add at least ${$u(usd(OLD_COURSE.providerLow - OLD_COURSE.packageGBP))} to ${$u(usd(OLD_COURSE.providerHigh - OLD_COURSE.packageGBP))} per person to the total above, before any refund we could recover on the St Andrews house. Exact quotes come from the provider.</p></div>
+  <div class="block"><h3>What an Old Course time costs</h3>${oldCourseRoutes()}</div>
 
   <div class="block"><h3>When money moves</h3><div class="sheet">
     <div class="row"><div class="l"><b>House deposits</b><span>Paid Oct 5, 2026. ${$u(usd(paid/TRIP.size))} each, fronted by ${TRIP.organiser}.</span></div><div class="r num">${$g(paid)}</div></div>
@@ -795,7 +908,7 @@ function pollCard(v){
       : `<b>Final: ${name(d.pick)}, with ${n} of ${TRIP.size}.</b> ${d.frozen ? "Voting has closed." : "It stays final unless enough people change their answer before "+fmtDay(v.by)+"."}`; }
   else if(d.state === "lapsed"){ tg = tag("wait","No majority"); line = `<b>Voting closed without a majority.</b> ${TRIP.organiser} will make the call${d.lead ? "; "+name(d.lead)+" led with "+d.t.by[d.lead].length : ""}.`; }
   else { tg = tag("vote","Open"); line = `${d.t.n} of ${TRIP.size} have answered. It becomes final when ${NEED} pick the same option${d.lead ? "; "+name(d.lead)+" leads with "+d.t.by[d.lead].length : ""}.`; }
-  return `<div class="sheet votebox vcard"><div class="head"><div><h3>${v.title}</h3>${dueLine(v)}</div>${tg}</div>
+  return `<div class="sheet votebox vcard" id="q-${v.id}"><div class="head"><div><h3>${v.title}</h3>${dueLine(v)}</div>${tg}</div>
     <p class="why">${v.text}</p>
     ${opts.map(o => { const who = d.t.by[o.id] || [], n = who.length;
       return `<button class="opt" data-vote="${v.id}" data-val="${o.id}" aria-pressed="${mine === o.id}" ${off ? "disabled" : ""}><span><b>${o.label}</b>${o.note ? `<small>${o.note}</small>` : ""}
@@ -811,7 +924,7 @@ function caddieCard(v){
   return `<div class="sheet votebox vcard"><div class="head"><div><h3>${v.title}</h3>${dueLine(v)}</div>${answered === TRIP.size ? tag("ok","Complete") : tag("vote",answered+" of "+TRIP.size+" in")}</div>
     <p class="why">${v.text}</p>
     ${rounds.map(r => { const c = COURSES[r[1]], t = tally(r[0]), yes = t.by.yes || [], mine = V.draft[r[0]], pending = slotOpen(r[1]);
-      return `<div class="rnd"><div class="t"><b>${c.name}</b><span>${r[2]}${pending ? ", course pending" : ""}</span></div>
+      return `<div class="rnd" id="q-${r[0]}"><div class="t"><b>${c.name}</b><span>${r[2]}${pending ? ", course pending" : ""}</span></div>
         <div class="seg">
           <button data-vote="${r[0]}" data-val="yes" aria-pressed="${mine === "yes"}" ${off ? "disabled" : ""}><b>Caddie</b><small class="num">${c.caddie ? $u(usd(allIn(c,true)))+" all-in" : "Fee not published"}</small></button>
           <button data-vote="${r[0]}" data-val="no" aria-pressed="${mine === "no"}" ${off ? "disabled" : ""}><b>No caddie</b><small class="num">${$u(usd(allIn(c,false)))} all-in</small></button>
@@ -821,52 +934,141 @@ function caddieCard(v){
 }
 function ownCard(v){
   const off = frozen(v) || !S.who, t = tally(v.id), yes = t.by.yes || [], mine = V.draft[v.id], enough = yes.length >= 2;
-  return `<div class="sheet votebox vcard"><div class="head"><div><h3>${v.title}</h3>${dueLine(v)}</div>${enough ? tag("ok","Covered") : tag("vote",yes.length+" of 2 needed")}</div>
+  return `<div class="sheet votebox vcard" id="q-${v.id}"><div class="head"><div><h3>${v.title}</h3>${dueLine(v)}</div>${enough ? tag("ok","Covered") : tag("vote",yes.length+" of 2 needed")}</div>
     <p class="why">${v.text}</p>
     <div class="vbody"><div class="seg">${v.options.map(o => `<button data-vote="${v.id}" data-val="${o.id}" aria-pressed="${mine === o.id}" ${off ? "disabled" : ""}><b>${o.label}</b></button>`).join("")}</div></div>
     <div class="vfoot">${yes.length ? "<b>Volunteers: "+yes.map(nameOf).join(", ")+".</b>" : "No volunteers yet."} ${t.n} of ${TRIP.size} answered.</div></div>`;
 }
+const privNote = `<p class="note" style="margin-top:0">Only ${TRIP.organiser} can see this. It is not shown to the group and can't be read back from the website.</p>`;
+function flightsCard(v){
+  const off = frozen(v) || !S.who, t = tally(v.id), grp = t.by.group || [], own = t.by.own || [], mine = V.draft[v.id], st = stat(S.who);
+  return `<div class="sheet votebox vcard" id="q-${v.id}"><div class="head"><div><h3>${v.title}</h3>${dueLine(v)}</div>${t.n === TRIP.size ? tag("ok","Complete") : tag("vote",t.n+" of "+TRIP.size+" in")}</div>
+    <p class="why">${v.text}</p>
+    <div class="vbody"><div class="seg">${v.options.map(o => `<button data-vote="${v.id}" data-val="${o.id}" aria-pressed="${mine === o.id}" ${off ? "disabled" : ""}><b>${o.label}</b></button>`).join("")}</div>
+    ${mine === "group" ? `<div style="margin-top:16px">
+      <label class="field"><span>Known Traveler Number, for TSA PreCheck</span><input data-det="ktn" value="${esc(D.draft.ktn)}" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20" placeholder="${st.has_ktn && !D.mine.ktn ? "On file. Type to replace" : "Leave blank if you don't have one"}"></label>
+      <label class="field"><span>Preferred airlines and member numbers</span><textarea data-det="airlines" rows="3" maxlength="400" spellcheck="false" placeholder="${st.has_airlines && !D.mine.airlines ? "On file. Type to replace" : "One per line, like: United MileagePlus AB123456"}">${esc(D.draft.airlines)}</textarea></label>
+      ${privNote}<p class="note">Your Known Traveler Number is on your Global Entry card or in your TSA PreCheck account. ${TRIP.organiser} will also need your name exactly as it appears on your passport, and will ask for it when booking.</p></div>` : ""}</div>
+    <div class="vfoot">${grp.length ? "<b>With the group: "+grp.map(nameOf).join(", ")+".</b> " : ""}${own.length ? "On their own: "+own.map(nameOf).join(", ")+". " : ""}${t.n} of ${TRIP.size} answered.</div></div>`;
+}
+function handicapCard(){
+  const off = !S.who, all = GOLFERS.filter(x => stat(x.id).handicap_index != null), certs = GOLFERS.filter(x => stat(x.id).has_certificate).length;
+  const v = {by:DETAILS.handicap};
+  return `<div class="sheet votebox vcard" id="q-hcp"><div class="head"><div><h3>Handicap index and certificate</h3>${dueLine(v)}</div>${all.length === TRIP.size && certs === TRIP.size ? tag("ok","Complete") : tag("vote",all.length+" of "+TRIP.size+" in")}</div>
+    <p class="why">The Old Course wants an official index of 36 or better and proof of it at the starter. Royal Troon caps men at 20 and Western Gailes at 24, so the group needs everyone's index before the Ayrshire vote closes.</p>
+    <div class="vbody">
+      <div class="two"><label class="field"><span>Your handicap index</span><input data-det="hcp" value="${esc(D.draft.hcp)}" inputmode="decimal" autocomplete="off" maxlength="5" placeholder="12.4" ${off ? "disabled" : ""}></label>
+      <label class="field"><span>Home club or golf association</span><input data-det="club" value="${esc(D.draft.club)}" autocomplete="off" maxlength="80" placeholder="As it appears in GHIN" ${off ? "disabled" : ""}></label></div>
+      <p class="flag" id="flag-hcp">${hcpFlag()}</p>
+      <div class="field" id="q-cert" style="margin-top:14px"><span>Your handicap certificate</span>
+        <input type="file" id="certFile" accept="image/*,application/pdf" ${off || D.busy ? "disabled" : ""}>
+        <p class="flag">${D.up ? `<span class="${/^Uploaded/.test(D.up) ? "pos" : "neg"}">${esc(D.up)}</span>` : D.draft.cert ? `<span class="pos">Uploaded${D.draft.cert !== D.mine.cert ? ". Lock in to send it to "+TRIP.organiser : " and sent"}.</span>` : onFile("cert") ? `<span class="pos">On file. Upload again to replace it.</span>` : "A screenshot, photo or PDF of your handicap card, up to 5 MB."}</p></div>
+      <details class="howto"><summary>How to find your index and get the certificate</summary>
+        <ol>
+          <li><b>You need an official index.</b> In the US that is a USGA Handicap Index, kept in GHIN through a club or your state golf association. An index from a scoring app alone is not accepted.</li>
+          <li><b>No index yet?</b> Join through your club or your state or regional golf association (in Kansas City, Central Links Golf; in Chicago, the CDGA; in Oregon, the OGA). It takes a paid membership and three 18-hole scores posted before an index appears, so start now.</li>
+          <li><b>Find your index.</b> Open the GHIN app or sign in at ghin.com. Your Handicap Index is the number on the home screen.</li>
+          <li><b>Get the certificate on a phone.</b> In the GHIN app, open the Account tab (called More in some versions) and choose My Handicap Card (or My Card). Take a screenshot showing your name, GHIN number, club and index.</li>
+          <li><b>Or on a computer.</b> Sign in at ghin.com, open the menu at the top left, choose My Card, then Print and save it as a PDF.</li>
+          <li><b>Send it.</b> Type the index and club above, tap Choose File to upload the screenshot or PDF, then lock in.</li>
+          <li><b>Before we fly.</b> Your index moves with every round, so a fresh certificate is needed in August 2028, and a printed copy goes in your golf bag.</li>
+        </ol>
+        <p class="note">Official help: <a href="https://usgasupport.zendesk.com/hc/en-us/articles/360041235372-My-Handicap-Card" target="_blank" rel="noopener">USGA: My Handicap Card</a> · <a href="https://www.usga.org/handicapping/ghin-faqs.html" target="_blank" rel="noopener">GHIN questions</a> · <a href="https://www.ghin.com" target="_blank" rel="noopener">ghin.com</a></p>
+      </details>
+    </div>
+    <div class="vfoot">${all.length ? "<b>Indexes in: "+all.map(x => x.name+" "+stat(x.id).handicap_index).join(", ")+".</b> " : "No indexes in yet. "}Certificates in: ${certs} of ${TRIP.size}.</div></div>`;
+}
+function passportCard(){
+  const off = !S.who, ok = GOLFERS.filter(x => stat(x.id).passport_ok).length, v = {by:DETAILS.passport};
+  return `<div class="sheet votebox vcard" id="q-passport"><div class="head"><div><h3>Passport expiry date</h3>${dueLine(v)}</div>${ok === TRIP.size ? tag("ok","Complete") : tag("vote",ok+" of "+TRIP.size+" confirmed")}</div>
+    <p class="why">Your passport should run to at least ${fmtDay(TRIP.passportMin)}, six months after we fly home. Enter the expiry date printed on it and the site checks it for you.</p>
+    <div class="vbody"><label class="field"><span>Expiry date on your passport</span><input type="date" data-det="passport" value="${esc(D.draft.passport)}" min="2026-01-01" max="2040-12-31" ${off ? "disabled" : ""}></label>
+      <p class="flag" id="flag-passport">${passportFlag()}</p>${privNote}</div>
+    <div class="vfoot">Passports confirmed long enough: ${ok} of ${TRIP.size}.</div></div>`;
+}
+function adminBlock(){
+  if(S.x.role !== "admin") return "";
+  const rows = D.admin;
+  return `<div class="block"><h3>Everyone's details</h3><p class="lede" style="margin-bottom:14px">Only visible while you are signed in with the admin code.</p>
+    ${!rows ? `<div class="sheet pad"><button class="btn" data-act="adminDetails">Show everyone's details</button>${D.adminMsg ? `<p class="msg">${esc(D.adminMsg)}</p>` : ""}</div>`
+    : `<div class="sheet">${GOLFERS.map(x => { const r = rows.find(y => y.golfer_id === x.id) || {};
+        return `<div class="row stack"><div class="l"><b>${x.name}</b><span>Index ${r.handicap_index != null ? r.handicap_index : "not in"}${r.home_club ? ", "+esc(r.home_club) : ""}. Passport ${r.passport_expires ? "expires "+fmtDay(r.passport_expires)+(r.passport_expires < TRIP.passportMin ? " (TOO SOON)" : "") : "not in"}.${r.known_traveler ? " KTN "+esc(r.known_traveler)+"." : ""}${r.airlines ? " Airlines: "+esc(r.airlines).replace(/\n/g, "; ")+"." : ""}</span></div><div class="r">${r.certificate_path ? `<button class="btn ghost sm" style="margin-top:0" data-act="openCert" data-id="${esc(r.certificate_path)}">Open certificate</button>` : "No certificate"}</div></div>`; }).join("")}</div>
+       ${D.adminMsg ? `<p class="msg">${esc(D.adminMsg)}</p>` : ""}`}</div>`;
+}
 function lockBlock(){
   const g = me(); if(!g) return "";
-  const row = myRow(), sub = submitted(), dirty = dirtyKeys(), answered = KEYS.filter(k => V.draft[k]).length;
-  const items = [["wed","Wednesday's round"],["thu","Thursday's round"],["guarantee","Old Course route"],["rules","Drop-out rules"],["cad_jubilee","Jubilee"],["cad_old","Old Course"],["cad_balcomie","Balcomie"],["cad_wed","Wednesday"],["cad_thu","Thursday"],["driver","Driving"]];
+  const row = myRow(), sub = submitted(), dirty = dirtyKeys(), dd = dirtyDetails(), nd = dirty.length + dd.length, p = progress();
+  const items = [["wed","Wednesday's round"],["thu","Thursday's round"],["rules","Drop-out rules"],["cad_jubilee","Jubilee"],["cad_old","Old Course"],["cad_balcomie","Balcomie"],["cad_wed","Wednesday"],["cad_thu","Thursday"],["driver","Driving"],["flights","Flights"]];
+  const det = [["hcp","Handicap index", (D.draft.hcp || "").trim() || (onFile("hcp") ? "On file" : "")],["cert","Handicap certificate", D.draft.cert ? "Uploaded" : (onFile("cert") ? "On file" : "")],["passport","Passport expires", D.draft.passport ? fmtDay(D.draft.passport)+(D.draft.passport < TRIP.passportMin ? " (too soon)" : "") : (onFile("passport") ? "On file" : "")]];
+  if(V.draft.flights === "group") det.push(["ktn","Known Traveler Number", (D.draft.ktn || "").trim() ? "Entered" : (stat(g.id).has_ktn ? "On file" : "")], ["airlines","Airline numbers", (D.draft.airlines || "").trim() ? "Entered" : (stat(g.id).has_airlines ? "On file" : "")]);
   const when = row ? new Date(row.locked_at).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : "";
   let state;
-  if(dirty.length) state = `<p><b>${dirty.length} change${dirty.length>1?"s":""} not locked in.</b> The group still sees ${row ? "your earlier answers" : "nothing from you"} until you lock in.</p>`;
-  else if(row) state = `<p><b>Locked in ${when}.</b> Everyone can see your answers. Change any of them above and this re-opens.</p>`;
+  if(nd) state = `<p><b>${nd} change${nd>1?"s":""} not locked in.</b> ${row ? "The group still sees your earlier answers" : "Nobody can see your answers"} until you lock in.</p>`;
+  else if(p.locked) state = `<p><b>Locked in${when ? " "+when : ""}.</b> ${p.left ? p.left+" question"+(p.left>1?"s are":" is")+" still unanswered." : "Everything is answered."} Change anything above and this re-opens.</p>`;
   else state = `<p>Nothing submitted yet. Make your selections above, then lock them in here.</p>`;
+  const canReset = !!row || KEYS.some(k => V.draft[k]);
   return `<div class="block" id="lock"><h3>Lock in your selections</h3>
     <form class="sheet" id="voteForm">
       ${items.map(i => { const val = V.draft[i[0]], changed = dirty.includes(i[0]);
         return `<div class="row"><div class="l"><b>${i[0].startsWith("cad_") ? "Caddie: "+i[1] : i[1]}</b>${changed ? `<span>${sub[i[0]] ? "Was "+labelOf(i[0], sub[i[0]])+". Not locked in yet." : "Not locked in yet."}</span>` : ""}</div><div class="r ${val ? "" : "muted"}">${val ? labelOf(i[0], val) : "Not answered"}</div></div>`; }).join("")}
+      ${det.map(i => `<div class="row"><div class="l"><b>${i[1]}</b>${dd.includes(i[0]) ? `<span>Not locked in yet.</span>` : ""}</div><div class="r ${i[2] ? "" : "muted"}">${esc(i[2]) || (i[0] === "ktn" || i[0] === "airlines" ? "None given" : "Not answered")}</div></div>`).join("")}
       <div class="pad" style="border-top:1px solid var(--rule)">
         ${state}
-        ${dirty.length ? `${!S.x.code ? `<label class="field" style="margin-top:12px"><span>Group code</span><input name="code" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" required></label>` : ""}
-          <div class="acts" style="margin-top:12px"><button class="btn" ${V.busy ? "disabled" : ""}>Lock in as ${g.name}${answered < KEYS.length ? " ("+answered+" of "+KEYS.length+" answered)" : ""}</button>
+        ${nd ? `<div class="acts" style="margin-top:12px"><button class="btn" ${V.busy ? "disabled" : ""}>Lock in as ${g.name}${p.left ? " ("+p.made+" of "+p.total+" answered)" : ""}</button>
           <button type="button" class="btn ghost" data-act="revertVotes">Discard changes</button></div>
-          ${answered < KEYS.length ? `<p class="note">You can lock in a partial set and come back for the rest.</p>` : ""}` : ""}
+          ${p.left ? `<p class="note">You can lock in a partial set and come back for the rest.</p>` : ""}` : ""}
         ${V.msg ? `<p class="msg">${esc(V.msg)}</p>` : ""}
+        ${canReset ? `<p class="note" style="margin-top:16px;padding-top:12px;border-top:1px solid var(--rule)"><button type="button" class="btn ghost sm" style="margin-top:0" data-act="resetVotes" ${V.busy ? "disabled" : ""}>Start over: retract all my votes</button><br>Removes every vote and answer of yours from the group's results so you can begin again. Your handicap, passport and flight details stay.</p>` : ""}
       </div>
     </form></div>`;
 }
+/* The bar that follows the reader down the Decisions tab: how many answered, how many left,
+   and whether what is on screen has been locked in.                                           */
+function progBar(){
+  const g = me(), p = progress(); if(!g) return {cls:"", html:""};
+  const done = !p.left && !p.dirty && p.locked;
+  const head = p.left ? `${p.left} left to answer` : "All answered";
+  const sub = p.dirty ? `${p.dirty} change${p.dirty>1?"s":""} not locked in yet`
+    : p.locked ? (p.left ? `Locked in with ${p.left} still unanswered` : "Locked in. Everything is answered")
+    : p.made ? "Nothing locked in yet" : "Tap an answer on each card";
+  return {cls:"prog " + (done ? "done" : p.left && p.locked && !p.dirty ? "short" : ""), html:`
+    <div class="pt"><b>${head}</b><span class="num">${p.made} of ${p.total} answered</span></div>
+    <div class="pm"><i style="width:${p.total ? Math.round(p.made / p.total * 100) : 0}%"></i></div>
+    <div class="pa"><span>${g.name}: ${sub}.</span><span class="pb">${p.left ? `<button data-act="nextQ">Next unanswered</button>` : ""}${p.dirty ? `<button class="go" data-act="lockNow" ${V.busy ? "disabled" : ""}>Lock in</button>` : ""}</span></div>`};
+}
+/* While someone types in a details field: refresh the progress bar, the field's flag and the
+   lock-in summary, but leave the field itself alone so the keyboard and cursor stay put.      */
+function softRefresh(){
+  const w = $("progWrap"), l = $("lock"), a = $("flag-hcp"), b = $("flag-passport");
+  if(w){ const p = progBar(); w.className = p.cls; w.innerHTML = p.html; }
+  if(l) l.outerHTML = lockBlock();
+  if(a) a.innerHTML = hcpFlag(); if(b) b.innerHTML = passportFlag();
+}
 function decisions(){
-  const g = me(), dirty = dirtyKeys().length;
+  const g = me(), bar = progBar(), nq = KEYS.length + DCOUNT.length;
   const exec = d => `<div class="row"><div class="l"><b>${d.title}</b><span>${d.outcome || d.text}</span></div><div class="r">${d.status === "Decided" ? tag("ok","Decided") : tag("wait","By "+fmtDay(d.by))}</div></div>`;
-  const out = `<h2>Decisions</h2><p class="lede">Everything the group needs to settle, in one place. Tap your answer, then lock in at the bottom. A vote is final once ${NEED} of ${TRIP.size} have locked in the same option.</p>
+  const out = `<h2>Decisions</h2><p class="lede">${g && !myRow() && !stat(g.id).golfer_id ? g.name+", "+nq+" quick answers are needed from you. " : "Everything the group needs to settle, in one place. "}Tap your answer on each card, then lock in. A vote is final once ${NEED} of ${TRIP.size} have locked in the same option.</p>
   <div id="staleBox">${staleHTML()}</div>
   ${!sbOn() ? `<div class="banner"><p>Voting isn't switched on yet.</p></div>` : V.error ? `<div class="banner"><p>${esc(V.error)}</p><button class="btn sm" data-act="refreshVotes">Try again</button></div>` : !V.loaded ? `<p class="note" style="margin:0 0 16px">Loading everyone's answers…</p>` : ""}
   ${V.note ? `<div class="banner" role="status"><p>${esc(V.note)}</p></div>` : ""}
   ${V.fresh.length ? `<div class="banner" role="status"><p>New since you last looked: ${listOf(V.fresh.map(nameOf))} changed selections.</p></div>` : ""}
   ${!g ? `<div class="block" style="margin-top:0"><h3>Who's voting?</h3><p class="lede" style="margin-bottom:12px">Pick your name to enter your answers. You can read the results without it.</p>
       <div class="pick" style="margin-bottom:26px">${GOLFERS.map(x => `<button data-who="${x.id}"><b>${x.name}</b><span>${x.home}</span></button>`).join("")}</div></div>`
-    : `<div class="sheet lockbar"><p>${dirty ? `<b>${dirty} change${dirty>1?"s":""} not locked in.</b> Only you can see ${dirty>1?"them":"it"} so far.` : myRow() ? `<b>${g.name}, you're locked in.</b> Change any answer to re-open.` : `<b>Answering as ${g.name}.</b> Nothing locked in yet.`}</p>${dirty ? `<button class="btn sm" data-act="toLock">Review and lock in</button>` : ""}</div>`}
+    : `<div id="progWrap" class="${bar.cls}" role="status">${bar.html}</div>`}
+  ${D.err && g ? `<div class="banner"><p>${esc(D.err)}</p></div>` : ""}
 
   <div class="block" style="margin-top:0"><h3>Group votes</h3>${VOTES.filter(v => v.kind === "poll").map(pollCard).join("")}</div>
-  <div class="block"><h3>Your own answers</h3>${VOTES.filter(v => v.kind === "own").map(v => v.id === "caddie" ? caddieCard(v) : ownCard(v)).join("")}</div>
+  <div class="block"><h3>Your own answers</h3>${VOTES.filter(v => v.kind === "own").map(v => v.id === "caddie" ? caddieCard(v) : v.id === "flights" ? flightsCard(v) : ownCard(v)).join("")}</div>
+  <div class="block"><h3>Your details for ${TRIP.organiser}</h3><p class="lede" style="margin-bottom:14px">Sent with the same Lock in button. Handicap indexes are shown to the group; your passport date and traveller numbers go to ${TRIP.organiser} only.</p>${handicapCard()}${passportCard()}</div>
   ${lockBlock()}
+  ${adminBlock()}
 
-  <div class="block"><h3>Why these dates</h3><p class="lede" style="margin-bottom:14px">When each booking window opens. No club has published 2028 dates yet, so these are projected from how each one handled 2026 and 2027.</p>
-  <div class="sheet">${BOOKING.map(b => `<div class="row stack"><div class="l"><b>${b.what}</b><span>${b.when}</span></div><div class="r">${b.act}</div></div>`).join("")}</div></div>
+  <div class="block"><h3>Why these dates</h3><p class="lede" style="margin-bottom:14px">Each date below is the day something has to happen, who does it, and the reason. No club has published 2028 dates yet, so the ones marked projected come from what that club did for 2026 and 2027, and will be replaced as they announce.</p>
+  <div class="sheet">${TIMELINE.map(t => `<div class="tl"><p class="when">${t.when}${t.est ? " "+tag("wait","Projected") : ""}</p><b>${t.what}</b><span><em>${t.who}.</em> ${t.why}</span></div>`).join("")}</div>
+
+  <h3 style="margin:26px 0 10px">How we get on the Old Course</h3><p class="lede" style="margin-bottom:14px">Nobody can simply book it. These five steps, in this order, give us the most chances the rules allow.</p>
+  <div class="sheet">${OLD_PLAN.map((t,i) => `<div class="tl step"><i>${i+1}</i><div><p class="when">${t.when}</p><b>${t.what}</b><span>${t.how}</span></div></div>`).join("")}</div>
+  <p class="note">Ballot and singles rules are the ones St Andrews Links ran in 2026; they are checked again before we travel.</p></div>
 
   <div class="block"><h3>Handled for you</h3><p class="lede" style="margin-bottom:14px">${TRIP.organiser} makes these and reports back, to save everyone a long thread.</p>
   <div class="sheet">${DECISIONS.slice().sort((a,b) => a.by < b.by ? -1 : 1).map(exec).join("")}</div></div>
@@ -963,7 +1165,9 @@ async function loadBallots(){
   if(!sbOn()) return;
   try{ V.rows = await sb("decision_ballots?select=golfer_id,choices,locked_at,updated_at"); V.error = ""; }
   catch(e){ V.rows = []; V.error = "Couldn't load the group's answers ("+e.message+"). Check your connection and try again."; }
-  V.loaded = true; V.stale = []; loadDraft();
+  try{ const st = await sb("rpc/traveler_status", {method:"POST", body:"{}"}); D.status = {}; (st || []).forEach(r => D.status[r.golfer_id] = r); D.err = ""; }
+  catch(e){ D.status = {}; D.err = V.error ? "" : "Handicap, passport and flight details can't be saved yet: the database needs the latest supabase-decisions.sql run once."; }
+  V.loaded = true; V.stale = []; loadDraft(); loadDetails();
   let seen = null; try{ seen = JSON.parse(localStorage.getItem("scot28seen") || "null"); }catch(_){}
   V.fresh = seen ? V.rows.filter(r => r.golfer_id !== S.who && seen[r.golfer_id] !== r.updated_at).map(r => r.golfer_id) : [];
   draw(); paintStale();
@@ -1072,44 +1276,88 @@ document.addEventListener("submit", async e => {
     else { const m = f.querySelector(".msg"), t = "Not saved: "+err.message; if(m) m.textContent = t; else f.insertAdjacentHTML("beforeend", `<p class="msg">${esc(t)}</p>`); }
   }
 });
-/* Lock in: checks the group code if this device doesn't have it yet, then replaces this
-   golfer's whole row. Answers to anything already closed are sent as last submitted.          */
-document.addEventListener("submit", async e => {
-  const f = e.target; if(f.id !== "voteForm") return;
-  e.preventDefault(); if(V.busy || !S.who) return;
-  const d = new FormData(f); V.busy = true; V.msg = ""; draw();
+/* Lock in: replaces this golfer's whole row of answers, and sends any changed details.
+   No code is asked for. Answers to anything already closed are sent as last submitted.        */
+async function lockIn(){
+  if(V.busy || !S.who) return;
+  const idx = parseIndex(D.draft.hcp);
+  if(idx !== null && isNaN(idx)){ V.msg = "Your handicap index needs to be a number, like 12.4. Fix it and lock in again."; draw(); const el = $("q-hcp"); if(el && el.scrollIntoView) el.scrollIntoView({block:"start"}); return; }
+  V.busy = true; V.msg = ""; draw();
   try{
-    if(!S.x.code){
-      const code = String(d.get("code") || "").trim(), role = await sb("rpc/code_role", {method:"POST", body:JSON.stringify({p_code:code})});
-      if(role !== "admin" && role !== "entry"){ V.busy = false; V.msg = "That code isn't right. Ask "+TRIP.organiser+" for the current one."; draw(); return; }
-      keepCode(code, role);
+    if(dirtyKeys().length){
+      const sub = submitted(), choices = {};
+      KEYS.forEach(k => { const val = frozen(voteById(k)) ? sub[k] : V.draft[k]; if(val) choices[k] = val; });
+      await sb("rpc/submit_ballot", {method:"POST", body:JSON.stringify({p_golfer:S.who, p_choices:choices})});
+      try{ localStorage.removeItem(draftKey()); }catch(_){}
     }
-    const sub = submitted(), choices = {};
-    KEYS.forEach(k => { const val = frozen(voteById(k)) ? sub[k] : V.draft[k]; if(val) choices[k] = val; });
-    await sb("rpc/submit_ballot", {method:"POST", body:JSON.stringify({p_code:S.x.code, p_golfer:S.who, p_choices:choices})});
-    try{ localStorage.removeItem(draftKey()); }catch(_){}
-    V.busy = false; V.msg = "Locked in. Everyone now sees your selections."; await loadBallots();
+    const dd = dirtyDetails();
+    if(dd.length){
+      /* null leaves a field as it is on file; an empty string clears it */
+      const val = f => dd.includes(f) ? (f === "hcp" ? (idx === null ? "" : String(idx)) : (D.draft[f] || "").trim()) : null;
+      await sb("rpc/save_details", {method:"POST", body:JSON.stringify({p_golfer:S.who, p_handicap:val("hcp"), p_club:val("club"), p_certificate:val("cert"), p_passport:val("passport"), p_ktn:val("ktn"), p_airlines:val("airlines")})});
+      DFIELDS.forEach(f => D.draft[f] = (D.draft[f] || "").trim()); D.mine = Object.assign({}, D.draft); D.up = ""; keepDetails();
+    }
+    V.busy = false; await loadBallots();
+    const p = progress(); V.msg = p.left ? "Locked in, but "+p.left+" question"+(p.left>1?"s are":" is")+" still unanswered. Come back to finish before the deadlines." : "Locked in. Everything is answered."; draw();
   }catch(err){
     V.busy = false;
-    if(/code/i.test(err.message)){ signOut(); V.msg = "That code no longer works. Enter the current one and lock in again."; }
-    else V.msg = "Not locked in: "+err.message+". Your selections are still saved on this device; try again when you have a connection.";
+    V.msg = "Not locked in: "+err.message+". Your selections are still saved on this device; try again when you have a connection.";
     draw();
   }
+}
+/* Start over: removes this golfer's row from the results and clears the answers on screen. */
+async function resetVotes(){
+  const g = me(); if(!g || V.busy) return;
+  if(!confirm("Retract all of "+g.name+"'s votes and answers?\n\nThey come out of the group's results straight away and you start again from a blank sheet. Your handicap, passport and flight details are kept.")) return;
+  V.busy = true; V.msg = ""; draw();
+  try{
+    if(myRow()) await sb("rpc/retract_ballot", {method:"POST", body:JSON.stringify({p_golfer:S.who})});
+    try{ localStorage.removeItem(draftKey()); }catch(_){}
+    V.rows = V.rows.filter(r => r.golfer_id !== S.who); V.draft = {}; S.touched = {};
+    V.busy = false; await loadBallots(); V.msg = "All of your votes have been retracted. Start again from the top whenever you're ready."; draw(); window.scrollTo(0,0);
+  }catch(err){ V.busy = false; V.msg = "Not retracted: "+err.message+". Nothing has changed; try again when you have a connection."; draw(); }
+}
+async function uploadCert(file){
+  if(!file || !S.who) return;
+  if(file.size > 5 * 1048576){ D.up = "That file is over 5 MB. Take a screenshot instead of a full photo and try again."; draw(); return; }
+  D.busy = true; D.up = "Sending your certificate…"; draw();
+  try{
+    const ext = ((file.name || "").split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0,5) || "jpg", path = S.who+"/"+Date.now()+"."+ext;
+    const r = await fetch(SUPABASE.url.replace(/\/$/,"")+"/storage/v1/object/certificates/"+path, {method:"POST", headers:{apikey:SUPABASE.key, Authorization:"Bearer "+SUPABASE.key, "Content-Type":file.type || "application/octet-stream"}, body:file});
+    if(!r.ok){ const b = await r.json().catch(() => null); throw new Error((b && (b.message || b.error)) || "upload failed ("+r.status+")"); }
+    D.draft.cert = path; D.up = "Uploaded "+(file.name || "your certificate")+". Lock in to send it to "+TRIP.organiser+"."; keepDetails();
+  }catch(err){ D.up = "Couldn't upload: "+err.message+". Try again, or use a screenshot or PDF."; }
+  D.busy = false; draw();
+}
+async function adminDetails(){
+  try{ D.admin = await sb("rpc/admin_details", {method:"POST", body:JSON.stringify({p_code:S.x.code})}); D.adminMsg = ""; }
+  catch(err){ D.admin = null; D.adminMsg = "Couldn't load: "+err.message; }
+  draw();
+}
+function openCert(path){ D.adminMsg = "Certificate file: "+path+". Open it in Supabase > Storage > certificates."; draw(); }
+document.addEventListener("submit", e => {
+  const f = e.target; if(f.id !== "voteForm") return;
+  e.preventDefault(); lockIn();
 });
+document.addEventListener("input", e => {
+  const f = e.target.dataset && e.target.dataset.det; if(!f || !S.who) return;
+  D.draft[f] = e.target.value; V.msg = ""; keepDetails(); softRefresh();
+});
+document.addEventListener("change", e => { if(e.target.id === "certFile" && e.target.files && e.target.files[0]) uploadCert(e.target.files[0]); });
 
 const RENDER = {home, itinerary, golf, travel, costs, expenses, decisions, guide};
 function nav(){
-  const inMore = MORE.some(m => m[0] === S.tab);
+  const inMore = MORE.some(m => m[0] === S.tab), left = me() && V.loaded && !V.error ? progress().left : 0;
   return (S.more ? `<div class="scrim" data-more></div><div class="more" id="moreSheet">${MORE.map(m =>
       `<button data-tab="${m[0]}" ${S.tab===m[0] ? 'aria-current="page"' : ""}><b>${m[1]}</b><span>${m[2]}</span></button>`).join("")}</div>` : "")
     + `<nav class="bar" aria-label="Sections">${BAR.map(b =>
-      `<button data-tab="${b[0]}" ${S.tab===b[0] && !S.more ? 'aria-current="page"' : ""}>${b[2]}<span>${b[1]}</span></button>`).join("")}
+      `<button data-tab="${b[0]}" ${S.tab===b[0] && !S.more ? 'aria-current="page"' : ""}>${b[2]}<span>${b[1]}</span>${b[0]==="decisions" && left ? `<i class="badge">${left}</i>` : ""}</button>`).join("")}
       <button data-more aria-expanded="${S.more}" aria-controls="moreSheet" class="${inMore ? "cur" : ""}">${MORE_ICON}<span>More</span></button></nav>`;
 }
 function draw(){
   syncSlots();
   document.body.dataset.view = S.tab;
-  $("tabs").innerHTML = TABS.map(t => `<button class="tab" role="tab" aria-selected="${S.tab===t[0]}" data-tab="${t[0]}">${t[0]==="home" && me() ? me().name+"'s trip" : t[1]}</button>`).join("");
+  $("tabs").innerHTML = TABS.map(t => `<button class="tab" role="tab" aria-selected="${S.tab===t[0]}" data-tab="${t[0]}">${t[0]==="home" && me() ? me().name+"'s trip" : t[1]}${t[0]==="decisions" && me() && V.loaded && !V.error && progress().left ? " ("+progress().left+")" : ""}</button>`).join("");
   $("nav").innerHTML = nav();
   TABS.forEach(t => { const p = $("p-"+t[0]); p.classList.toggle("on", S.tab === t[0]); p.innerHTML = S.tab === t[0] ? RENDER[t[0]]() : ""; });
   $("whoBtn").textContent = me() ? "Not "+me().name+"?" : "";
@@ -1121,20 +1369,26 @@ document.addEventListener("click", e => {
   const t = e.target.closest("[data-tab]"), w = e.target.closest("[data-who]"), o = e.target.closest("[data-slot]"), vt = e.target.closest("[data-vote]"), act = e.target.closest("[data-act]");
   if(t){ S.tab = t.dataset.tab; S.more = false; S.x.msg = ""; V.msg = ""; history.replaceState(null, "", "#"+S.tab); window.scrollTo(0,0); }
   else if(e.target.closest("[data-more]")){ S.more = !S.more; }
-  else if(w){ S.who = w.dataset.who; remember(); V.note = ""; V.msg = ""; S.touched = {}; loadDraft(); window.scrollTo(0,0); }
+  else if(w){ S.who = w.dataset.who; remember(); V.note = ""; V.msg = ""; S.touched = {}; loadDraft(); loadDetails(); window.scrollTo(0,0);
+    /* straight to the questions unless this golfer has already answered and locked in everything */
+    const p = progress(); if(sbOn() && !V.error && (!V.loaded || p.left || p.dirty)){ S.tab = "decisions"; history.replaceState(null, "", "#decisions"); } }
   else if(vt){ setVote(vt.dataset.vote, vt.dataset.val); }
   else if(o){ if(slotPick(o.dataset.slot)) return; S[o.dataset.slot] = o.dataset.id; S.touched[o.dataset.slot] = true; }
   else if(act){ const a = act.dataset.act;
     if(a === "splitAll" || a === "splitNone"){ document.querySelectorAll("#expForm [name=split]").forEach(c => c.checked = a === "splitAll"); return; }
     if(a === "refreshVotes"){ S.tab = "decisions"; S.more = false; V.msg = ""; history.replaceState(null, "", "#decisions"); loadBallots(); window.scrollTo(0,0); return; }
-    if(a === "toLock"){ const el = $("lock"); if(el && el.scrollIntoView) el.scrollIntoView({block:"start", behavior:"smooth"}); return; }
-    if(a === "revertVotes"){ V.draft = Object.assign({}, submitted()); V.msg = ""; S.touched = {}; saveDraft(); draw(); return; }
+    if(a === "nextQ"){ const el = $("q-"+progress().next); if(el && el.scrollIntoView) el.scrollIntoView({block:"start", behavior:"smooth"}); return; }
+    if(a === "lockNow"){ lockIn(); return; }
+    if(a === "resetVotes"){ resetVotes(); return; }
+    if(a === "adminDetails"){ adminDetails(); return; }
+    if(a === "openCert"){ openCert(act.dataset.id); return; }
+    if(a === "revertVotes"){ V.draft = Object.assign({}, submitted()); D.draft = Object.assign({}, D.mine); DFIELDS.forEach(f => { if(D.draft[f] == null) D.draft[f] = ""; }); D.up = ""; keepDetails(); V.msg = ""; S.touched = {}; saveDraft(); draw(); return; }
     const id = act.dataset.id; S.x.msg = "";
     if(a === "delExp"){ delExpense(id); return; }
     if(a === "signOut") signOut();
     else if(a === "editExp"){ S.x.edit = id; S.x.form = true; draw(); const el = $("entry"); if(el && el.scrollIntoView) el.scrollIntoView({block:"start"}); return; }
     else { S.x.form = a === "openForm"; S.x.edit = null; } }
-  else if(e.target.id === "whoBtn"){ S.who = null; S.tab = "home"; remember(); S.touched = {}; loadDraft(); }
+  else if(e.target.id === "whoBtn"){ S.who = null; S.tab = "home"; remember(); S.touched = {}; loadDraft(); loadDetails(); }
   else return;
   draw();
 });
@@ -1145,6 +1399,7 @@ window.addEventListener("online", checkFresh);
 setInterval(checkFresh, 60000);
 
 (function init(){
+  loadDetails();
   $("favIcon").href = $("touchIcon").href;
   const q = new URLSearchParams(location.search).get("g");
   let saved = ""; try{ saved = localStorage.getItem("scot28who") || ""; }catch(e){}
