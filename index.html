@@ -599,7 +599,7 @@ const DETAILS = { handicap:"2027-01-31", passport:"2027-09-01" };
 const DECISIONS = [
   {title:"Tee time targets", text:"Morning at Balcomie before the drive west; after 1 PM at Turnberry if it is chosen.", by:"2027-01-31", status:"Open", outcome:""},
   {title:"Deposits and paying back", text:"One person fronts the bookings; a reimbursement schedule and method will follow before the first golf deposit.", by:"2027-01-31", status:"Open", outcome:""},
-  {title:"Old Course booking route", text:"Two applications of four in the autumn 2027 window, then the daily ballot and the singles draw. The step-by-step plan is on the Itinerary tab, under Why these dates.", by:"2027-08-15", status:"Open", outcome:""},
+  {title:"Old Course booking route", text:"Two applications of four in the autumn 2027 window, then the daily ballot and the singles draw. The step-by-step plan is at the top of the Golf tab.", by:"2027-08-15", status:"Open", outcome:""},
   {title:"Old Course fourballs", text:"The application takes four golfers at a time, so one four could win and the other miss. How the two fours are picked, and what we do if only one gets a time, will be set before we apply.", by:"2027-08-15", status:"Open", outcome:""},
   {title:"Airports and arrival window", text:"An arrive-by time on Sep 9 and a not-before departure on Sep 15. Edinburgh both ways, or home from Glasgow.", by:"2027-09-01", status:"Open", outcome:""},
   {title:"Who books flights", text:"Each golfer chooses on the Decisions tab: book their own to the target window, or have Chris book them with the group.", by:"2027-09-01", status:"Open", outcome:""},
@@ -631,7 +631,7 @@ const TIMELINE = [
   {when:"Sep 9 to Sep 30, 2027", who:"Chris", est:true, what:"Book Wednesday's round, Balcomie and the van.",
     why:"Turnberry and van hire open about twelve months before the date. Crail has the next season on sale by autumn; groups over four book by email and pay within five days."},
   {when:"By Oct 31, 2027", who:"St Andrews Links", est:true, what:"Application results arrive by email. Winners pay in full within about two weeks.",
-    why:"A missed payment loses the tee time. This is also the day we know whether anyone needs the ballot plan below."},
+    why:"A missed payment loses the tee time. This is also the day we know whether anyone needs the ballot plan on the Golf tab."},
   {when:"Oct 10 to Oct 31, 2027", who:"Everyone", est:true, what:"Flights are booked: your own, or by Chris for the group.",
     why:"Airlines release seats about 330 days out, so flights for early September 2028 go on sale in mid-October 2027."},
   {when:"By Nov 15, 2027", who:"Everyone", est:false, what:"Lock in caddie or no caddie for each round.",
@@ -639,7 +639,7 @@ const TIMELINE = [
   {when:"Jul 11 and Jul 14, 2028", who:"Automatic", est:false, what:"The two house balances are charged.",
     why:"These are also the last days to cancel either house for a full refund."},
   {when:"Sep 7 to Sep 10, 2028", who:"Chris", est:false, what:"Daily ballot entries, only for golfers still without an Old Course time.",
-    why:"The ballot closes at 2 PM UK time two days before play. The exact days are in the plan below."}
+    why:"The ballot closes at 2 PM UK time two days before play. The exact days are in the Old Course plan on the Golf tab."}
 ];
 /* HOW WE GET ON THE OLD COURSE: the steps, in order. when = the day or range for that step.  */
 const OLD_PLAN = [
@@ -911,11 +911,7 @@ function itinerary(){
       plan.concat(d.sleep ? ["Sleep: "+d.sleep] : [])); }).join("")}</div>
 
   <div class="block" id="why"><h3>Why these dates</h3><p class="lede" style="margin-bottom:14px">Each date below is the day something has to happen, who does it, and the reason. No club has published 2028 dates yet, so the ones marked projected come from what that club did for 2026 and 2027, and will be replaced as they announce.</p>
-  <div class="sheet">${TIMELINE.map(t => `<div class="tl"><p class="when">${t.when}${t.est ? " "+tag("wait","Projected") : ""}</p><b>${t.what}</b><span><em>${t.who}.</em> ${t.why}</span></div>`).join("")}</div>
-
-  <h3 style="margin:26px 0 10px">How we get on the Old Course</h3><p class="lede" style="margin-bottom:14px">Nobody can simply book it. These five steps, in this order, give us the most chances the rules allow.</p>
-  <div class="sheet">${OLD_PLAN.map((t,i) => `<div class="tl step"><i>${i+1}</i><div><p class="when">${t.when}</p><b>${t.what}</b><span>${t.how}</span></div></div>`).join("")}</div>
-  <p class="note">Ballot and singles rules are the ones St Andrews Links ran in 2026; they are checked again before we travel.</p></div>`;
+  <div class="sheet">${TIMELINE.map(t => `<div class="tl"><p class="when">${t.when}${t.est ? " "+tag("wait","Projected") : ""}</p><b>${t.what}</b><span><em>${t.who}.</em> ${t.why}</span></div>`).join("")}</div></div>`;
 }
 
 function courseCard(id, when){
@@ -944,19 +940,24 @@ function golf(){
     ${s.options.map(id => { const c = COURSES[id], n = (d.t.by[id] || []).length;
       return `<button class="opt" aria-pressed="${S[k]===id}" data-slot="${k}" data-id="${id}" ${d.pick ? "disabled" : ""}><span><b>${c.name}</b><small>${c.about}${c.rules ? " "+c.rules : ""}</small><small class="votes">${n} of ${TRIP.size} votes</small></span><span class="p num">${$u(usd(allIn(c,c.budgetCaddie)))}</span></button>`; }).join("")}</div>`; };
   return `<h2>Golf</h2>
-  <p class="lede">Six rounds in six days. Prices are per person, all-in for 2028: green fee plus caddie and tip where the budget assumes one, or trolley hire where it doesn't.</p>
-  <div class="sheet">${fixed.map(d => courseCard(d.round, `${d.dow}, Sep ${d.d}`)).join("")}</div>
+  <p class="lede">Six rounds in six days. The Old Course comes first, because it is the one round nobody can simply book.</p>
+  <div class="block" style="margin-top:0" id="oldcourse">
+  <h3>How we get on the Old Course</h3><p class="lede" style="margin-bottom:14px">Nobody can simply book it. These five steps, in this order, give us the most chances the rules allow.</p>
+  <div class="sheet">${OLD_PLAN.map((t,i) => `<div class="tl step"><i>${i+1}</i><div><p class="when">${t.when}</p><b>${t.what}</b><span>${t.how}</span></div></div>`).join("")}</div>
+  <p class="note">Ballot and singles rules are the ones St Andrews Links ran in 2026; they are checked again before we travel.</p>
+  <h3 style="margin:26px 0 10px">What each way costs</h3><p class="lede" style="margin-bottom:14px">Per golfer. The budget assumes the advance application succeeds.</p>
+  ${oldCourseRoutes()}
+  <p class="note">2028 figures are 2027 prices plus 5%.</p></div>
+
+  <div class="block"><h3>The rounds</h3>
+  <p class="lede" style="margin-bottom:14px">Prices are per person, all-in for 2028: green fee plus caddie and tip where the budget assumes one, or trolley hire where it doesn't.</p>
+  <div class="sheet">${fixed.map(d => courseCard(d.round, `${d.dow}, Sep ${d.d}`)).join("")}</div></div>
 
   <div class="block"><h3>The Ayrshire rounds</h3>
   <p class="lede" style="margin-bottom:14px">These two are for all eight of us to decide. Tapping an option here is only a what-if, to see what it does to the itinerary and your cost. Your actual vote goes on the Decisions tab.</p>
   ${slot("wed")}${slot("thu")}
   <div class="sheet"><div class="row total"><div class="l"><b>Golf with this pairing</b></div><div class="r num">${$u(usd(golfGBP(null)))}</div></div></div>
   <p class="note"><button class="btn sm" data-tab="decisions">Vote on the Decisions tab</button></p></div>
-
-  <div class="block"><h3>Getting on the Old Course</h3>
-  <p class="lede" style="margin-bottom:14px">There is no ordinary booking for the Old Course. These are the two ways on and what each costs per golfer.</p>
-  ${oldCourseRoutes()}
-  <p class="note">2028 figures are 2027 prices plus 5%. The step-by-step plan, with dates, is on the Itinerary tab under Why these dates.</p></div>
 
   <div class="block"><h3>Handicaps</h3><div class="sheet">
     <div class="row"><div class="l"><b>Old Course</b><span>Certificate required at the starter</span></div><div class="r">36 or better</div></div>
