@@ -310,6 +310,35 @@
   .two>*{min-width:0}
   @media(min-width:600px){.two{grid-template-columns:1fr 1fr}}
   .note{font-size:14px;color:var(--muted);margin-top:10px}
+
+  /* flights and houses */
+  .fl-target .fees,.hs .fees{margin-top:0;border:0}
+  .fl-target .fees b{font-family:var(--display);font-weight:400;font-size:20px}
+  .fl-target .fees div{padding:12px 14px}
+  .row .l em,.tl span em{font-style:normal;font-weight:600;color:var(--ink)}
+  .rt,.hs{margin-bottom:14px;overflow:hidden}
+  .rt.you{border-color:var(--gold);box-shadow:inset 3px 0 0 var(--gold)}
+  .rth,.hsh{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;padding:16px 16px 0}
+  .rth .when,.hsh .when{font-size:14px;color:var(--green);font-weight:600;margin-bottom:2px}
+  .rt.you .rth .when{color:var(--gold)}
+  .rtp{padding:8px 16px 0;font-size:15px;color:var(--muted)}
+  .pts{margin:10px 0 0;padding:0 16px 16px;list-style:none;font-size:15px}
+  .pts li{padding:3px 0 3px 14px;position:relative}
+  .pts li::before{content:"";position:absolute;left:0;top:13px;width:6px;height:1px;background:var(--gold)}
+  .hsh h3{font-size:24px}
+  .hsh .town{font-size:14px;color:var(--muted)}
+  .hs .fees{margin-top:14px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+  .hs h4{font:600 14px/1.3 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin:18px 16px 0}
+  .hs .pts{padding-bottom:0;margin-top:6px}
+  .rooms{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);margin-top:8px;font-size:14px}
+  .rooms div{background:var(--paper);padding:8px 16px;min-width:0}
+  .rooms div:last-child:nth-child(odd){grid-column:1/-1}
+  .rooms b{display:block;font-weight:600}
+  .rooms span{color:var(--muted)}
+  .fit{padding:10px 16px 0;font-size:15px}
+  .hsf{margin-top:16px;padding:12px 16px 14px;border-top:1px solid var(--rule);font-size:14px;color:var(--muted)}
+  .hsf span{display:block}
+  .hsf .btn{display:inline-flex;align-items:center;text-decoration:none;margin-top:10px}
   footer{font-size:14px;color:var(--muted);text-align:center;padding:0 20px 40px}
 
   /* first-visit title page: put the site on the phone's home screen before anything else */
@@ -351,7 +380,8 @@
   <section class="panel" id="p-home"></section>
   <section class="panel" id="p-itinerary"></section>
   <section class="panel" id="p-golf"></section>
-  <section class="panel" id="p-travel"></section>
+  <section class="panel" id="p-flights"></section>
+  <section class="panel" id="p-houses"></section>
   <section class="panel" id="p-costs"></section>
   <section class="panel" id="p-expenses"></section>
   <section class="panel" id="p-decisions"></section>
@@ -374,7 +404,7 @@ const TRIP = {
   flightUSD: 1744,            // per person, rough estimate
   vanHire: 840,               // group estimate: 9-seater, 6 days at about 140/day
   vanFuel: 200,               // group placeholder
-  arrivalWindow: "",          // e.g. "Land at Edinburgh by 11:00 AM on Sat, Sep 9"
+  arrivalWindow: "Land at Edinburgh by about 9:30 AM on Sat, Sep 9",   // early enough for the par 3 that afternoon
   departWindow: "",           // e.g. "No flights before 1:00 PM on Fri, Sep 15"
   passportMin: "2029-03-15"   // passports must run to this date: six months after we fly home.
                               // The same date is written into supabase-decisions.sql.
@@ -451,7 +481,7 @@ const SLOTS = {
 
 const DAYS = [
   {dow:"Sat", d:9,  base:"St Andrews",       round:"balgove",  sleep:"Townhouse, St Andrews",
-    plan:["Land in Scotland and collect the van.","About 1 hr 15 min from Edinburgh Airport to St Andrews.","House check-in from 4:00 PM."]},
+    plan:["Land at Edinburgh by about 9:30 AM and collect the van.","About 1 hr 15 min from Edinburgh Airport to St Andrews.","House check-in from 4:00 PM."]},
   {dow:"Sun", d:10, base:"St Andrews",       round:"jubilee",  sleep:"Townhouse, St Andrews",
     plan:["The Old Course is closed on Sundays, and open to walk as a public park."]},
   {dow:"Mon", d:11, base:"St Andrews",       round:"old",      sleep:"Townhouse, St Andrews",
@@ -464,12 +494,67 @@ const DAYS = [
     plan:["Check out by 10:00 AM.","Return the van and fly home.","Departure airport still to be decided: Edinburgh or Glasgow."]}
 ];
 
+/* The listing details (about, rooms, fit, near, has, rules) are from each house's public VRBO
+   page, read Oct 5, 2026; a few Smithfield items come from the owner's other listings of the
+   same house. rooms = [room, beds]. fit = how eight golfers sleep there.                      */
 const HOUSES = [
   {name:"4-Bedroom Townhouse", town:"St Andrews, Fife", inn:"Sat, Sep 9 from 4:00 PM", out:"Tue, Sep 12 by 10:00 AM",
-    total:2028.44, paid:678.44, balance:1350, balanceDate:"Jul 11, 2028", cancel:"Full refund until Jul 11, 2028", roomKey:"roomFife"},
+    total:2028.44, paid:678.44, balance:1350, balanceDate:"Jul 11, 2028", cancel:"Full refund until Jul 11, 2028", roomKey:"roomFife",
+    host:"Debbie Kilpatrick", link:"https://www.vrbo.com/en-gb/p6716034",
+    about:"A townhouse in the middle of St Andrews with a games room, a garden and its own parking. We walk to the first tee, to the pubs and to dinner.",
+    facts:[["Sleeps 8","4 bedrooms"],["5 bathrooms","Some en suite"],["Old Course","4 to 5 min walk"],["Town centre","5 min walk"]],
+    rooms:[["Bedroom 1","King bed, plus two double futons"],["Bedroom 2","Two single beds"],["Bedroom 3","Two single beds"],["Bedroom 4","Two single beds"]],
+    fit:"Seven proper beds for eight of us: one king and six singles. Two share the king, or one of us takes a futon in that room. The room draw settles it.",
+    has:["Games room with a pool table","South-facing garden","Private parking for two to three cars","Wi-Fi, Sky TV and Apple TV","Full kitchen with a dishwasher","Washer and dryer"],
+    rules:["No smoking and no pets.","Eight guests at most.","The listing rules out stag parties, so keep it civil late at night."]},
   {name:"Smithfield House", town:"Tarbolton, Ayrshire", inn:"Tue, Sep 12 from 4:00 PM", out:"Fri, Sep 15 by 10:00 AM",
-    total:1926, paid:736, balance:1190, balanceDate:"Jul 14, 2028", cancel:"Full refund until Jul 14, 2028, then 50% until Aug 13", roomKey:"roomAyr"}
+    total:1926, paid:736, balance:1190, balanceDate:"Jul 14, 2028", cancel:"Full refund until Jul 14, 2028, then 50% until Aug 13", roomKey:"roomAyr",
+    host:"Drew", link:"https://www.vrbo.com/en-gb/p10426902",
+    about:"A renovated farmhouse in the Ayrshire countryside, set up for big groups: a games room, a cinema room and a covered barbecue pavilion around a private courtyard.",
+    facts:[["Sleeps 16","8 bedrooms"],["5 bathrooms","3 en suite"],["Prestwick and Troon","15 to 20 min drive"],["Village shops and pubs","500 m"]],
+    rooms:[["Brodick Suite","King bed"],["Viaduct Suite","King bed"],["Culzean Suite","Queen bed"],["Dean Castle Suite","Queen bed"],["Rozelle Suite","Queen bed"],["Barony Suite","Double bed"],["Dunure Suite","Double bed"],["Kelburn Suite","Two single beds"]],
+    fit:"Eight bedrooms for eight of us, so everyone has a room of their own. Three have their own bathroom, which is what the room draw is really for.",
+    has:["Games room with table tennis and table football","Cinema room","Barbecue pavilion with a wood-fired pizza oven and patio heaters","Dining table that seats sixteen","Wi-Fi, parking, washer and dryer","Electric vehicle charging"],
+    rules:["Smoking outdoors only, in the marked areas.","No events or parties."]}
 ];
+
+/* FLIGHTS: the guidance on the Flights tab. Airlines have not published September 2028 yet, so
+   every time below is from the September 2026 timetable, the pattern these routes have kept.
+   Re-check each one when 2028 goes on sale (see opens), then update basis.
+   fit: "yes" lands inside TRIP.arrivalWindow, "late" does not.                                */
+const FLIGHTS = {
+  basis: "September 2026",
+  nonstops: [
+    {from:"Chicago O'Hare",    airline:"United 118", dep:"6:30 PM",  arr:"8:25 AM",  fit:"yes",  note:"Our flight. One a day."},
+    {from:"Newark",            airline:"United 36",  dep:"8:10 PM",  arr:"8:05 AM",  fit:"yes",  note:"The backup if Chicago is full."},
+    {from:"New York JFK",      airline:"Delta 208",  dep:"9:20 PM",  arr:"9:20 AM",  fit:"yes",  note:"Just inside the window."},
+    {from:"Washington Dulles", airline:"United 978", dep:"10:25 PM", arr:"10:35 AM", fit:"late", note:"An hour too late."},
+    {from:"Atlanta",           airline:"Delta 34",   dep:"11:00 PM", arr:"11:50 AM", fit:"late", note:"Costs us the par 3."}
+  ],
+  /* one entry per home city; home must match GOLFERS[].home. gap = hours behind Scotland.     */
+  routes: [
+    {home:"Kansas City", stops:"One stop, in Chicago", gap:6,
+      how:"An early-afternoon United flight from Kansas City to O'Hare, about 1 hr 30 min, then United 118 to Edinburgh at 6:30 PM. Kansas City has no flights to Europe, so one stop is the fewest possible.",
+      tips:["Pick a first flight that lands at O'Hare by 4:00 PM. That leaves two and a half hours, and United's terminals connect, so you never leave security.","Book both flights as one ticket. Your clubs are checked through to Edinburgh, and United has to rebook you if the first flight runs late.","If the Chicago flight is full or far dearer, connect in Newark for United 36 instead. It lands twenty minutes earlier."]},
+    {home:"Chicago", stops:"Nonstop", gap:6,
+      how:"United 118 from O'Hare at 6:30 PM on Friday, landing in Edinburgh at 8:25 AM on Saturday. About 7 hr 55 min in the air.",
+      tips:["It is the only nonstop from Chicago and it runs once a day.","The Kansas City five are aiming for the same flight, so we would land together."]},
+    {home:"Bend, OR", stops:"Two stops", gap:8,
+      how:"Redmond to a United hub such as Denver, on to Chicago, then United 118 to Edinburgh. No city Redmond flies to has an Edinburgh nonstop, so two stops is the realistic minimum.",
+      tips:["Take the first flight out of Redmond on Friday morning. You lose two hours flying east and need to be at O'Hare by 4:00 PM Central.","The lower-stress version: fly to Chicago on Thursday, Sep 7, stay the night, and take the nonstop with everyone on Friday.","Redmond's 2028 schedule isn't out, so treat this as the routing to check, not a booking."]}
+  ],
+  /* when each airline starts selling: United 337 days ahead, Delta and American 331.          */
+  opens: [
+    {when:"Thu, Oct 7, 2027",  what:"United starts selling Friday, Sep 8.", why:"The day we fly out. Watch the price, but you can't buy the return yet."},
+    {when:"Thu, Oct 14, 2027", what:"United starts selling Friday, Sep 15.", why:"The first day a whole United round trip can be bought. This is the day to book."},
+    {when:"Wed, Oct 20, 2027", what:"Delta and American reach Sep 15.", why:"Their round trips can be bought from today."}
+  ],
+  home: [
+    {route:"Edinburgh to Chicago O'Hare", airline:"United 119", dep:"11:30 AM", note:"Lands 2:00 PM Central. Means leaving Tarbolton about 7:00 AM."},
+    {route:"Edinburgh to Newark",         airline:"United 37",  dep:"12:20 PM", note:"Means leaving Tarbolton about 7:45 AM."},
+    {route:"Glasgow to Newark",           airline:"United",     dep:"About 2:00 PM", note:"Lands about 4:35 PM Eastern. Leave at the 10:00 AM check-out. Seasonal: it ran until Sep 22 in 2026."}
+  ]
+};
 
 /* GROUP DECISIONS, entered by each golfer on the Decisions tab and stored in the database.
    by      = the deadline, YYYY-MM-DD. Voting closes at the end of that day.
@@ -499,7 +584,7 @@ const VOTES = [
       {id:"no",  label:"Not driving", note:""}
     ]},
   {id:"flights", kind:"own", title:"Flights: on your own or with the group", by:"2027-09-01", closed:false,
-    text:"Book your own flights to the arrival window, or have Chris book you with the group. Fares for September 2028 go on sale in mid-October 2027, so the group booking needs everyone's details before then.",
+    text:"Book your own flights to the arrival window, or have Chris book you with the group. The Flights tab shows which flights fit. Fares for September 2028 go on sale in mid-October 2027, so the group booking needs everyone's details before then.",
     options:[
       {id:"own",   label:"I'll book my own", note:""},
       {id:"group", label:"Book me with the group", note:""}
@@ -587,7 +672,7 @@ const SEED_EXPENSES = [
 /* ====================================== END OF DATA ====================================== */
 
 const $ = id => document.getElementById(id);
-const TABS = [["home","My trip"],["itinerary","Itinerary"],["golf","Golf"],["travel","Travel and houses"],["costs","Costs"],["expenses","Expenses"],["decisions","Decisions"],["guide","Field guide"]];
+const TABS = [["home","My trip"],["itinerary","Itinerary"],["golf","Golf"],["flights","Flights"],["houses","Houses and van"],["costs","Costs"],["expenses","Expenses"],["decisions","Decisions"],["guide","Field guide"]];
 /* Phone navigation. BAR = the four sections on the bottom bar; MORE = the rest, behind the More button.
    To promote a section, move its id from MORE to BAR (keep BAR at four so the labels fit).   */
 const svg = d => `<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
@@ -599,7 +684,8 @@ const BAR = [
 ];
 const MORE = [
   ["costs","Costs","The full budget, round by round"],
-  ["travel","Travel and houses","Flights, the van and both houses"],
+  ["flights","Flights","Which flights to book, and when"],
+  ["houses","Houses and van","Both houses, the van and the drives"],
   ["expenses","Expenses","What's been fronted and who owes whom"],
   ["guide","Field guide","Packing, weather, money and etiquette"]
 ];
@@ -768,7 +854,7 @@ function home(){
     [!!sub.driver, "Say whether you'll drive", sub.driver ? (sub.driver === "yes" ? "You're a volunteer driver." : "You're not driving.") : "Due "+fmtDay(drv.by)+". We need at least two volunteers for a large van on the left."],
     [st.handicap_index != null && st.has_certificate, "Enter your handicap index and upload your certificate", st.handicap_index != null ? "Index on file: "+st.handicap_index+"."+(st.has_certificate ? "" : " Certificate still to upload.") : "Due "+fmtDay(DETAILS.handicap)+". The Old Course needs 36 or better; Royal Troon caps men at 20."],
     [!!st.passport_ok, "Enter your passport expiry date", st.has_passport && !st.passport_ok ? "The date on file is before "+fmtDay(TRIP.passportMin)+". Renew it, then enter the new date." : st.passport_ok ? "On file, and it runs long enough." : "Due "+fmtDay(DETAILS.passport)+". It has to run past "+fmtDay(TRIP.passportMin)+"."],
-    [sub.flights === "group" || (!!g.flightOut && !!g.flightBack), "Flights", sub.flights === "group" ? TRIP.organiser+" is booking you with the group, around mid-October 2027." : sub.flights === "own" ? (TRIP.arrivalWindow ? "You're booking your own. "+TRIP.arrivalWindow+"." : "You're booking your own. Wait for the arrival window; fares open around mid-October 2027.") : "Due "+fmtDay(VOTES.find(v => v.id === "flights").by)+". Choose to book your own or with the group."]
+    [sub.flights === "group" || (!!g.flightOut && !!g.flightBack), "Flights", sub.flights === "group" ? TRIP.organiser+" is booking you with the group, around mid-October 2027." : sub.flights === "own" ? (TRIP.arrivalWindow ? "You're booking your own. "+TRIP.arrivalWindow+". The Flights tab has the flights that fit." : "You're booking your own. Fares open around mid-October 2027.") : "Due "+fmtDay(VOTES.find(v => v.id === "flights").by)+". Choose to book your own or with the group."]
   ];
   const open = todo.filter(t => !t[0]).length;
   const golf = usd(golfGBP(g)), total = TRIP.flightUSD + sharedUSD() + golf;
@@ -787,7 +873,7 @@ function home(){
       <div class="row stack"><div class="l"><b>Outbound</b><span>From ${g.airport}, ${g.home}</span></div><div class="r">${g.flightOut || "Not booked"}</div></div>
       <div class="row stack"><div class="l"><b>Return</b><span>Friday, Sep 15</span></div><div class="r">${g.flightBack || "Not booked"}</div></div>
       ${HOUSES.map(h => `<div class="row stack"><div class="l"><b>${h.name}</b><span>${h.town}</span></div><div class="r">${g[h.roomKey] || "Room to be drawn"}</div></div>`).join("")}
-    </div></div>
+    </div><div class="acts" style="margin-top:2px"><button class="btn ghost sm" data-tab="flights">Which flights to book</button><button class="btn ghost sm" data-tab="houses">See the houses</button></div></div>
 
     <div class="block"><h3>Your rounds</h3><div class="sheet">
       ${DAYS.filter(d => roundOf(d)).map(d => { const id = roundOf(d), c = COURSES[id], cad = wantsCaddie(g,id), said = cadSaid(g,id);
@@ -862,30 +948,98 @@ function golf(){
   </div><p class="note">Limits can change; each is confirmed again when we book.</p></div>`;
 }
 
-function travel(){
+function flights(){
+  const g = me(), F = FLIGHTS, sub = submitted();
+  const mine = g && F.routes.find(r => r.home === g.home);
+  const order = mine ? [mine].concat(F.routes.filter(r => r !== mine)) : F.routes;
+  const hrs = n => { const h = ((8 + 24 - n) % 24); return (h % 12 || 12) + ":25 " + (h < 12 ? "AM" : "PM"); };
+  const route = r => { const who = GOLFERS.filter(x => x.home === r.home).map(x => x.name), you = r === mine;
+    return `<div class="sheet rt${you ? " you" : ""}"><div class="rth"><div><div class="when">${you ? "Your route" : listOf(who)}</div><h3>From ${r.home}</h3></div>${tag(r.stops === "Nonstop" ? "ok" : "wait", r.stops)}</div>
+      <p class="rtp">${r.how}</p><ul class="pts">${r.tips.map(t => `<li>${t}</li>`).join("")}</ul></div>`; };
+  const choice = !g ? "" : sub.flights === "group" ? `<div class="banner"><p><b>${TRIP.organiser} is booking you with the group.</b> You don't need to buy anything. This page is here so you know what is being booked and why.</p></div>`
+    : sub.flights === "own" ? "" : `<div class="banner"><p><b>You haven't said who books your flights.</b> Book your own with this page, or have ${TRIP.organiser} book you with the group.</p><button class="btn sm" data-tab="decisions">Choose</button></div>`;
+
+  return `<h2>Flights</h2><p class="lede">For anyone booking their own: which flights to buy, how the time change works, and the day they go on sale.</p>
+  ${choice}
+  <div class="sheet fl-target"><div class="fees">
+    <div><span>Leave home</span><b>Fri, Sep 8</b><span>An evening flight out of the US</span></div>
+    <div><span>Land in Edinburgh</span><b>Sat, Sep 9</b><span>By about 9:30 AM</span></div>
+    <div><span>Fly home</span><b>Fri, Sep 15</b><span>${TRIP.departWindow || "Airport still to be set"}</span></div>
+    <div><span>Stops</span><b>As few as possible</b><span>None from Chicago, one from Kansas City</span></div>
+  </div></div>
+  <p class="note">Why 9:30: passports, bags and the van take about an hour, and St Andrews is 1 hr 15 min from the airport. Landing by 9:30 puts us in town around noon, with the afternoon free for the par 3 before the house opens at 4:00 PM.</p>
+
+  <div class="block"><h3>The date trap</h3><div class="sheet">
+    <div class="row stack"><div class="l"><b>You leave on Friday and land on Saturday</b><span>Every flight to Scotland is overnight. Search for a departure on <em>Friday, Sep 8</em>. If you search for Sep 9 you will land on Sunday and miss the first round.</span></div></div>
+    <div class="row stack"><div class="l"><b>Look for the +1</b><span>Airline sites show each time in that airport's own clock. A flight that fits reads something like 6:30 PM to 8:25 AM <em>+1</em>. The +1 means the next day.</span></div></div>
+    <div class="row stack"><div class="l"><b>Coming home, you land the same day</b><span>You leave Scotland late morning on Friday, Sep 15 and are back in the US that afternoon, because the clock runs backwards on the way west.</span></div></div>
+  </div>
+  <div class="sheet" style="margin-top:14px">
+    <div class="row"><div class="l"><b>Kansas City and Chicago</b><span>Central time</span></div><div class="r">6 hours behind<small>8:25 AM there is ${hrs(6)} at home</small></div></div>
+    <div class="row"><div class="l"><b>Bend</b><span>Pacific time</span></div><div class="r">8 hours behind<small>8:25 AM there is ${hrs(8)} at home</small></div></div>
+  </div><p class="note">We land in the small hours by our body clocks. Sleep on the plane, stay up on Saturday, and nine easy holes in daylight is the best cure there is.</p></div>
+
+  <div class="block"><h3>Nonstops to Edinburgh</h3>
+  <p class="lede" style="margin-bottom:14px">Every US nonstop that could work, with the time it lands on Saturday morning. Glasgow has one US flight, from Newark, and it lands after 10:00 AM.</p>
+  <div class="sheet">${F.nonstops.map(f => `<div class="row"><div class="l"><b>${f.from}</b><span>${f.airline}. Leaves ${f.dep} Friday. ${f.note}</span></div><div class="r num">${f.arr}<small>${f.fit === "yes" ? '<span class="pos">Lands in time</span>' : '<span class="neg">Too late</span>'}</small></div></div>`).join("")}</div>
+  <p class="note">Times are the ${F.basis} timetable. Airlines haven't published 2028, but these routes keep close to the same times each year. Each one is checked again when 2028 goes on sale.</p></div>
+
+  <div class="block"><h3>${mine ? "Your route, and everyone else's" : "The route from each city"}</h3>${order.map(route).join("")}</div>
+
+  <div class="block"><h3>When to book</h3><div class="sheet">
+    ${F.opens.map(o => `<div class="tl"><div class="when">${o.when}</div><b>${o.what}</b><span>${o.why}</span></div>`).join("")}
+  </div><p class="note">Airlines add one new day of flights each morning, about eleven months ahead. Summer-only routes like Chicago to Edinburgh are sometimes loaded a few weeks after that, so if it isn't there on the first day, keep checking and don't settle for a worse flight. It is one flight a day on a single-aisle plane, so don't leave it until 2028 either.</p></div>
+
+  <div class="block"><h3>Before you pay</h3><div class="sheet">
+    ${[["The outbound leaves on Friday, Sep 8 and shows +1.","It lands at Edinburgh (EDI) on Saturday, Sep 9, by about 9:30 AM."],
+       ["Every flight is on one ticket.","Not two bookings stitched together. One ticket means your bags are checked through and the airline owns a missed connection."],
+       ["Any connection in the US is two hours or more.","There is one Edinburgh flight a day from each city. Miss it and you arrive a day late."],
+       ["The name matches your passport, letter for letter.","And the passport runs past "+fmtDay(TRIP.passportMin)+", six months after we fly home."],
+       ["The fare includes a checked bag.","You are bringing clubs and a suitcase, and the cheapest fares often include neither."],
+       ["Then send "+TRIP.organiser+" your flight numbers.","They go on this page and on your My trip tab, so the van knows who lands when."]]
+      .map((c,i) => `<div class="tl step"><i>${i+1}</i><div><b>${c[0]}</b><span>${c[1]}</span></div></div>`).join("")}
+  </div></div>
+
+  <div class="block"><h3>Getting home</h3>
+  <p class="lede" style="margin-bottom:14px">${TRIP.departWindow ? TRIP.departWindow+"." : "The departure airport isn't set yet: Edinburgh, or Glasgow, which is half the drive from the house. "+TRIP.organiser+" will set it by "+fmtDay("2027-09-01")+", before any fares are on sale, so nobody needs to guess."}</p>
+  <div class="sheet">${F.home.map(f => `<div class="row"><div class="l"><b>${f.route}</b><span>${f.airline}. ${f.note}</span></div><div class="r num">${f.dep}</div></div>`).join("")}</div>
+  <p class="note">From the ${F.basis} timetable. We check out of the house by 10:00 AM, and Tarbolton is 45 min from Glasgow Airport or 1 hr 30 min from Edinburgh.</p></div>
+
+  <div class="block"><h3>Who's booked</h3><div class="sheet">
+    ${GOLFERS.map(x => { const c = choicesOf(x).flights; return `<div class="row"><div class="l"><b>${x.name}</b><span>${x.home} (${x.airport})${x.flightOut ? ". "+x.flightOut : c === "group" ? ". With the group" : c === "own" ? ". Booking their own" : ""}</span></div><div class="r">${x.flightOut ? tag("ok","Booked") : tag("wait","Not booked")}</div></div>`; }).join("")}
+  </div></div>`;
+}
+
+function houses(){
   const drivers = (tally("driver").by.yes || []).map(nameOf);
-  return `<h2>Travel and houses</h2><p class="lede">Flights, the van and both houses.</p>
-  <div class="block" style="margin-top:0"><h3>Flights</h3><div class="sheet">
-    <div class="row"><div class="l"><b>Arrive</b><span>${TRIP.arrivalWindow || "Arrive-by time to be set"}</span></div><div class="r">Sat, Sep 9</div></div>
-    <div class="row"><div class="l"><b>Depart</b><span>${TRIP.departWindow || "Edinburgh or Glasgow, to be set"}</span></div><div class="r">Fri, Sep 15</div></div>
-    ${GOLFERS.map(g => `<div class="row"><div class="l"><b>${g.name}</b><span>${g.home} (${g.airport})${g.flightOut ? ". "+g.flightOut : ""}</span></div><div class="r">${g.flightOut ? tag("ok","Booked") : tag("wait","Not booked")}</div></div>`).join("")}
-  </div><p class="note">Everyone books their own flights once the arrival window is set. Fares for September 2028 open around autumn 2027.</p></div>
+  const house = h => `<div class="sheet hs">
+      <div class="hsh"><div><div class="when">${h.inn.split(" from")[0]} to ${h.out.split(" by")[0]}</div><h3>${h.name}</h3><p class="town">${h.town}</p></div>${tag("ok","Confirmed")}</div>
+      <p class="rtp">${h.about}</p>
+      <div class="fees">${h.facts.map(f => `<div><b>${f[0]}</b><span>${f[1]}</span></div>`).join("")}
+        <div><b>Check-in</b><span>${h.inn}</span></div><div><b>Check-out</b><span>${h.out}</span></div></div>
+      <h4>Bedrooms</h4>
+      <div class="rooms">${h.rooms.map(r => `<div><b>${r[0]}</b><span>${r[1]}</span></div>`).join("")}</div>
+      <p class="fit">${h.fit}</p>
+      <h4>In the house</h4><ul class="pts">${h.has.map(x => `<li>${x}</li>`).join("")}</ul>
+      <h4>House rules</h4><ul class="pts">${h.rules.map(x => `<li>${x}</li>`).join("")}</ul>
+      <div class="hsf"><span>${$g(h.total)} for the house, ${$u(usd(h.total / TRIP.size))} each. Balance of ${$g(h.balance)} charges ${h.balanceDate}. ${h.cancel}. Hosted by ${h.host}.</span>
+        <a class="btn ghost sm" href="${h.link}" target="_blank" rel="noopener">See the photos on VRBO</a></div>
+    </div>`;
+  return `<h2>Houses and van</h2><p class="lede">Three nights in St Andrews, three in Ayrshire. Both houses are booked and the deposits are paid.</p>
+  ${HOUSES.map(house).join("")}
+  <p class="note">Addresses and check-in instructions are released three days before arrival and will be posted here. Room assignments are drawn before the trip.</p>
 
   <div class="block"><h3>The van</h3><div class="sheet">
     <div class="row"><div class="l"><b>Nine-seat van</b><span>Sep 9 to 15, National preferred, Edinburgh pickup assumed</span></div><div class="r">${tag("wait","Not booked")}</div></div>
     <div class="row"><div class="l"><b>The problem</b><span>Everyone is bringing their own clubs, and a nine-seater holds eight people or their gear, not both. Plan on a second vehicle, which means more drivers.</span></div></div>
     <div class="row"><div class="l"><b>Drivers</b><span>${drivers.length ? listOf(drivers)+"." : "No volunteers yet."} We need at least two. Volunteer on the Decisions tab.</span></div></div>
+    <div class="row"><div class="l"><b>Parking</b><span>The St Andrews house has private parking for two to three cars. Whether a nine-seat van fits is a question for the host before we book one.</span></div></div>
   </div></div>
 
   <div class="block"><h3>Drives</h3><div class="sheet">
     ${[["Edinburgh Airport to St Andrews","1 hr 15 min"],["St Andrews to Crail","25 min"],["Crail to Tarbolton","2 hr 30 min"],["Tarbolton to Turnberry","40 min"],["Tarbolton to Troon or Prestwick","15 to 20 min"],["Tarbolton to Glasgow Airport","45 min"],["Tarbolton to Edinburgh Airport","1 hr 30 min"]]
       .map(r => `<div class="row"><div class="l">${r[0]}</div><div class="r">${r[1]}</div></div>`).join("")}
-  </div><p class="note">Approximate, without traffic.</p></div>
-
-  <div class="block"><h3>Houses</h3><div class="two">${HOUSES.map(h => `<div class="sheet pad">
-      ${tag("ok","Confirmed")}<h3 style="margin:10px 0 2px">${h.name}</h3><p class="small" style="color:var(--green);font-weight:600">${h.town}</p>
-      <p class="small" style="margin-top:10px"><b>In</b> ${h.inn}<br><b>Out</b> ${h.out}<br><span class="muted">${h.cancel}</span></p></div>`).join("")}</div>
-  <p class="note">Eight adults in each. Addresses and check-in instructions are released three days before arrival and will be posted here.</p></div>`;
+  </div><p class="note">Approximate, without traffic.</p></div>`;
 }
 
 function costs(){
@@ -1434,7 +1588,7 @@ function welcome(){
   </div>`;
 }
 
-const RENDER = {home, itinerary, golf, travel, costs, expenses, decisions, guide};
+const RENDER = {home, itinerary, golf, flights, houses, costs, expenses, decisions, guide};
 function nav(){
   const inMore = MORE.some(m => m[0] === S.tab), left = me() && V.loaded && !V.error ? progress().left : 0;
   return (S.more ? `<div class="scrim" data-more></div><div class="more" id="moreSheet">${MORE.map(m =>
@@ -1497,7 +1651,7 @@ setInterval(checkFresh, 60000);
   let saved = ""; try{ saved = localStorage.getItem("scot28who") || ""; }catch(e){}
   const id = (q || saved).toLowerCase();
   if(GOLFERS.some(g => g.id === id)){ S.who = id; if(q) remember(); }
-  const h = location.hash.slice(1); if(RENDER[h]) S.tab = h;
+  const h0 = location.hash.slice(1), h = h0 === "travel" ? "flights" : h0; if(RENDER[h]) S.tab = h;
   $("updated").textContent = TRIP.updated;
   let seenWelcome = ""; try{ seenWelcome = localStorage.getItem("scot28welcome") || ""; }catch(e){}
   S.welcome = !standalone() && !seenWelcome;
