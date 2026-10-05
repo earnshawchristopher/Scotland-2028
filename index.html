@@ -511,7 +511,7 @@ const TIMELINE = [
     why:"The Old Course application needs an index and home club for every golfer, the window lasts about two weeks, and its dates are only announced a few weeks ahead."},
   {when:"By Aug 31, 2027", who:"Everyone", est:false, what:"Answer the driver question.",
     why:"Van hire opens about a year out. The number of named drivers decides whether we book one vehicle or two."},
-  {when:"By Sep 1, 2027", who:"Everyone", est:false, what:"Choose your own flights or the group booking, and enter your passport expiry date.",
+  {when:"By Sep 1, 2027", who:"Everyone", est:false, what:"Choose your own flights or the group booking, and enter your passport expiry date. For the group booking, add your name as on your passport and your date of birth.",
     why:"Chris sets the arrival window and books the group in mid-October. A passport that runs out before March 15, 2029 needs renewing first, because the ticket has to match the passport you travel on."},
   {when:"Aug 23 to Oct 6, 2027", who:"Chris", est:true, what:"Submit two Old Course applications of four golfers each.",
     why:"The window has moved later each year: Aug 26 to Sep 4 in 2024, Sep 10 to 22 in 2025, Sep 23 to Oct 6 in 2026. It is a draw, so being first earns nothing, but an entry after the closing minute is not counted."},
@@ -656,8 +656,10 @@ function syncSlots(){
    These go to a separate table that the website cannot read back, because they include a
    passport date and traveller numbers. This device keeps its own copy of what it sent
    (D.mine); the group only ever sees D.status: each golfer's index, and yes/no for the rest.  */
-const DFIELDS = ["hcp","club","cert","passport","ktn","airlines"];
-const DCOUNT = ["hcp","cert","passport"];                         // the three that count as questions
+const DFIELDS = ["hcp","club","cert","passport","fname","mname","lname","dob","ktn","airlines"];
+/* the details that count as questions: three for everyone, plus name and birthday for anyone
+   who asks to be booked with the group                                                        */
+const dcount = () => ["hcp","cert","passport"].concat(V.draft.flights === "group" ? ["fname","lname","dob"] : []);
 const detKey = () => "scot28details:" + S.who;
 const stat = id => D.status[id] || {};
 function loadDetails(){
@@ -668,7 +670,7 @@ function loadDetails(){
 function keepDetails(){ try{ localStorage.setItem(detKey(), JSON.stringify({mine:D.mine, draft:D.draft})); }catch(_){} }
 const dirtyDetails = () => S.who ? DFIELDS.filter(f => (D.draft[f] || "").trim() !== (D.mine[f] || "").trim()) : [];
 const allDirty = () => dirtyKeys().length + dirtyDetails().length;
-const onFile = f => { const st = stat(S.who); return f === "hcp" ? st.handicap_index != null : f === "cert" ? !!st.has_certificate : f === "passport" ? !!st.has_passport : false; };
+const onFile = f => { const st = stat(S.who); return f === "hcp" ? st.handicap_index != null : f === "cert" ? !!st.has_certificate : f === "passport" ? !!st.has_passport : (f === "fname" || f === "lname") ? !!st.has_name : f === "dob" ? !!st.has_dob : false; };
 const hasDetail = f => !!(D.draft[f] || "").trim() || ((D.mine[f] || "") === "" && onFile(f));
 const parseIndex = t => { t = String(t || "").trim(); if(!t) return null; const n = parseFloat(t.replace(/^\+/, "-")); return isFinite(n) && n >= -10 && n <= 54 ? Math.round(n * 10) / 10 : NaN; };
 const myIndex = () => { const n = parseIndex(D.draft.hcp); return n !== null && !isNaN(n) ? n : (stat(S.who).handicap_index != null ? Number(stat(S.who).handicap_index) : null); };
@@ -681,6 +683,12 @@ function hcpFlag(){
   if(n > 20) return `<span class="neg">Fine everywhere except Royal Troon, which caps men at 20. Keep that in mind for Thursday's vote.</span>`;
   return `<span class="pos">Within the limit at every course on the list.</span>`;
 }
+function dobFlag(){
+  const v = D.draft.dob || "";
+  if(!v) return onFile("dob") ? `<span class="pos">On file. Enter it again only to correct it.</span>` : "";
+  if(v > new Date().toLocaleDateString("en-CA") || v < "1930-01-01") return `<span class="neg">That doesn't look like a date of birth. Check the year.</span>`;
+  return "";
+}
 function passportFlag(){
   const v = D.draft.passport || "";
   if(!v) return onFile("passport") ? (stat(S.who).passport_ok ? `<span class="pos">On file, and it runs long enough.</span>` : `<span class="neg">On file, but it expires before ${fmtDay(TRIP.passportMin)}. Renew it, then enter the new date.</span>`) : "";
@@ -690,8 +698,8 @@ function passportFlag(){
 /* How far through the questions this golfer is. Counts what is on screen (including answers
    not locked in yet); anything already closed and never answered is left out of the total.   */
 function progress(){
-  const keys = KEYS.filter(k => !frozen(voteById(k)) || V.draft[k]), made = keys.filter(k => V.draft[k]).length + DCOUNT.filter(hasDetail).length, total = keys.length + DCOUNT.length;
-  return {total, made, left:total - made, dirty:allDirty(), locked:!!myRow() || !!stat(S.who).golfer_id, next:keys.find(k => !V.draft[k]) || DCOUNT.find(f => !hasDetail(f)) || ""};
+  const keys = KEYS.filter(k => !frozen(voteById(k)) || V.draft[k]), dc = dcount(), made = keys.filter(k => V.draft[k]).length + dc.filter(hasDetail).length, total = keys.length + dc.length;
+  return {total, made, left:total - made, dirty:allDirty(), locked:!!myRow() || !!stat(S.who).golfer_id, next:keys.find(k => !V.draft[k]) || dc.find(f => !hasDetail(f)) || ""};
 }
 function labelOf(key, val){
   if(!val) return "";
@@ -946,9 +954,15 @@ function flightsCard(v){
     <p class="why">${v.text}</p>
     <div class="vbody"><div class="seg">${v.options.map(o => `<button data-vote="${v.id}" data-val="${o.id}" aria-pressed="${mine === o.id}" ${off ? "disabled" : ""}><b>${o.label}</b></button>`).join("")}</div>
     ${mine === "group" ? `<div style="margin-top:16px">
+      <p class="note" style="margin:0 0 12px">${TRIP.organiser} needs these to buy your ticket. Spell your name exactly as it is printed on your passport: the airline can refuse a ticket that doesn't match.</p>
+      <div class="two"><label class="field" id="q-fname"><span>First name, as on your passport</span><input data-det="fname" value="${esc(D.draft.fname)}" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="40" placeholder="${st.has_name && !D.mine.fname ? "On file. Type to replace" : ""}"></label>
+      <label class="field" id="q-lname"><span>Last name, as on your passport</span><input data-det="lname" value="${esc(D.draft.lname)}" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="40" placeholder="${st.has_name && !D.mine.lname ? "On file. Type to replace" : ""}"></label></div>
+      <label class="field"><span>Middle name, if your passport shows one</span><input data-det="mname" value="${esc(D.draft.mname)}" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="40" placeholder="Leave blank if none"></label>
+      <label class="field" id="q-dob"><span>Date of birth</span><input type="date" data-det="dob" value="${esc(D.draft.dob)}" min="1930-01-01" max="2012-12-31"></label>
+      <p class="flag" id="flag-dob">${dobFlag()}</p>
       <label class="field"><span>Known Traveler Number, for TSA PreCheck</span><input data-det="ktn" value="${esc(D.draft.ktn)}" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20" placeholder="${st.has_ktn && !D.mine.ktn ? "On file. Type to replace" : "Leave blank if you don't have one"}"></label>
       <label class="field"><span>Preferred airlines and member numbers</span><textarea data-det="airlines" rows="3" maxlength="400" spellcheck="false" placeholder="${st.has_airlines && !D.mine.airlines ? "On file. Type to replace" : "One per line, like: United MileagePlus AB123456"}">${esc(D.draft.airlines)}</textarea></label>
-      ${privNote}<p class="note">Your Known Traveler Number is on your Global Entry card or in your TSA PreCheck account. ${TRIP.organiser} will also need your name exactly as it appears on your passport, and will ask for it when booking.</p></div>` : ""}</div>
+      ${privNote}<p class="note">Your Known Traveler Number is on your Global Entry card or in your TSA PreCheck account. </p></div>` : ""}</div>
     <div class="vfoot">${grp.length ? "<b>With the group: "+grp.map(nameOf).join(", ")+".</b> " : ""}${own.length ? "On their own: "+own.map(nameOf).join(", ")+". " : ""}${t.n} of ${TRIP.size} answered.</div></div>`;
 }
 function handicapCard(){
@@ -992,7 +1006,7 @@ function adminBlock(){
   return `<div class="block"><h3>Everyone's details</h3><p class="lede" style="margin-bottom:14px">Only visible while you are signed in with the admin code.</p>
     ${!rows ? `<div class="sheet pad"><button class="btn" data-act="adminDetails">Show everyone's details</button>${D.adminMsg ? `<p class="msg">${esc(D.adminMsg)}</p>` : ""}</div>`
     : `<div class="sheet">${GOLFERS.map(x => { const r = rows.find(y => y.golfer_id === x.id) || {};
-        return `<div class="row stack"><div class="l"><b>${x.name}</b><span>Index ${r.handicap_index != null ? r.handicap_index : "not in"}${r.home_club ? ", "+esc(r.home_club) : ""}. Passport ${r.passport_expires ? "expires "+fmtDay(r.passport_expires)+(r.passport_expires < TRIP.passportMin ? " (TOO SOON)" : "") : "not in"}.${r.known_traveler ? " KTN "+esc(r.known_traveler)+"." : ""}${r.airlines ? " Airlines: "+esc(r.airlines).replace(/\n/g, "; ")+"." : ""}</span></div><div class="r">${r.certificate_path ? `<button class="btn ghost sm" style="margin-top:0" data-act="openCert" data-id="${esc(r.certificate_path)}">Open certificate</button>` : "No certificate"}</div></div>`; }).join("")}</div>
+        return `<div class="row stack"><div class="l"><b>${x.name}</b><span>Index ${r.handicap_index != null ? r.handicap_index : "not in"}${r.home_club ? ", "+esc(r.home_club) : ""}. Passport ${r.passport_expires ? "expires "+fmtDay(r.passport_expires)+(r.passport_expires < TRIP.passportMin ? " (TOO SOON)" : "") : "not in"}.${r.last_name || r.first_name ? " Ticket name: "+esc([r.first_name, r.middle_name, r.last_name].filter(Boolean).join(" "))+"." : ""}${r.birth_date ? " Born "+fmtDay(r.birth_date)+"." : ""}${r.known_traveler ? " KTN "+esc(r.known_traveler)+"." : ""}${r.airlines ? " Airlines: "+esc(r.airlines).replace(/\n/g, "; ")+"." : ""}</span></div><div class="r">${r.certificate_path ? `<button class="btn ghost sm" style="margin-top:0" data-act="openCert" data-id="${esc(r.certificate_path)}">Open certificate</button>` : "No certificate"}</div></div>`; }).join("")}</div>
        ${D.adminMsg ? `<p class="msg">${esc(D.adminMsg)}</p>` : ""}`}</div>`;
 }
 function lockBlock(){
@@ -1000,7 +1014,7 @@ function lockBlock(){
   const row = myRow(), sub = submitted(), dirty = dirtyKeys(), dd = dirtyDetails(), nd = dirty.length + dd.length, p = progress();
   const items = [["wed","Wednesday's round"],["thu","Thursday's round"],["rules","Drop-out rules"],["cad_jubilee","Jubilee"],["cad_old","Old Course"],["cad_balcomie","Balcomie"],["cad_wed","Wednesday"],["cad_thu","Thursday"],["driver","Driving"],["flights","Flights"]];
   const det = [["hcp","Handicap index", (D.draft.hcp || "").trim() || (onFile("hcp") ? "On file" : "")],["cert","Handicap certificate", D.draft.cert ? "Uploaded" : (onFile("cert") ? "On file" : "")],["passport","Passport expires", D.draft.passport ? fmtDay(D.draft.passport)+(D.draft.passport < TRIP.passportMin ? " (too soon)" : "") : (onFile("passport") ? "On file" : "")]];
-  if(V.draft.flights === "group") det.push(["ktn","Known Traveler Number", (D.draft.ktn || "").trim() ? "Entered" : (stat(g.id).has_ktn ? "On file" : "")], ["airlines","Airline numbers", (D.draft.airlines || "").trim() ? "Entered" : (stat(g.id).has_airlines ? "On file" : "")]);
+  if(V.draft.flights === "group") det.push(["fname","Name on passport", [D.draft.fname, D.draft.mname, D.draft.lname].map(x => (x || "").trim()).filter(Boolean).join(" ") || (stat(g.id).has_name ? "On file" : "")], ["dob","Date of birth", D.draft.dob ? fmtDay(D.draft.dob) : (stat(g.id).has_dob ? "On file" : "")], ["ktn","Known Traveler Number", (D.draft.ktn || "").trim() ? "Entered" : (stat(g.id).has_ktn ? "On file" : "")], ["airlines","Airline numbers", (D.draft.airlines || "").trim() ? "Entered" : (stat(g.id).has_airlines ? "On file" : "")]);
   const when = row ? new Date(row.locked_at).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : "";
   let state;
   if(nd) state = `<p><b>${nd} change${nd>1?"s":""} not locked in.</b> ${row ? "The group still sees your earlier answers" : "Nobody can see your answers"} until you lock in.</p>`;
@@ -1011,7 +1025,7 @@ function lockBlock(){
     <form class="sheet" id="voteForm">
       ${items.map(i => { const val = V.draft[i[0]], changed = dirty.includes(i[0]);
         return `<div class="row"><div class="l"><b>${i[0].startsWith("cad_") ? "Caddie: "+i[1] : i[1]}</b>${changed ? `<span>${sub[i[0]] ? "Was "+labelOf(i[0], sub[i[0]])+". Not locked in yet." : "Not locked in yet."}</span>` : ""}</div><div class="r ${val ? "" : "muted"}">${val ? labelOf(i[0], val) : "Not answered"}</div></div>`; }).join("")}
-      ${det.map(i => `<div class="row"><div class="l"><b>${i[1]}</b>${dd.includes(i[0]) ? `<span>Not locked in yet.</span>` : ""}</div><div class="r ${i[2] ? "" : "muted"}">${esc(i[2]) || (i[0] === "ktn" || i[0] === "airlines" ? "None given" : "Not answered")}</div></div>`).join("")}
+      ${det.map(i => `<div class="row"><div class="l"><b>${i[1]}</b>${dd.includes(i[0]) || (i[0] === "fname" && (dd.includes("lname") || dd.includes("mname"))) ? `<span>Not locked in yet.</span>` : ""}</div><div class="r ${i[2] ? "" : "muted"}">${esc(i[2]) || (i[0] === "ktn" || i[0] === "airlines" ? "None given" : "Not answered")}</div></div>`).join("")}
       <div class="pad" style="border-top:1px solid var(--rule)">
         ${state}
         ${nd ? `<div class="acts" style="margin-top:12px"><button class="btn" ${V.busy ? "disabled" : ""}>Lock in as ${g.name}${p.left ? " ("+p.made+" of "+p.total+" answered)" : ""}</button>
@@ -1039,13 +1053,14 @@ function progBar(){
 /* While someone types in a details field: refresh the progress bar, the field's flag and the
    lock-in summary, but leave the field itself alone so the keyboard and cursor stay put.      */
 function softRefresh(){
-  const w = $("progWrap"), l = $("lock"), a = $("flag-hcp"), b = $("flag-passport");
+  const w = $("progWrap"), l = $("lock"), a = $("flag-hcp"), b = $("flag-passport"), c = $("flag-dob");
+  if(c) c.innerHTML = dobFlag();
   if(w){ const p = progBar(); w.className = p.cls; w.innerHTML = p.html; }
   if(l) l.outerHTML = lockBlock();
   if(a) a.innerHTML = hcpFlag(); if(b) b.innerHTML = passportFlag();
 }
 function decisions(){
-  const g = me(), bar = progBar(), nq = KEYS.length + DCOUNT.length;
+  const g = me(), bar = progBar(), nq = KEYS.length + dcount().length;
   const exec = d => `<div class="row"><div class="l"><b>${d.title}</b><span>${d.outcome || d.text}</span></div><div class="r">${d.status === "Decided" ? tag("ok","Decided") : tag("wait","By "+fmtDay(d.by))}</div></div>`;
   const out = `<h2>Decisions</h2><p class="lede">${g && !myRow() && !stat(g.id).golfer_id ? g.name+", "+nq+" quick answers are needed from you. " : "Everything the group needs to settle, in one place. "}Tap your answer on each card, then lock in. A vote is final once ${NEED} of ${TRIP.size} have locked in the same option.</p>
   <div id="staleBox">${staleHTML()}</div>
@@ -1059,7 +1074,7 @@ function decisions(){
 
   <div class="block" style="margin-top:0"><h3>Group votes</h3>${VOTES.filter(v => v.kind === "poll").map(pollCard).join("")}</div>
   <div class="block"><h3>Your own answers</h3>${VOTES.filter(v => v.kind === "own").map(v => v.id === "caddie" ? caddieCard(v) : v.id === "flights" ? flightsCard(v) : ownCard(v)).join("")}</div>
-  <div class="block"><h3>Your details for ${TRIP.organiser}</h3><p class="lede" style="margin-bottom:14px">Sent with the same Lock in button. Handicap indexes are shown to the group; your passport date and traveller numbers go to ${TRIP.organiser} only.</p>${handicapCard()}${passportCard()}</div>
+  <div class="block"><h3>Your details for ${TRIP.organiser}</h3><p class="lede" style="margin-bottom:14px">Sent with the same Lock in button. Handicap indexes are shown to the group; your passport date, name, birthday and traveller numbers go to ${TRIP.organiser} only.</p>${handicapCard()}${passportCard()}</div>
   ${lockBlock()}
   ${adminBlock()}
 
@@ -1282,6 +1297,7 @@ async function lockIn(){
   if(V.busy || !S.who) return;
   const idx = parseIndex(D.draft.hcp);
   if(idx !== null && isNaN(idx)){ V.msg = "Your handicap index needs to be a number, like 12.4. Fix it and lock in again."; draw(); const el = $("q-hcp"); if(el && el.scrollIntoView) el.scrollIntoView({block:"start"}); return; }
+  if(D.draft.dob && dobFlag()){ V.msg = "Check your date of birth, then lock in again."; draw(); const el = $("q-dob"); if(el && el.scrollIntoView) el.scrollIntoView({block:"start"}); return; }
   V.busy = true; V.msg = ""; draw();
   try{
     if(dirtyKeys().length){
@@ -1294,7 +1310,7 @@ async function lockIn(){
     if(dd.length){
       /* null leaves a field as it is on file; an empty string clears it */
       const val = f => dd.includes(f) ? (f === "hcp" ? (idx === null ? "" : String(idx)) : (D.draft[f] || "").trim()) : null;
-      await sb("rpc/save_details", {method:"POST", body:JSON.stringify({p_golfer:S.who, p_handicap:val("hcp"), p_club:val("club"), p_certificate:val("cert"), p_passport:val("passport"), p_ktn:val("ktn"), p_airlines:val("airlines")})});
+      await sb("rpc/save_details", {method:"POST", body:JSON.stringify({p_golfer:S.who, p_handicap:val("hcp"), p_club:val("club"), p_certificate:val("cert"), p_passport:val("passport"), p_first:val("fname"), p_middle:val("mname"), p_last:val("lname"), p_dob:val("dob"), p_ktn:val("ktn"), p_airlines:val("airlines")})});
       DFIELDS.forEach(f => D.draft[f] = (D.draft[f] || "").trim()); D.mine = Object.assign({}, D.draft); D.up = ""; keepDetails();
     }
     V.busy = false; await loadBallots();
