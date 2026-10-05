@@ -172,6 +172,7 @@
   .day .base{font-size:14px;color:var(--green);font-weight:600;margin-bottom:2px}
   .day ul{margin:8px 0 0;padding:0;list-style:none;font-size:15px;color:var(--muted)}
   .day li{padding:2px 0 2px 14px;position:relative}
+  .day li .link{min-height:0;padding:0;color:var(--ink);font-weight:600}
   .day li::before{content:"";position:absolute;left:0;top:12px;width:6px;height:1px;background:var(--gold)}
   .tee{display:inline-block;margin-top:6px;font-size:14px;font-weight:600}
   @media(max-width:380px){.day{grid-template-columns:46px 1fr;gap:12px}}
@@ -481,7 +482,7 @@ const SLOTS = {
 
 const DAYS = [
   {dow:"Sat", d:9,  base:"St Andrews",       round:"balgove",  sleep:"Townhouse, St Andrews",
-    plan:["Land at Edinburgh by about 9:30 AM and collect the van.","About 1 hr 15 min from Edinburgh Airport to St Andrews.","House check-in from 4:00 PM."]},
+    plan:["Land at Edinburgh by about 9:30 AM. United 118 from Chicago is due at 8:25 AM.","Collect the van.","About 1 hr 15 min from Edinburgh Airport to St Andrews.","House check-in from 4:00 PM."]},
   {dow:"Sun", d:10, base:"St Andrews",       round:"jubilee",  sleep:"Townhouse, St Andrews",
     plan:["The Old Course is closed on Sundays, and open to walk as a public park."]},
   {dow:"Mon", d:11, base:"St Andrews",       round:"old",      sleep:"Townhouse, St Andrews",
@@ -531,15 +532,16 @@ const FLIGHTS = {
     {from:"Washington Dulles", airline:"United 978", dep:"10:25 PM", arr:"10:35 AM", fit:"late", note:"An hour too late."},
     {from:"Atlanta",           airline:"Delta 34",   dep:"11:00 PM", arr:"11:50 AM", fit:"late", note:"Costs us the par 3."}
   ],
-  /* one entry per home city; home must match GOLFERS[].home. gap = hours behind Scotland.     */
+  /* one entry per home city; home must match GOLFERS[].home. gap = hours behind Scotland.
+     line = the one-sentence version shown on the Itinerary.                                   */
   routes: [
-    {home:"Kansas City", stops:"One stop, in Chicago", gap:6,
+    {home:"Kansas City", stops:"One stop, in Chicago", gap:6, line:"an early-afternoon flight to O'Hare, then United 118 to Edinburgh at 6:30 PM",
       how:"An early-afternoon United flight from Kansas City to O'Hare, about 1 hr 30 min, then United 118 to Edinburgh at 6:30 PM. Kansas City has no flights to Europe, so one stop is the fewest possible.",
       tips:["Pick a first flight that lands at O'Hare by 4:00 PM. That leaves two and a half hours, and United's terminals connect, so you never leave security.","Book both flights as one ticket. Your clubs are checked through to Edinburgh, and United has to rebook you if the first flight runs late.","If the Chicago flight is full or far dearer, connect in Newark for United 36 instead. It lands twenty minutes earlier."]},
-    {home:"Chicago", stops:"Nonstop", gap:6,
+    {home:"Chicago", stops:"Nonstop", gap:6, line:"United 118 from O'Hare at 6:30 PM, nonstop to Edinburgh",
       how:"United 118 from O'Hare at 6:30 PM on Friday, landing in Edinburgh at 8:25 AM on Saturday. About 7 hr 55 min in the air.",
       tips:["It is the only nonstop from Chicago and it runs once a day.","The Kansas City five are aiming for the same flight, so we would land together."]},
-    {home:"Bend, OR", stops:"Two stops", gap:8,
+    {home:"Bend, OR", stops:"Two stops", gap:8, line:"the first flight out of Redmond, two stops, joining United 118 in Chicago",
       how:"Redmond to a United hub such as Denver, on to Chicago, then United 118 to Edinburgh. No city Redmond flies to has an Edinburgh nonstop, so two stops is the realistic minimum.",
       tips:["Take the first flight out of Redmond on Friday morning. You lose two hours flying east and need to be at O'Hare by 4:00 PM Central.","The lower-stress version: fly to Chicago on Thursday, Sep 7, stay the night, and take the nonstop with everyone on Friday.","Redmond's 2028 schedule isn't out, so treat this as the routing to check, not a booking."]}
   ],
@@ -597,10 +599,10 @@ const DETAILS = { handicap:"2027-01-31", passport:"2027-09-01" };
 const DECISIONS = [
   {title:"Tee time targets", text:"Morning at Balcomie before the drive west; after 1 PM at Turnberry if it is chosen.", by:"2027-01-31", status:"Open", outcome:""},
   {title:"Deposits and paying back", text:"One person fronts the bookings; a reimbursement schedule and method will follow before the first golf deposit.", by:"2027-01-31", status:"Open", outcome:""},
-  {title:"Old Course booking route", text:"Two applications of four in the autumn 2027 window, then the daily ballot and the singles draw. The step-by-step plan is under Why these dates.", by:"2027-08-15", status:"Open", outcome:""},
+  {title:"Old Course booking route", text:"Two applications of four in the autumn 2027 window, then the daily ballot and the singles draw. The step-by-step plan is at the top of the Golf tab.", by:"2027-08-15", status:"Open", outcome:""},
   {title:"Old Course fourballs", text:"The application takes four golfers at a time, so one four could win and the other miss. How the two fours are picked, and what we do if only one gets a time, will be set before we apply.", by:"2027-08-15", status:"Open", outcome:""},
   {title:"Airports and arrival window", text:"An arrive-by time on Sep 9 and a not-before departure on Sep 15. Edinburgh both ways, or home from Glasgow.", by:"2027-09-01", status:"Open", outcome:""},
-  {title:"Who books flights", text:"Each golfer chooses on this tab: book their own to the target window, or have Chris book them with the group.", by:"2027-09-01", status:"Open", outcome:""},
+  {title:"Who books flights", text:"Each golfer chooses on the Decisions tab: book their own to the target window, or have Chris book them with the group.", by:"2027-09-01", status:"Open", outcome:""},
   {title:"Vehicle setup", text:"Everyone is bringing their own clubs, so eight golfers and eight bags need a nine-seater plus a second vehicle. National preferred.", by:"2027-09-30", status:"Open", outcome:""},
   {title:"Room assignments", text:"Assigned or drawn for each house.", by:"2028-07-01", status:"Open", outcome:""},
   {title:"Foursomes and games", text:"Pairings rotate daily, with one trip-long game.", by:"2028-08-01", status:"Open", outcome:""},
@@ -618,7 +620,7 @@ const TIMELINE = [
     why:"Royal Troon is asked for the exact day its 2028 visitor diary opens. Western Gailes and Dundonald have no opening day and take requests by email, so asking early gets the best pick of times. Western Gailes then wants a 50% non-refundable deposit within three weeks of holding a time."},
   {when:"Mar 22 to Apr 30, 2027", who:"Chris", est:true, what:"Book Thursday's round on the day the tee sheet opens.",
     why:"Royal Troon has opened the following year's diary between late March and late April, and most times are gone within a month. If the group picks Prestwick instead, the same window is used; it is paid in full at booking."},
-  {when:"By Aug 1, 2027", who:"Everyone", est:false, what:"Check that the handicap index, home club and certificate you entered on this tab are current.",
+  {when:"By Aug 1, 2027", who:"Everyone", est:false, what:"Check that the handicap index, home club and certificate you entered on the Decisions tab are current.",
     why:"The Old Course application needs an index and home club for every golfer, the window lasts about two weeks, and its dates are only announced a few weeks ahead."},
   {when:"By Aug 31, 2027", who:"Everyone", est:false, what:"Answer the driver question.",
     why:"Van hire opens about a year out. The number of named drivers decides whether we book one vehicle or two."},
@@ -629,7 +631,7 @@ const TIMELINE = [
   {when:"Sep 9 to Sep 30, 2027", who:"Chris", est:true, what:"Book Wednesday's round, Balcomie and the van.",
     why:"Turnberry and van hire open about twelve months before the date. Crail has the next season on sale by autumn; groups over four book by email and pay within five days."},
   {when:"By Oct 31, 2027", who:"St Andrews Links", est:true, what:"Application results arrive by email. Winners pay in full within about two weeks.",
-    why:"A missed payment loses the tee time. This is also the day we know whether anyone needs the ballot plan below."},
+    why:"A missed payment loses the tee time. This is also the day we know whether anyone needs the ballot plan on the Golf tab."},
   {when:"Oct 10 to Oct 31, 2027", who:"Everyone", est:true, what:"Flights are booked: your own, or by Chris for the group.",
     why:"Airlines release seats about 330 days out, so flights for early September 2028 go on sale in mid-October 2027."},
   {when:"By Nov 15, 2027", who:"Everyone", est:false, what:"Lock in caddie or no caddie for each round.",
@@ -637,12 +639,12 @@ const TIMELINE = [
   {when:"Jul 11 and Jul 14, 2028", who:"Automatic", est:false, what:"The two house balances are charged.",
     why:"These are also the last days to cancel either house for a full refund."},
   {when:"Sep 7 to Sep 10, 2028", who:"Chris", est:false, what:"Daily ballot entries, only for golfers still without an Old Course time.",
-    why:"The ballot closes at 2 PM UK time two days before play. The exact days are in the plan below."}
+    why:"The ballot closes at 2 PM UK time two days before play. The exact days are in the Old Course plan on the Golf tab."}
 ];
 /* HOW WE GET ON THE OLD COURSE: the steps, in order. when = the day or range for that step.  */
 const OLD_PLAN = [
   {when:"Before Aug 1, 2027", what:"Make all eight of us eligible.",
-    how:"Every golfer needs an official handicap index of 36 or better and the certificate to prove it at the starter. Enter your index and home club and upload your certificate on this tab. One missing golfer holds up a whole fourball's entry."},
+    how:"Every golfer needs an official handicap index of 36 or better and the certificate to prove it at the starter. Enter your index and home club and upload your certificate on the Decisions tab. One missing golfer holds up a whole fourball's entry."},
   {when:"Aug 23 to Oct 6, 2027 (projected)", what:"Enter the advance draw twice, as two fourballs.",
     how:"An application takes four golfers at most, so eight of us means two separate entries, each asking for Jubilee on Sunday, Sep 10 and the Old Course on Monday, Sep 11. Both go in during the first days of the window so there is time to fix a rejected detail. The draw happens after the window closes."},
   {when:"By Oct 31, 2027", what:"Act on the result the same week.",
@@ -892,13 +894,24 @@ function home(){
 }
 
 function itinerary(){
-  return `<h2>Itinerary</h2><p class="lede">Dates are locked. Tee times appear here as each one is booked.</p>
-  <div class="sheet">${DAYS.map(d => { const id = roundOf(d), c = id && COURSES[id];
-    const plan = d.slot ? [(slotOpen(id) ? "Course pending the group vote. " : "") + c.about, c.rules].filter(Boolean).concat(d.plan) : d.plan;
-    return `<div class="day"><div class="dt"><span>${d.dow}</span><b>${d.d}</b><span>Sep</span></div><div>
-      <div class="base">${d.base}</div><h3>${c ? c.name : "Travel day"}</h3>
-      ${c ? `<span class="tee">${c.tee ? "Tee time "+c.tee : "Tee time to be booked"}</span>` : ""}
-      <ul>${plan.map(p => `<li>${p}</li>`).join("")}${d.sleep ? `<li>Sleep: ${d.sleep}</li>` : ""}</ul></div></div>`; }).join("")}</div>`;
+  const g = me(), F = FLIGHTS, r = g && F.routes.find(x => x.home === g.home), choice = g ? submitted().flights : "";
+  const li = a => a.filter(Boolean).map(p => `<li>${p}</li>`).join("");
+  const day = (dow, d, base, title, tee, items) => `<div class="day"><div class="dt"><span>${dow}</span><b>${d}</b><span>Sep</span></div><div>
+      <div class="base">${base}</div><h3>${title}</h3>${tee ? `<span class="tee">${tee}</span>` : ""}<ul>${li(items)}</ul></div></div>`;
+  const out = day("Fri", 8, "Leaving home", "Fly to Scotland", g && g.flightOut ? "Booked: "+esc(g.flightOut) : "Flights on sale mid-October 2027", (
+      g && r ? ["From "+r.home+": "+r.line+".", choice === "group" ? TRIP.organiser+" is booking you with the group." : ""]
+             : F.routes.map(x => "From "+x.home+": "+x.line+".")
+    ).concat(["Every flight is overnight. You leave on Friday and land on Saturday morning.", `<button class="link" data-tab="flights">Which flights to book</button>`]));
+  const home = (g && g.flightBack ? ["Your flight: "+esc(g.flightBack)+"."] : [])
+    .concat(["Flights home leave late morning to early afternoon: "+F.home.filter((f,i) => i !== 1).map(f => f.route+" at "+f.dep.replace("About ","about ")).join(", or ")+".", "You land in the US the same afternoon."]);
+  return `<h2>Itinerary</h2><p class="lede">Dates are locked. Flights and tee times appear here as each one is booked.</p>
+  <div class="sheet">${out}${DAYS.map(d => { const id = roundOf(d), c = id && COURSES[id];
+    const plan = d.slot ? [(slotOpen(id) ? "Course pending the group vote. " : "") + c.about, c.rules].filter(Boolean).concat(d.plan) : d.base === "Homeward" ? d.plan.concat(home) : d.plan;
+    return day(d.dow, d.d, d.base, c ? c.name : d.base === "Homeward" ? "Fly home" : "Travel day", c ? (c.tee ? "Tee time "+c.tee : "Tee time to be booked") : d.base === "Homeward" && g && g.flightBack ? "Booked: "+esc(g.flightBack) : "",
+      plan.concat(d.sleep ? ["Sleep: "+d.sleep] : [])); }).join("")}</div>
+
+  <div class="block" id="why"><h3>Why these dates</h3><p class="lede" style="margin-bottom:14px">Each date below is the day something has to happen, who does it, and the reason. No club has published 2028 dates yet, so the ones marked projected come from what that club did for 2026 and 2027, and will be replaced as they announce.</p>
+  <div class="sheet">${TIMELINE.map(t => `<div class="tl"><p class="when">${t.when}${t.est ? " "+tag("wait","Projected") : ""}</p><b>${t.what}</b><span><em>${t.who}.</em> ${t.why}</span></div>`).join("")}</div></div>`;
 }
 
 function courseCard(id, when){
@@ -927,19 +940,24 @@ function golf(){
     ${s.options.map(id => { const c = COURSES[id], n = (d.t.by[id] || []).length;
       return `<button class="opt" aria-pressed="${S[k]===id}" data-slot="${k}" data-id="${id}" ${d.pick ? "disabled" : ""}><span><b>${c.name}</b><small>${c.about}${c.rules ? " "+c.rules : ""}</small><small class="votes">${n} of ${TRIP.size} votes</small></span><span class="p num">${$u(usd(allIn(c,c.budgetCaddie)))}</span></button>`; }).join("")}</div>`; };
   return `<h2>Golf</h2>
-  <p class="lede">Six rounds in six days. Prices are per person, all-in for 2028: green fee plus caddie and tip where the budget assumes one, or trolley hire where it doesn't.</p>
-  <div class="sheet">${fixed.map(d => courseCard(d.round, `${d.dow}, Sep ${d.d}`)).join("")}</div>
+  <p class="lede">Six rounds in six days. The Old Course comes first, because it is the one round nobody can simply book.</p>
+  <div class="block" style="margin-top:0" id="oldcourse">
+  <h3>How we get on the Old Course</h3><p class="lede" style="margin-bottom:14px">Nobody can simply book it. These five steps, in this order, give us the most chances the rules allow.</p>
+  <div class="sheet">${OLD_PLAN.map((t,i) => `<div class="tl step"><i>${i+1}</i><div><p class="when">${t.when}</p><b>${t.what}</b><span>${t.how}</span></div></div>`).join("")}</div>
+  <p class="note">Ballot and singles rules are the ones St Andrews Links ran in 2026; they are checked again before we travel.</p>
+  <h3 style="margin:26px 0 10px">What each way costs</h3><p class="lede" style="margin-bottom:14px">Per golfer. The budget assumes the advance application succeeds.</p>
+  ${oldCourseRoutes()}
+  <p class="note">2028 figures are 2027 prices plus 5%.</p></div>
+
+  <div class="block"><h3>The rounds</h3>
+  <p class="lede" style="margin-bottom:14px">Prices are per person, all-in for 2028: green fee plus caddie and tip where the budget assumes one, or trolley hire where it doesn't.</p>
+  <div class="sheet">${fixed.map(d => courseCard(d.round, `${d.dow}, Sep ${d.d}`)).join("")}</div></div>
 
   <div class="block"><h3>The Ayrshire rounds</h3>
   <p class="lede" style="margin-bottom:14px">These two are for all eight of us to decide. Tapping an option here is only a what-if, to see what it does to the itinerary and your cost. Your actual vote goes on the Decisions tab.</p>
   ${slot("wed")}${slot("thu")}
   <div class="sheet"><div class="row total"><div class="l"><b>Golf with this pairing</b></div><div class="r num">${$u(usd(golfGBP(null)))}</div></div></div>
   <p class="note"><button class="btn sm" data-tab="decisions">Vote on the Decisions tab</button></p></div>
-
-  <div class="block"><h3>Getting on the Old Course</h3>
-  <p class="lede" style="margin-bottom:14px">There is no ordinary booking for the Old Course. These are the two ways on and what each costs per golfer.</p>
-  ${oldCourseRoutes()}
-  <p class="note">2028 figures are 2027 prices plus 5%. The step-by-step plan, with dates, is on the Decisions tab under Why these dates.</p></div>
 
   <div class="block"><h3>Handicaps</h3><div class="sheet">
     <div class="row"><div class="l"><b>Old Course</b><span>Certificate required at the starter</span></div><div class="r">36 or better</div></div>
@@ -1257,13 +1275,6 @@ function decisions(){
   <div class="block"><h3>Your details for ${TRIP.organiser}</h3><p class="lede" style="margin-bottom:14px">Sent with the same Lock in button. Handicap indexes are shown to the group; your passport date, name, birthday and traveller numbers go to ${TRIP.organiser} only.</p>${handicapCard()}${passportCard()}</div>
   ${lockBlock()}
   ${adminBlock()}
-
-  <div class="block"><h3>Why these dates</h3><p class="lede" style="margin-bottom:14px">Each date below is the day something has to happen, who does it, and the reason. No club has published 2028 dates yet, so the ones marked projected come from what that club did for 2026 and 2027, and will be replaced as they announce.</p>
-  <div class="sheet">${TIMELINE.map(t => `<div class="tl"><p class="when">${t.when}${t.est ? " "+tag("wait","Projected") : ""}</p><b>${t.what}</b><span><em>${t.who}.</em> ${t.why}</span></div>`).join("")}</div>
-
-  <h3 style="margin:26px 0 10px">How we get on the Old Course</h3><p class="lede" style="margin-bottom:14px">Nobody can simply book it. These five steps, in this order, give us the most chances the rules allow.</p>
-  <div class="sheet">${OLD_PLAN.map((t,i) => `<div class="tl step"><i>${i+1}</i><div><p class="when">${t.when}</p><b>${t.what}</b><span>${t.how}</span></div></div>`).join("")}</div>
-  <p class="note">Ballot and singles rules are the ones St Andrews Links ran in 2026; they are checked again before we travel.</p></div>
 
   <div class="block"><h3>Handled for you</h3><p class="lede" style="margin-bottom:14px">${TRIP.organiser} makes these and reports back, to save everyone a long thread.</p>
   <div class="sheet">${DECISIONS.slice().sort((a,b) => a.by < b.by ? -1 : 1).map(exec).join("")}</div></div>
