@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scotland 2028</title>
+<meta name="description" content="Fife and Ayrshire, 9 to 15 September 2028.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sea:#0e1e2b;      /* North Sea ink: dark panels */
+    --sea2:#172c3c;
+    --haar:#edf0ee;     /* sea mist: page */
+    --paper:#fafbf9;
+    --rule:#d5dbd7;
+    --ink:#14212b;
+    --muted:#5a6770;
+    --gold:#9a7a35;     /* gold leaf on light */
+    --leaf:#d6b877;     /* gold leaf on dark */
+    --green:#2e5a47;
+    --heather:#6b4a6e;
+    --display:"Marcellus","Iowan Old Style",Georgia,serif;
+    --body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--haar);color:var(--ink);font:16px/1.55 var(--body);-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.15}
+  h2{font-size:30px;margin-bottom:6px}
+  h3{font-size:21px}
+  p{margin:0}
+  button{font:inherit;color:inherit}
+  :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+  .wrap{max-width:720px;margin:0 auto;padding:0 20px}
+  .num{font-variant-numeric:tabular-nums}
+  .muted{color:var(--muted)}
+  .small{font-size:14px}
+
+  /* masthead + tabs */
+  .mast{background:var(--sea);color:#eef2f0}
+  .mast .wrap{display:flex;justify-content:space-between;align-items:baseline;padding-top:16px;padding-bottom:12px}
+  .mast .name{font-family:var(--display);font-size:22px;letter-spacing:.02em;color:var(--leaf)}
+  .mast .who{font-size:14px;color:#b9c5cc;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  .tabs{position:sticky;top:0;z-index:10;background:var(--sea);border-top:1px solid #24394a}
+  .tabs .wrap{display:flex;gap:22px;overflow-x:auto;scrollbar-width:none;padding-top:0;padding-bottom:0}
+  .tabs .wrap::-webkit-scrollbar{display:none}
+  .tab{background:none;border:0;padding:13px 0 11px;color:#a9b7c0;white-space:nowrap;cursor:pointer;border-bottom:2px solid transparent;font-weight:500;font-size:15px}
+  .tab[aria-selected=true]{color:#fff;border-bottom-color:var(--leaf)}
+
+  main{padding:30px 0 70px}
+  .panel{display:none}.panel.on{display:block}
+  .lede{color:var(--muted);margin-bottom:22px;max-width:56ch}
+  .block{margin-top:34px}
+  .block>h3{margin-bottom:10px}
+
+  /* the honours board: the one loud thing */
+  .board{background:var(--sea);color:var(--leaf);padding:8px;margin-bottom:28px}
+  .board .inner{border:1px solid var(--leaf);outline:1px solid var(--leaf);outline-offset:-5px;padding:30px 24px 26px}
+  .board h1{font-size:clamp(36px,10.5vw,58px);letter-spacing:.03em;text-align:center}
+  .board .dates{text-align:center;color:#c8d0d4;margin:8px 0 22px;font-size:15px}
+  .board ol{list-style:none;margin:0;padding:0;font-family:var(--display);font-size:17px}
+  .board li{display:flex;align-items:baseline;gap:8px;padding:5px 0}
+  .board li .d{flex:none;width:74px}
+  .board li .dots{flex:1;border-bottom:1px dotted #8a7a52;transform:translateY(-4px);min-width:14px}
+  .board li .c{text-align:right}
+  .board li.tbd .c{font-style:italic;color:#c8d0d4}
+  .board .foot{text-align:center;margin-top:20px;font-size:14px;color:#c8d0d4}
+
+  /* quiet surfaces */
+  .sheet{background:var(--paper);border:1px solid var(--rule);border-radius:3px}
+  .row{display:flex;justify-content:space-between;gap:16px;padding:13px 16px;border-top:1px solid var(--rule);align-items:baseline}
+  .row:first-child{border-top:0}
+  .row .l{min-width:0}
+  .row .l b{font-weight:600}
+  .row .l span{display:block;color:var(--muted);font-size:14px}
+  .row .r{text-align:right;flex:none;font-weight:600}
+  .row .r small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+  .row.total{background:var(--sea);color:#fff;border-radius:0 0 2px 2px}
+  .row.total .r{font-family:var(--display);font-size:26px;color:var(--leaf);font-weight:400}
+  .pad{padding:16px}
+
+  .tag{display:inline-block;font-size:12.5px;font-weight:600;padding:2px 9px;border-radius:99px;border:1px solid currentColor;white-space:nowrap}
+  .tag.ok{color:var(--green)} .tag.wait{color:var(--gold)} .tag.vote{color:var(--heather)}
+
+  /* who are you */
+  .pick{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  @media(min-width:520px){.pick{grid-template-columns:repeat(4,1fr)}}
+  .pick button{background:var(--paper);border:1px solid var(--rule);border-radius:3px;padding:14px 12px;text-align:left;cursor:pointer}
+  .pick button b{display:block;font-family:var(--display);font-weight:400;font-size:20px}
+  .pick button span{font-size:13px;color:var(--muted)}
+  .pick button:hover{border-color:var(--gold)}
+
+  /* itinerary */
+  .day{display:grid;grid-template-columns:58px 1fr;gap:16px;padding:18px 16px;border-top:1px solid var(--rule)}
+  .day:first-child{border-top:0}
+  .day .dt{font-family:var(--display);text-align:center;line-height:1.1}
+  .day .dt b{display:block;font-size:30px;font-weight:400}
+  .day .dt span{font-size:14px;color:var(--muted)}
+  .day h3{font-size:20px}
+  .day .base{font-size:14px;color:var(--green);font-weight:600;margin-bottom:2px}
+  .day ul{margin:8px 0 0;padding:0;list-style:none;font-size:14.5px;color:var(--muted)}
+  .day li{padding:2px 0 2px 14px;position:relative}
+  .day li::before{content:"";position:absolute;left:0;top:11px;width:6px;height:1px;background:var(--gold)}
+  .tee{display:inline-block;margin-top:6px;font-size:14px;font-weight:600}
+
+  /* courses */
+  .course{padding:18px 16px;border-top:1px solid var(--rule)}
+  .course:first-child{border-top:0}
+  .course .top{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+  .course .price{font-family:var(--display);font-size:22px;white-space:nowrap}
+  .course .when{font-size:14px;color:var(--green);font-weight:600}
+  .course p{font-size:14.5px;color:var(--muted);margin-top:6px}
+  .fees{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);margin-top:12px;font-size:14px}
+  .fees div{background:var(--paper);padding:8px 10px}
+  .fees b{display:block;font-weight:600}
+  .fees span{color:var(--muted);font-size:13px}
+
+  .opt{display:flex;justify-content:space-between;gap:12px;width:100%;text-align:left;background:var(--paper);border:0;border-top:1px solid var(--rule);padding:14px 16px;cursor:pointer;align-items:center}
+  .opt:first-child{border-top:0}
+  .opt b{font-weight:600}
+  .opt small{display:block;color:var(--muted);font-size:13.5px;line-height:1.4;margin-top:2px}
+  .opt .p{font-family:var(--display);font-size:19px;white-space:nowrap}
+  .opt[aria-pressed=true]{box-shadow:inset 3px 0 0 var(--heather);background:#f4eff5}
+  .votebox{border-color:var(--heather)}
+  .votebox .head{padding:12px 16px;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center;gap:10px}
+
+  .check{display:flex;gap:12px;padding:12px 16px;border-top:1px solid var(--rule);align-items:flex-start}
+  .check:first-child{border-top:0}
+  .check i{flex:none;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--gold);margin-top:2px;display:grid;place-items:center;font-style:normal;font-size:12px;color:#fff}
+  .check.done i{background:var(--green);border-color:var(--green)}
+  .check b{font-weight:600;display:block}
+  .check span{font-size:14px;color:var(--muted)}
+
+  .field{display:block;margin-bottom:12px}
+  .field>span{display:block;font-size:14px;font-weight:600;margin-bottom:4px}
+  input,select{font:inherit;width:100%;padding:10px 12px;border:1px solid var(--rule);border-radius:3px;background:#fff;color:var(--ink)}
+  .btn{background:var(--sea);color:#fff;border:0;border-radius:3px;padding:11px 18px;font-weight:600;cursor:pointer}
+  .btn.ghost{background:none;color:var(--ink);border:1px solid var(--rule)}
+  .btn[disabled]{opacity:.5;cursor:default}
+  .chips{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+  .chips label{display:flex;gap:8px;align-items:center;border:1px solid var(--rule);border-radius:3px;padding:8px 10px;background:#fff}
+  .chips input{width:auto}
+  .msg{font-size:14px;margin-top:10px;color:var(--heather)}
+  .pos{color:var(--green)}.neg{color:var(--heather)}
+  .guide h3{margin:26px 0 8px}
+  .guide ul{margin:0;padding-left:18px}
+  .guide li{margin:5px 0}
+  .two{display:grid;gap:14px}
+  @media(min-width:600px){.two{grid-template-columns:1fr 1fr}}
+  .note{font-size:14px;color:var(--muted);margin-top:10px}
+  footer{font-size:13px;color:var(--muted);text-align:center;padding-bottom:40px}
+</style>
+</head>
+<body>
+
+<div class="mast"><div class="wrap">
+  <span class="name">Scotland 2028</span>
+  <button class="who" id="whoBtn"></button>
+</div></div>
+<div class="tabs"><div class="wrap" role="tablist" id="tabs"></div></div>
+
+<main class="wrap">
+  <section class="panel" id="p-home"></section>
+  <section class="panel" id="p-itinerary"></section>
+  <section class="panel" id="p-golf"></section>
+  <section class="panel" id="p-travel"></section>
+  <section class="panel" id="p-costs"></section>
+  <section class="panel" id="p-expenses"></section>
+  <section class="panel" id="p-decisions"></section>
+  <section class="panel" id="p-guide"></section>
+</main>
+<footer>Last updated <span id="updated"></span>. Prices are estimates until booked.</footer>
+
+<script>
+/* ==========================================================================================
+   TRIP DATA  -  the single source of truth. Edit values here; every tab recalculates.
+   Money is GBP unless a name ends in USD. Leave a value as "" or null when not known yet.
+   ========================================================================================== */
+const TRIP = {
+  updated: "Oct 5, 2026",
+  organiser: "Chris",
+  rate: 1.33,                 // GBP to USD planning rate
+  size: 8,
+  flightUSD: 1744,            // per person, rough estimate
+  vanHire: 840,               // group estimate: 9-seater, 6 days at about 140/day
+  vanFuel: 200,               // group placeholder
+  arrivalWindow: "",          // e.g. "Land at Edinburgh by 11:00 AM on Sat, Sep 9"
+  departWindow: ""            // e.g. "No flights before 1:00 PM on Fri, Sep 15"
+};
+
+/* One entry per golfer. This drives each person's "My trip" tab.
+   caddie: {old:true, jubilee:false ...} - leave a course out until they answer.
+   clubs: "bring" | "ship" | "rent".  driver: true | false | null (not asked yet).            */
+const GOLFERS = [
+  {id:"rich",    name:"Rich",    home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, clubs:"", driver:null, budgetGiven:false, caddie:{}, roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"chris",   name:"Chris",   home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, clubs:"", driver:null, budgetGiven:false, caddie:{}, roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"brandon", name:"Brandon", home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, clubs:"", driver:null, budgetGiven:false, caddie:{}, roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"jack",    name:"Jack",    home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, clubs:"", driver:null, budgetGiven:false, caddie:{}, roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"mike",    name:"Mike",    home:"Kansas City", airport:"MCI", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, clubs:"", driver:null, budgetGiven:false, caddie:{}, roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"cam",     name:"Cam",     home:"Chicago",     airport:"ORD", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, clubs:"", driver:null, budgetGiven:false, caddie:{}, roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"jackson", name:"Jackson", home:"Chicago",     airport:"ORD", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, clubs:"", driver:null, budgetGiven:false, caddie:{}, roomFife:"", roomAyr:"", paidUSD:0},
+  {id:"russ",    name:"Russ",    home:"Bend, OR",    airport:"RDM", flightOut:"", flightBack:"", passportOK:false, handicap:null, certificate:false, clubs:"", driver:null, budgetGiven:false, caddie:{}, roomFife:"", roomAyr:"", paidUSD:0}
+];
+
+/* green = estimated 2028 green fee. caddie/tip = per bag. trolley = hire if no caddie.
+   budgetCaddie = whether the group budget assumes a caddie. tee = "" until booked.            */
+const COURSES = {
+  balgove:  {name:"Balgove", where:"St Andrews Links", green:16.5375, caddie:0, tip:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
+    rules:"", caddieNote:"Not needed. Nine holes, carry a few clubs.",
+    about:"A nine-hole par 3 to shake off the flight on arrival day."},
+  jubilee:  {name:"Jubilee Course", where:"St Andrews Links", green:170.8875, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
+    rules:"", caddieNote:"Optional. Most visitors take a trolley here.",
+    about:"Sunday's round, because the Old Course is closed on Sundays."},
+  old:      {name:"Old Course", where:"St Andrews Links", green:391.3875, caddie:80, tip:40, trolley:6, budgetCaddie:true, tee:"", booked:false,
+    rules:"Handicap certificate of 36 or better. Closed Sundays.", caddieNote:"Strongly recommended, and budgeted. Book ahead.",
+    about:"The one round that isn't up for debate. Tee times come by advance application or the daily ballot, so this is not guaranteed until we hold a time."},
+  balcomie: {name:"Balcomie Links", where:"Crail", green:187.425, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
+    rules:"", caddieNote:"Optional. Single caddie, or a forecaddie for a fourball at about £200. Request in advance.",
+    about:"A morning round on the way out of Fife, then the drive west."},
+  turnberry:{name:"Turnberry (Ailsa)", where:"Ayrshire", green:600.8625, caddie:85, tip:40, trolley:35, budgetCaddie:true, tee:"", booked:false,
+    rules:"Budgeted at the afternoon rate, after 1 PM. Morning times run about £1,000.", caddieNote:"Budgeted. Must be pre-booked; availability not guaranteed.",
+    about:"The marquee Ayrshire round, and the most expensive of the trip."},
+  wgailes:  {name:"Western Gailes", where:"Ayrshire", green:341.775, caddie:75, tip:40, trolley:0, budgetCaddie:false, tee:"", booked:false,
+    rules:"Handicap limit 24. Wednesday visitor times 9:00 to 12:00 and 2:00 to 4:30.", caddieNote:"Optional, not budgeted.",
+    about:"Classic links squeezed between the railway and the sea. Lunch is included."},
+  dundonald:{name:"Dundonald Links", where:"Ayrshire", green:270.1125, caddie:0, tip:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
+    rules:"", caddieNote:"No caddie fee published; we would ask the club.",
+    about:"A modern championship links and Scottish Open host."},
+  gailes:   {name:"Gailes Links", where:"Ayrshire", green:176.4, caddie:0, tip:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
+    rules:"", caddieNote:"No caddie information published.",
+    about:"The lowest-cost option. Cheaper still as a weekday fourball after 2 PM."},
+  troon:    {name:"Royal Troon (Old Course)", where:"Ayrshire", green:451.5, caddie:75, tip:40, trolley:0, budgetCaddie:true, tee:"", booked:false,
+    rules:"Men's handicap limit 20. Visitors on Monday, Tuesday and Thursday only.", caddieNote:"Budgeted. Advance request, subject to availability.",
+    about:"Open Championship venue. All eight of us need to be at 20 or better to play."},
+  prestwick:{name:"Prestwick", where:"Ayrshire", green:378, caddie:70, tip:40, trolley:0, budgetCaddie:true, tee:"", booked:false,
+    rules:"", caddieNote:"Budgeted. Book at least a week ahead.",
+    about:"The birthplace of the Open, about fifteen minutes from the house."}
+};
+
+/* The two Ayrshire rounds are a group vote. "pick" is what is pencilled in today.
+   Once the group decides, set pick and change decided to true.                                */
+const SLOTS = {
+  wed: {label:"Wednesday, Sep 13", options:["turnberry","wgailes","dundonald","gailes"], pick:"turnberry", decided:false},
+  thu: {label:"Thursday, Sep 14",  options:["troon","prestwick"],                        pick:"troon",     decided:false}
+};
+
+const DAYS = [
+  {dow:"Sat", d:9,  base:"St Andrews",       round:"balgove",  sleep:"Townhouse, St Andrews",
+    plan:["Land in Scotland and collect the van.","About 1 hr 15 min from Edinburgh Airport to St Andrews.","House check-in from 4:00 PM."]},
+  {dow:"Sun", d:10, base:"St Andrews",       round:"jubilee",  sleep:"Townhouse, St Andrews",
+    plan:["The Old Course is closed on Sundays, and open to walk as a public park."]},
+  {dow:"Mon", d:11, base:"St Andrews",       round:"old",      sleep:"Townhouse, St Andrews",
+    plan:["Subject to getting a tee time.","Bring your handicap certificate to the starter."]},
+  {dow:"Tue", d:12, base:"Fife to Ayrshire", round:"balcomie", sleep:"Smithfield House, Tarbolton",
+    plan:["Check out of the townhouse by 10:00 AM, bags in the van.","About 25 min to Crail for a morning tee time.","About 2 hr 30 min drive to Tarbolton after the round.","House check-in from 4:00 PM."]},
+  {dow:"Wed", d:13, base:"Tarbolton",        slot:"wed",       sleep:"Smithfield House, Tarbolton", plan:[]},
+  {dow:"Thu", d:14, base:"Tarbolton",        slot:"thu",       sleep:"Smithfield House, Tarbolton", plan:["Last night. Settle up the games."]},
+  {dow:"Fri", d:15, base:"Homeward",         round:null,       sleep:"",
+    plan:["Check out by 10:00 AM.","Return the van and fly home.","Departure airport still to be decided: Edinburgh or Glasgow."]}
+];
+
+const HOUSES = [
+  {name:"4-Bedroom Townhouse", town:"St Andrews, Fife", inn:"Sat, Sep 9 from 4:00 PM", out:"Tue, Sep 12 by 10:00 AM",
+    total:2028.44, paid:678.44, balance:1350, balanceDate:"Jul 11, 2028", cancel:"Full refund until Jul 11, 2028", roomKey:"roomFife"},
+  {name:"Smithfield House", town:"Tarbolton, Ayrshire", inn:"Tue, Sep 12 from 4:00 PM", out:"Fri, Sep 15 by 10:00 AM",
+    total:1926, paid:736, balance:1190, balanceDate:"Jul 14, 2028", cancel:"Full refund until Jul 14, 2028, then 50% until Aug 13", roomKey:"roomAyr"}
+];
+
+/* status: "Open" or "Decided". outcome: fill in once decided.                                 */
+const DECISIONS = [
+  {who:"group", title:"Per-person budget ceiling", text:"What is a comfortable all-in number for you, excluding food? It frames every other choice.", by:"First, before the Ayrshire vote", status:"Open", outcome:""},
+  {who:"group", title:"Ayrshire rounds on Sep 13 and 14", text:"The biggest swing in cost and in the experience. Compare the options on the Golf tab.", by:"Before the 2028 tee sheets open", status:"Open", outcome:""},
+  {who:"group", title:"Drop-out and cost-sharing rules", text:"Proposal: houses and van split equally by eight, golf paid per player, and anyone who drops out covers their non-refundable costs unless replaced.", by:"Before any non-refundable deposit", status:"Open", outcome:""},
+  {who:"group", title:"Caddies", text:"Your call, round by round. We need a yes or no from each of you so caddies can be pre-booked.", by:"When tee times are booked", status:"Open", outcome:""},
+  {who:"group", title:"Clubs: bring, ship or rent", text:"Rental runs about £45 to £65 a round where published. Your answers decide what vehicle we need.", by:"Before the van is booked", status:"Open", outcome:""},
+  {who:"group", title:"Volunteer drivers", text:"At least two people willing to drive a large van on the left, more if we take two vehicles.", by:"Before the van is booked", status:"Open", outcome:""},
+  {who:"group", title:"Paying more for a guaranteed Old Course time", text:"Only comes up if the advance application and the ballot both fail.", by:"Only if needed", status:"Open", outcome:""},
+  {who:"exec", title:"Old Course booking route", text:"Advance application first, daily ballot as backup.", status:"Open", outcome:""},
+  {who:"exec", title:"Arrival-day par 3", text:"Balgove is pencilled in.", status:"Open", outcome:""},
+  {who:"exec", title:"Vehicle setup", text:"One nine-seater plus a second vehicle, or ship the clubs. National preferred.", status:"Open", outcome:""},
+  {who:"exec", title:"Airports and arrival window", text:"An arrive-by time on Sep 9 and a not-before departure on Sep 15. Edinburgh both ways, or home from Glasgow.", status:"Open", outcome:""},
+  {who:"exec", title:"Who books flights", text:"Everyone books their own to the target window.", status:"Open", outcome:""},
+  {who:"exec", title:"Deposits and paying back", text:"One person fronts the bookings; a reimbursement schedule and method will follow.", status:"Open", outcome:""},
+  {who:"exec", title:"Room assignments", text:"Assigned or drawn for each house in summer 2028.", status:"Open", outcome:""},
+  {who:"exec", title:"Foursomes and games", text:"Pairings rotate daily, with one trip-long game.", status:"Open", outcome:""},
+  {who:"exec", title:"Tee time targets", text:"Morning at Balcomie before the drive west; after 1 PM at Turnberry if it is chosen.", status:"Open", outcome:""}
+];
+/* EXPENSES
+   SUPABASE: paste the project URL and the publishable (anon) key from Supabase > Project
+   Settings > API. Until both are filled in, the Expenses tab shows only the entries below
+   and the entry form stays off. The group code and the admin code are NOT stored in this
+   file; they live in the database (see supabase-setup.sql).                                                      */
+const SUPABASE = { url: "https://rqqqpwywswxcjyqlwdbr.supabase.co", key: "sb_publishable_L5hR91KkqGaaRo0QFdfOvA_Vxjhx17J" };
+const CATEGORIES = ["Lodging","Transport","Golf","Food and drink","Other"];
+const ALL8 = GOLFERS.map(g => g.id);
+/* Expenses we already know about. Shown only until the database is connected; the setup
+   script loads the same two into the database so an admin can edit them there.
+   paid_by and split_among use golfer ids from GOLFERS above.                                  */
+const SEED_EXPENSES = [
+  {id:"seed-1", spent_on:"2026-10-05", description:"St Andrews townhouse deposit",   amount:678.44, currency:"GBP", paid_by:"chris", split_among:ALL8, category:"Lodging"},
+  {id:"seed-2", spent_on:"2026-10-05", description:"Smithfield House deposit, Tarbolton", amount:736.00, currency:"GBP", paid_by:"chris", split_among:ALL8, category:"Lodging"}
+];
+/* ====================================== END OF DATA ====================================== */
+
+const $ = id => document.getElementById(id);
+const TABS = [["home","My trip"],["itinerary","Itinerary"],["golf","Golf"],["travel","Travel and houses"],["costs","Costs"],["expenses","Expenses"],["decisions","Decisions"],["guide","Field guide"]];
+const S = {tab:"home", who:null, wed:SLOTS.wed.pick, thu:SLOTS.thu.pick,
+  x:{rows:[], loaded:false, error:"", code:"", role:"", form:false, edit:null, msg:"", busy:false}};
+
+const usd = gbp => gbp * TRIP.rate;
+const $u = n => "$" + Math.round(n).toLocaleString("en-US");
+const $g = n => "£" + Math.round(n).toLocaleString("en-US");
+const allIn = (c, cad) => c.green + (cad ? c.caddie + (c.caddie ? c.tip : 0) : c.trolley);
+const active = () => ["balgove","jubilee","old","balcomie",S.wed,S.thu];
+const roundOf = day => day.slot ? S[day.slot] : day.round;
+const me = () => GOLFERS.find(g => g.id === S.who) || null;
+const wantsCaddie = (g, id) => (g && id in g.caddie) ? g.caddie[id] : COURSES[id].budgetCaddie;
+const golfGBP = g => active().reduce((s,id) => s + allIn(COURSES[id], wantsCaddie(g,id)), 0);
+const sharedUSD = () => usd((HOUSES[0].total + HOUSES[1].total + TRIP.vanHire + TRIP.vanFuel) / TRIP.size);
+const tag = (cls, t) => `<span class="tag ${cls}">${t}</span>`;
+const slotOpen = id => Object.values(SLOTS).some(s => !s.decided && s.options.includes(id));
+
+function board(){
+  return `<div class="board"><div class="inner">
+    <h1>Scotland 2028</h1>
+    <p class="dates">Fife and Ayrshire, 9 to 15 September</p>
+    <ol>${DAYS.filter(d => roundOf(d)).map(d => { const id = roundOf(d);
+      return `<li class="${slotOpen(id) ? "tbd" : ""}"><span class="d">${d.dow} ${d.d}</span><span class="dots"></span><span class="c">${COURSES[id].name}</span></li>`; }).join("")}</ol>
+    <p class="foot">${daysToGo()} days to the first tee. Italic rounds are still to be voted on.</p>
+  </div></div>`;
+}
+function daysToGo(){ return Math.max(0, Math.ceil((new Date(2028,8,9) - new Date()) / 864e5)).toLocaleString("en-US"); }
+
+function home(){
+  const g = me();
+  if(!g) return board() + `<h2>Who's reading?</h2>
+    <p class="lede">Pick your name to see your own flights, rounds, costs and what's still needed from you. Your phone will remember.</p>
+    <div class="pick">${GOLFERS.map(x => `<button data-who="${x.id}"><b>${x.name}</b><span>${x.home}</span></button>`).join("")}</div>`;
+
+  const todo = [
+    [g.budgetGiven, "Tell "+TRIP.organiser+" your budget ceiling", "A comfortable all-in number, excluding food."],
+    [g.handicap !== null && g.certificate, "Send your handicap index and certificate", g.handicap !== null ? "Index on file: "+g.handicap+"." : "The Old Course needs 36 or better; Royal Troon caps men at 20."],
+    [!!g.clubs, "Clubs: bring, ship or rent", g.clubs ? "You said: "+g.clubs+"." : "This decides how big a vehicle we need."],
+    [g.driver !== null, "Say whether you'll drive", g.driver === null ? "We need at least two volunteers for a large van on the left." : (g.driver ? "You're a named driver." : "You're not driving.")],
+    [active().every(id => !COURSES[id].caddie || id in g.caddie), "Choose caddie or no caddie for each round", "So they can be pre-booked. Fees and tips are paid in cash."],
+    [g.passportOK, "Confirm your passport runs past March 2029", "Six months beyond the trip is the safe margin."],
+    [!!g.flightOut && !!g.flightBack, "Book your flights", TRIP.arrivalWindow ? TRIP.arrivalWindow+"." : "Not yet. Wait for the arrival window; fares open around autumn 2027."]
+  ];
+  const open = todo.filter(t => !t[0]).length;
+  const golf = usd(golfGBP(g)), total = TRIP.flightUSD + sharedUSD() + golf;
+  const warn = (g.handicap !== null && g.handicap > 20 && S.thu === "troon")
+    ? `<p class="note" style="color:var(--heather)">Your index is above Royal Troon's limit of 20. Tell ${TRIP.organiser} before the Ayrshire vote.</p>` : "";
+
+  return board() + `<h2>${g.name}'s trip</h2>
+    <p class="lede">${open ? open+" thing"+(open>1?"s":"")+" still needed from you." : "Nothing needed from you right now."}</p>
+
+    <div class="block" style="margin-top:0"><h3>Needed from you</h3><div class="sheet">
+      ${todo.map(t => `<div class="check ${t[0]?"done":""}"><i>${t[0]?"✓":""}</i><div><b>${t[1]}</b><span>${t[2]}</span></div></div>`).join("")}
+    </div></div>
+
+    <div class="block"><h3>Your travel</h3><div class="sheet">
+      <div class="row"><div class="l"><b>Outbound</b><span>From ${g.airport}, ${g.home}</span></div><div class="r">${g.flightOut || "Not booked"}</div></div>
+      <div class="row"><div class="l"><b>Return</b><span>Friday, Sep 15</span></div><div class="r">${g.flightBack || "Not booked"}</div></div>
+      ${HOUSES.map(h => `<div class="row"><div class="l"><b>${h.name}</b><span>${h.town}</span></div><div class="r">${g[h.roomKey] || "Room to be drawn"}</div></div>`).join("")}
+    </div></div>
+
+    <div class="block"><h3>Your rounds</h3><div class="sheet">
+      ${DAYS.filter(d => roundOf(d)).map(d => { const id = roundOf(d), c = COURSES[id], cad = wantsCaddie(g,id), chosen = id in g.caddie;
+        return `<div class="row"><div class="l"><b>${c.name}</b><span>${d.dow}, Sep ${d.d}. ${c.tee || "Tee time to come"}. ${!c.caddie ? "No caddie" : (chosen ? (cad?"Caddie":"No caddie") : (cad?"Caddie assumed":"No caddie assumed"))}.</span></div>
+        <div class="r num">${$u(usd(allIn(c,cad)))}</div></div>`; }).join("")}
+    </div>${warn}</div>
+
+    <div class="block"><h3>Your estimated cost</h3><div class="sheet">
+      <div class="row"><div class="l"><b>Flights</b><span>Rough estimate; you book your own</span></div><div class="r num">${$u(TRIP.flightUSD)}</div></div>
+      <div class="row"><div class="l"><b>Houses and van</b><span>Your one-eighth share</span></div><div class="r num">${$u(sharedUSD())}</div></div>
+      <div class="row"><div class="l"><b>Golf</b><span>Six rounds with your caddie choices</span></div><div class="r num">${$u(golf)}</div></div>
+      <div class="row total"><div class="l"><b>Estimated total</b></div><div class="r num">${$u(total)}</div></div>
+    </div>
+    <p class="note">${(() => { const b = ledger().by[g.id]; return "Shared expenses logged so far: you've fronted "+$u(b.paid)+" and your share is "+$u(b.share)+"."; })()} Excludes food, drinks and travel insurance. The full breakdown is on the Costs tab.</p></div>`;
+}
+
+function itinerary(){
+  return `<h2>Itinerary</h2><p class="lede">Dates are locked. Tee times appear here as each one is booked.</p>
+  <div class="sheet">${DAYS.map(d => { const id = roundOf(d), c = id && COURSES[id];
+    const plan = d.slot ? [(slotOpen(id) ? "Course pending the group vote. " : "") + c.about, c.rules].filter(Boolean).concat(d.plan) : d.plan;
+    return `<div class="day"><div class="dt"><span>${d.dow}</span><b>${d.d}</b><span>Sep</span></div><div>
+      <div class="base">${d.base}</div><h3>${c ? c.name : "Travel day"}</h3>
+      ${c ? `<span class="tee">${c.tee ? "Tee time "+c.tee : "Tee time to be booked"}</span>` : ""}
+      <ul>${plan.map(p => `<li>${p}</li>`).join("")}${d.sleep ? `<li>Sleep: ${d.sleep}</li>` : ""}</ul></div></div>`; }).join("")}</div>`;
+}
+
+function courseCard(id, when){
+  const c = COURSES[id];
+  return `<div class="course"><div class="when">${when}</div>
+    <div class="top"><h3>${c.name}</h3><span class="price num">${$u(usd(allIn(c,c.budgetCaddie)))}</span></div>
+    <p>${c.about}${c.rules ? " "+c.rules : ""}</p>
+    <div class="fees">
+      <div><b class="num">${$g(c.green)}</b><span>Green fee, 2028 estimate</span></div>
+      <div><b>${c.booked ? "Booked" : "Not booked"}</b><span>${c.tee || "Tee time to come"}</span></div>
+      <div><b class="num">${$g(allIn(c,false))} / ${$u(usd(allIn(c,false)))}</b><span>All-in without a caddie</span></div>
+      <div><b class="num">${c.caddie ? $g(allIn(c,true))+" / "+$u(usd(allIn(c,true))) : "n/a"}</b><span>All-in with caddie and tip</span></div>
+    </div><p>Caddies: ${c.caddieNote}</p></div>`;
+}
+function golf(){
+  const fixed = DAYS.filter(d => d.round);
+  const slot = k => { const s = SLOTS[k];
+    return `<div class="sheet votebox" style="margin-bottom:14px"><div class="head"><h3>${s.label}</h3>${s.decided ? tag("ok","Decided") : tag("vote","Group vote")}</div>
+    ${s.options.map(id => { const c = COURSES[id];
+      return `<button class="opt" aria-pressed="${S[k]===id}" data-slot="${k}" data-id="${id}"><span><b>${c.name}</b><small>${c.about}${c.rules ? " "+c.rules : ""}</small></span><span class="p num">${$u(usd(allIn(c,c.budgetCaddie)))}</span></button>`; }).join("")}</div>`; };
+  return `<h2>Golf</h2>
+  <p class="lede">Six rounds in six days. Prices are per person, all-in for 2028: green fee plus caddie and tip where the budget assumes one, or trolley hire where it doesn't.</p>
+  <div class="sheet">${fixed.map(d => courseCard(d.round, `${d.dow}, Sep ${d.d}`)).join("")}</div>
+
+  <div class="block"><h3>The Ayrshire rounds</h3>
+  <p class="lede" style="margin-bottom:14px">These two are for all eight of us to decide. Tap an option to see what it does to the itinerary and to your cost. It's a what-if; tell ${TRIP.organiser} your actual vote.</p>
+  ${slot("wed")}${slot("thu")}
+  <div class="sheet"><div class="row total"><div class="l"><b>Golf with this pairing</b></div><div class="r num">${$u(usd(golfGBP(null)))}</div></div></div></div>
+
+  <div class="block"><h3>Getting on the Old Course</h3><div class="sheet pad"><p>There is no ordinary booking for the Old Course. We'll enter the advance application when St Andrews Links opens it for 2028, and fall back on the daily ballot, drawn two days ahead. A paid guaranteed time is the last resort and would go to a group vote first.</p></div></div>
+
+  <div class="block"><h3>Handicaps</h3><div class="sheet">
+    <div class="row"><div class="l"><b>Old Course</b><span>Certificate required at the starter</span></div><div class="r">36 or better</div></div>
+    <div class="row"><div class="l"><b>Royal Troon</b><span>If chosen for Thursday</span></div><div class="r">20 or better</div></div>
+    <div class="row"><div class="l"><b>Western Gailes</b><span>If chosen for Wednesday</span></div><div class="r">24 or better</div></div>
+  </div><p class="note">Limits can change; each is confirmed again when we book.</p></div>`;
+}
+
+function travel(){
+  return `<h2>Travel and houses</h2><p class="lede">Flights, the van and both houses.</p>
+  <div class="block" style="margin-top:0"><h3>Flights</h3><div class="sheet">
+    <div class="row"><div class="l"><b>Arrive</b><span>${TRIP.arrivalWindow || "Arrive-by time to be set"}</span></div><div class="r">Sat, Sep 9</div></div>
+    <div class="row"><div class="l"><b>Depart</b><span>${TRIP.departWindow || "Edinburgh or Glasgow, to be set"}</span></div><div class="r">Fri, Sep 15</div></div>
+    ${GOLFERS.map(g => `<div class="row"><div class="l"><b>${g.name}</b><span>${g.home} (${g.airport})${g.flightOut ? ". "+g.flightOut : ""}</span></div><div class="r">${g.flightOut ? tag("ok","Booked") : tag("wait","Not booked")}</div></div>`).join("")}
+  </div><p class="note">Everyone books their own flights once the arrival window is set. Fares for September 2028 open around autumn 2027.</p></div>
+
+  <div class="block"><h3>The van</h3><div class="sheet">
+    <div class="row"><div class="l"><b>Nine-seat van</b><span>Sep 9 to 15, National preferred, Edinburgh pickup assumed</span></div><div class="r">${tag("wait","Not booked")}</div></div>
+    <div class="row"><div class="l"><b>The problem</b><span>A nine-seater holds eight people or their gear, not both. A second vehicle or shipping clubs are the options, and it depends on your clubs and driving answers.</span></div></div>
+    <div class="row"><div class="l"><b>Drivers</b><span>${GOLFERS.filter(g => g.driver).map(g => g.name).join(", ") || "No volunteers yet. We need at least two."}</span></div></div>
+  </div></div>
+
+  <div class="block"><h3>Drives</h3><div class="sheet">
+    ${[["Edinburgh Airport to St Andrews","1 hr 15 min"],["St Andrews to Crail","25 min"],["Crail to Tarbolton","2 hr 30 min"],["Tarbolton to Turnberry","40 min"],["Tarbolton to Troon or Prestwick","15 to 20 min"],["Tarbolton to Glasgow Airport","45 min"],["Tarbolton to Edinburgh Airport","1 hr 30 min"]]
+      .map(r => `<div class="row"><div class="l">${r[0]}</div><div class="r">${r[1]}</div></div>`).join("")}
+  </div><p class="note">Approximate, without traffic.</p></div>
+
+  <div class="block"><h3>Houses</h3><div class="two">${HOUSES.map(h => `<div class="sheet pad">
+      ${tag("ok","Confirmed")}<h3 style="margin:10px 0 2px">${h.name}</h3><p class="small" style="color:var(--green);font-weight:600">${h.town}</p>
+      <p class="small" style="margin-top:10px"><b>In</b> ${h.inn}<br><b>Out</b> ${h.out}<br><span class="muted">${h.cancel}</span></p></div>`).join("")}</div>
+  <p class="note">Eight adults in each. Addresses and check-in instructions are released three days before arrival and will be posted here.</p></div>`;
+}
+
+function costs(){
+  const lodging = usd((HOUSES[0].total + HOUSES[1].total) / TRIP.size), van = usd((TRIP.vanHire + TRIP.vanFuel) / TRIP.size), golf = usd(golfGBP(null));
+  const paid = HOUSES[0].paid + HOUSES[1].paid;
+  return `<h2>Costs</h2><p class="lede">Per person, in US dollars at £1 = $${TRIP.rate.toFixed(2)}. Your own number, with your caddie choices, is on My trip.</p>
+  <div class="sheet">
+    <div class="row"><div class="l"><b>Flights</b><span>Rough estimate. Yours will vary by city.</span></div><div class="r num">${$u(TRIP.flightUSD)}<small>Estimate</small></div></div>
+    <div class="row"><div class="l"><b>Houses</b><span>Six nights across two houses, split by eight</span></div><div class="r num">${$u(lodging)}<small>Confirmed</small></div></div>
+    <div class="row"><div class="l"><b>Van and fuel</b><span>Likely to rise if we need a second vehicle</span></div><div class="r num">${$u(van)}<small>Estimate</small></div></div>
+    <div class="row"><div class="l"><b>Golf</b><span>${COURSES[S.wed].name} and ${COURSES[S.thu].name} in Ayrshire</span></div><div class="r num">${$u(golf)}<small>Estimate</small></div></div>
+    <div class="row total"><div class="l"><b>Estimated total</b></div><div class="r num">${$u(TRIP.flightUSD + lodging + van + golf)}</div></div>
+  </div>
+  <p class="note">Not included: food and drink, travel insurance, club hire, souvenirs. Green fees assume a 5% rise each year from today's published prices.</p>
+
+  <div class="block"><h3>Golf, round by round</h3><div class="sheet">
+    ${active().map(id => { const c = COURSES[id]; return `<div class="row"><div class="l"><b>${c.name}</b><span>${c.budgetCaddie ? "With caddie and tip" : (c.trolley ? "With trolley hire" : "Green fee only")}</span></div><div class="r num">${$u(usd(allIn(c,c.budgetCaddie)))}<small>${$g(allIn(c,c.budgetCaddie))}</small></div></div>`; }).join("")}
+  </div></div>
+
+  <div class="block"><h3>When money moves</h3><div class="sheet">
+    <div class="row"><div class="l"><b>House deposits</b><span>Paid Oct 5, 2026. ${$u(usd(paid/TRIP.size))} each, fronted by ${TRIP.organiser}.</span></div><div class="r num">${$g(paid)}</div></div>
+    <div class="row"><div class="l"><b>St Andrews house balance</b><span>Charges automatically ${HOUSES[0].balanceDate}; last day to cancel free</span></div><div class="r num">${$g(HOUSES[0].balance)}</div></div>
+    <div class="row"><div class="l"><b>Tarbolton house balance</b><span>Charges automatically ${HOUSES[1].balanceDate}; last day to cancel free</span></div><div class="r num">${$g(HOUSES[1].balance)}</div></div>
+    <div class="row"><div class="l"><b>Green fees</b><span>Deposits as each tee time is booked</span></div><div class="r">To come</div></div>
+    <div class="row"><div class="l"><b>Caddies</b><span>Fee and tip, paid in cash on the day</span></div><div class="r">Cash</div></div>
+  </div><p class="note">How and when to pay ${TRIP.organiser} back will be posted here once it's set.</p></div>`;
+}
+
+function decisions(){
+  const item = d => `<div class="row"><div class="l"><b>${d.title}</b><span>${d.outcome || d.text}${d.by ? " Decide: "+d.by.charAt(0).toLowerCase()+d.by.slice(1)+"." : ""}</span></div><div class="r">${d.status === "Decided" ? tag("ok","Decided") : tag(d.who === "group" ? "vote" : "wait","Open")}</div></div>`;
+  return `<h2>Decisions</h2><p class="lede">Seven decisions need all eight of us. The rest ${TRIP.organiser} will make and report here, to save everyone a long thread.</p>
+  <div class="block" style="margin-top:0"><h3>For the group</h3><div class="sheet">${DECISIONS.filter(d => d.who === "group").map(item).join("")}</div></div>
+  <div class="block"><h3>Handled for you</h3><div class="sheet">${DECISIONS.filter(d => d.who === "exec").map(item).join("")}</div></div>
+  <div class="block"><h3>Already locked</h3><div class="sheet pad"><p>The dates, both houses, the six golf days, and the Old Course as the round that must happen.</p></div></div>`;
+}
+
+function guide(){
+  return `<div class="guide"><h2>Field guide</h2><p class="lede">What the tour companies tell their guests before a week of links golf, adapted for us.</p>
+  <h3>Papers</h3><ul>
+    <li>Passport valid well beyond the trip; six months past your return is the safe margin.</li>
+    <li>US visitors currently need a UK Electronic Travel Authorisation, applied for online before flying. Check the rules again in 2028.</li>
+    <li>A current handicap certificate, printed. Several of these courses ask for it at the starter's box.</li>
+    <li>Travel insurance that covers golf clubs in transit and cancelled rounds.</li></ul>
+  <h3>In the bag</h3><ul>
+    <li>A light bag. You're walking every round; carts are rare and usually need a medical certificate.</li>
+    <li>Full waterproofs, jacket and trousers, plus rain gloves and a warm hat.</li>
+    <li>Two pairs of waterproof golf shoes, so one pair can dry.</li>
+    <li>More balls than you think. Two or three a round is a fair guess in the wind.</li></ul>
+  <h3>Weather</h3><ul>
+    <li>Mid-September on the coast usually sits in the 50s to low 60s Fahrenheit, with wind most days.</li>
+    <li>Expect several kinds of weather inside one round, and dress in layers.</li>
+    <li>Daylight runs from roughly 6:45 AM to 7:30 PM.</li></ul>
+  <h3>Money</h3><ul>
+    <li>Caddies are paid in cash, fee and tip together. Budget about £120 a round where you take one.</li>
+    <li>Cards work nearly everywhere else. Keep some pounds for small clubhouse bars and honesty boxes.</li>
+    <li>Restaurants often add a service charge for large groups; no further tip is expected when they do.</li></ul>
+  <h3>On the course and in the clubhouse</h3><ul>
+    <li>Pace matters here. Around four hours is expected, and caddies will keep you moving.</li>
+    <li>Collared shirts and tailored trousers or shorts on the course. No denim in clubhouses.</li>
+    <li>Some rooms at the older clubs ask for a jacket and tie. We'll confirm per club once courses are chosen.</li>
+    <li>UK plugs are three-pin type G. Bring an adapter.</li></ul></div>`;
+}
+
+const esc = t => String(t == null ? "" : t).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nameOf = id => (GOLFERS.find(g => g.id === id) || {name:id}).name;
+const niceDate = d => new Date(d+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
+const toUSD = e => e.currency === "GBP" ? Number(e.amount) * TRIP.rate : Number(e.amount);
+const money = e => (e.currency === "GBP" ? "£" : "$") + Number(e.amount).toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2});
+const sbOn = () => !!(SUPABASE.url && SUPABASE.key);
+const allExpenses = () => (sbOn() && S.x.loaded && !S.x.error) ? S.x.rows : SEED_EXPENSES;
+
+function ledger(){
+  const by = {}; GOLFERS.forEach(g => by[g.id] = {paid:0, share:0});
+  allExpenses().forEach(e => { const split = (e.split_among || []).filter(id => by[id]); if(!split.length) return;
+    const v = toUSD(e); if(by[e.paid_by]) by[e.paid_by].paid += v; split.forEach(id => by[id].share += v / split.length); });
+  const owe = [], owed = [];
+  GOLFERS.forEach(g => { const n = by[g.id].paid - by[g.id].share; by[g.id].net = n; if(n < -0.5) owe.push([g.id,-n]); if(n > 0.5) owed.push([g.id,n]); });
+  owe.sort((a,b) => b[1]-a[1]); owed.sort((a,b) => b[1]-a[1]);
+  const pays = []; let i = 0, j = 0;
+  while(i < owe.length && j < owed.length){ const amt = Math.min(owe[i][1], owed[j][1]);
+    if(amt > 0.5) pays.push([owe[i][0], owed[j][0], amt]); owe[i][1] -= amt; owed[j][1] -= amt;
+    if(owe[i][1] < 0.5) i++; if(owed[j][1] < 0.5) j++; }
+  return {by, pays};
+}
+
+async function sb(path, opts){
+  const r = await fetch(SUPABASE.url.replace(/\/$/,"")+"/rest/v1/"+path, Object.assign({headers:{apikey:SUPABASE.key, Authorization:"Bearer "+SUPABASE.key, "Content-Type":"application/json"}}, opts || {}));
+  const body = await r.json().catch(() => null);
+  if(!r.ok) throw new Error((body && body.message) || "Request failed ("+r.status+")");
+  return body;
+}
+async function loadExpenses(){
+  if(!sbOn()) return;
+  try{ S.x.rows = await sb("expenses?select=*&order=spent_on.asc,created_at.asc"); S.x.error = ""; }
+  catch(e){ S.x.error = "Couldn't load expenses added by the group. Showing the house deposits only."; }
+  S.x.loaded = true; draw();
+}
+
+function expenses(){
+  const ed = S.x.edit ? S.x.rows.find(r => r.id === S.x.edit) : null, admin = S.x.role === "admin";
+  const L = ledger(), list = allExpenses().slice().sort((a,b) => a.spent_on < b.spent_on ? 1 : -1), g = me();
+  const total = list.reduce((s,e) => s + toUSD(e), 0);
+  let entry;
+  if(!sbOn()) entry = `<div class="sheet pad"><p>Expense entry isn't switched on yet. Once it is, anyone with the group code can add an expense here.</p></div>`;
+  else if(!S.x.code) entry = `<form class="sheet pad" id="codeForm"><label class="field"><span>Group or admin code</span><input name="code" autocomplete="off" autocapitalize="off" required></label>
+      <button class="btn" ${S.x.busy?"disabled":""}>Unlock expense entry</button>${S.x.msg ? `<p class="msg">${esc(S.x.msg)}</p>` : ""}</form>`;
+  else if(!S.x.form) entry = `<div class="sheet pad"><button class="btn" data-act="openForm">Add an expense</button>${S.x.msg ? `<p class="msg">${esc(S.x.msg)}</p>` : ""}</div>`;
+  else entry = `<form class="sheet pad" id="expForm">
+      <label class="field"><span>What was it?</span><input name="description" maxlength="80" placeholder="Groceries, Tarbolton" value="${ed ? esc(ed.description) : ""}" required></label>
+      <div class="two"><label class="field"><span>Amount</span><input name="amount" type="number" inputmode="decimal" step="0.01" min="0.01" value="${ed ? Number(ed.amount) : ""}" required></label>
+      <label class="field"><span>Currency</span><select name="currency"><option value="GBP">Pounds (£)</option><option value="USD" ${ed && ed.currency==="USD"?"selected":""}>US dollars ($)</option></select></label></div>
+      <div class="two"><label class="field"><span>Paid by</span><select name="paid_by">${GOLFERS.map(x => `<option value="${x.id}" ${(ed ? ed.paid_by===x.id : g && g.id===x.id)?"selected":""}>${x.name}</option>`).join("")}</select></label>
+      <label class="field"><span>Date</span><input name="spent_on" type="date" value="${ed ? ed.spent_on : new Date().toLocaleDateString("en-CA")}" required></label></div>
+      <label class="field"><span>Category</span><select name="category">${CATEGORIES.map(c => `<option ${ed && ed.category===c?"selected":""}>${c}</option>`).join("")}</select></label>
+      <div class="field"><span>Split between</span><div class="chips">${GOLFERS.map(x => `<label><input type="checkbox" name="split" value="${x.id}" ${!ed || ed.split_among.includes(x.id) ? "checked" : ""}>${x.name}</label>`).join("")}</div>
+        <p class="note"><button type="button" class="btn ghost" data-act="splitAll">Everyone</button> <button type="button" class="btn ghost" data-act="splitNone">Clear</button></p></div>
+      <button class="btn" ${S.x.busy?"disabled":""}>${ed ? "Save changes" : "Save expense"}</button> <button type="button" class="btn ghost" data-act="closeForm">Cancel</button>
+      ${S.x.msg ? `<p class="msg">${esc(S.x.msg)}</p>` : ""}</form>`;
+
+  return `<h2>Expenses</h2><p class="lede">Shared costs someone has fronted, and who owes whom. Totals are in US dollars at £1 = $${TRIP.rate.toFixed(2)}.</p>
+  ${S.x.error ? `<p class="msg" style="margin:0 0 16px">${S.x.error}</p>` : ""}
+  <div class="block" style="margin-top:0"><h3>To settle up</h3><div class="sheet">
+    ${L.pays.length ? L.pays.map(p => `<div class="row"><div class="l"><b>${nameOf(p[0])} pays ${nameOf(p[1])}</b></div><div class="r num">${$u(p[2])}</div></div>`).join("") : `<div class="row"><div class="l">Everyone is square.</div></div>`}
+  </div><p class="note">The fewest payments that clear every balance. No need to pay until ${TRIP.organiser} asks.</p></div>
+
+  <div class="block"><h3>Where everyone stands</h3><div class="sheet">
+    ${GOLFERS.map(x => { const b = L.by[x.id], n = Math.round(b.net);
+      return `<div class="row"><div class="l"><b>${x.name}</b><span>Fronted ${$u(b.paid)}, share ${$u(b.share)}</span></div><div class="r num ${n>0?"pos":n<0?"neg":""}">${n>0 ? "Owed "+$u(n) : n<0 ? "Owes "+$u(-n) : "Square"}</div></div>`; }).join("")}
+    <div class="row total"><div class="l"><b>Logged so far</b></div><div class="r num">${$u(total)}</div></div>
+  </div></div>
+
+  <div class="block" id="entry"><h3>${ed ? "Edit expense" : "Add an expense"}</h3>${entry}${S.x.code ? `<p class="note">${admin ? "Signed in as admin: you can edit and delete." : "Signed in with the group code."} <button class="who" style="color:inherit" data-act="signOut">Sign out</button></p>` : ""}</div>
+
+  <div class="block"><h3>Every expense</h3><div class="sheet">
+    ${list.map(e => { const n = (e.split_among||[]).length;
+      return `<div class="row"><div class="l"><b>${esc(e.description)}</b><span>${niceDate(e.spent_on)}. Paid by ${esc(nameOf(e.paid_by))}. ${n === GOLFERS.length ? "Split between all eight" : "Split between "+e.split_among.map(nameOf).map(esc).join(", ")}.</span></div>
+      <div class="r num">${money(e)}<small>${e.currency === "GBP" ? $u(toUSD(e))+", " : ""}${$u(toUSD(e)/Math.max(n,1))} each</small>${admin && S.x.rows.includes(e) ? `<small style="margin-top:6px"><button class="btn ghost" style="padding:4px 10px" data-act="editExp" data-id="${e.id}">Edit</button> <button class="btn ghost" style="padding:4px 10px" data-act="delExp" data-id="${e.id}">Delete</button></small>` : ""}</div></div>`; }).join("")}
+  </div></div>
+
+  <div class="block"><h3>Coming up</h3><div class="sheet">
+    ${HOUSES.map(h => `<div class="row"><div class="l"><b>${h.name} balance</b><span>Charges automatically ${h.balanceDate}. It will be added here once paid.</span></div><div class="r num">${$g(h.balance)}<small>${$u(usd(h.balance/TRIP.size))} each</small></div></div>`).join("")}
+  </div></div>`;
+}
+
+function signOut(){ const x = S.x; x.code = ""; x.role = ""; x.form = false; x.edit = null; try{ sessionStorage.removeItem("scot28code"); sessionStorage.removeItem("scot28role"); }catch(_){} }
+async function delExpense(id){
+  const e = S.x.rows.find(r => r.id === id); if(!e || !confirm('Delete "'+e.description+'" ('+money(e)+')? This can\'t be undone.')) return;
+  try{ await sb("rpc/delete_expense", {method:"POST", body:JSON.stringify({p_code:S.x.code, p_id:id})}); S.x.edit = null; S.x.form = false; S.x.msg = "Deleted. Balances are updated."; await loadExpenses(); }
+  catch(err){ S.x.msg = "Not deleted: "+err.message; draw(); }
+}
+document.addEventListener("submit", async e => {
+  const f = e.target; if(f.id !== "codeForm" && f.id !== "expForm") return;
+  e.preventDefault(); const d = new FormData(f), x = S.x;
+  if(f.id === "codeForm"){
+    const code = String(d.get("code")).trim(); x.busy = true; x.msg = ""; draw();
+    try{ const role = await sb("rpc/code_role", {method:"POST", body:JSON.stringify({p_code:code})});
+      if(role === "admin" || role === "entry"){ x.code = code; x.role = role; x.form = role === "entry"; try{ sessionStorage.setItem("scot28code", code); sessionStorage.setItem("scot28role", role); }catch(_){} } else x.msg = "That code isn't right. Ask "+TRIP.organiser+" for the current one."; }
+    catch(err){ x.msg = "Couldn't check the code: "+err.message; }
+    x.busy = false; draw(); return;
+  }
+  const split = d.getAll("split");
+  if(!split.length){ x.msg = "Choose at least one person to split this between."; const m = f.querySelector(".msg"); if(m) m.textContent = x.msg; else f.insertAdjacentHTML("beforeend", `<p class="msg">${x.msg}</p>`); return; }
+  const btn = f.querySelector("button.btn:not(.ghost)"); btn.disabled = true;
+  try{
+    await sb(x.edit ? "rpc/update_expense" : "rpc/add_expense", {method:"POST", body:JSON.stringify({...(x.edit ? {p_id:x.edit} : {p_added_by:S.who || ""}), p_code:x.code, p_spent_on:d.get("spent_on"), p_description:String(d.get("description")).trim(),
+      p_amount:Number(d.get("amount")), p_currency:d.get("currency"), p_paid_by:d.get("paid_by"), p_split_among:split, p_category:d.get("category")})});
+    x.form = false; x.edit = null; x.msg = "Saved. Balances are updated."; await loadExpenses();
+  }catch(err){
+    btn.disabled = false; const wrong = /code/i.test(err.message);
+    if(wrong){ signOut(); x.msg = "That code no longer works. Enter the current one."; draw(); }
+    else { const m = f.querySelector(".msg"), t = "Not saved: "+err.message; if(m) m.textContent = t; else f.insertAdjacentHTML("beforeend", `<p class="msg">${esc(t)}</p>`); }
+  }
+});
+
+const RENDER = {home, itinerary, golf, travel, costs, expenses, decisions, guide};
+function draw(){
+  $("tabs").innerHTML = TABS.map(t => `<button class="tab" role="tab" aria-selected="${S.tab===t[0]}" data-tab="${t[0]}">${t[0]==="home" && me() ? me().name+"'s trip" : t[1]}</button>`).join("");
+  TABS.forEach(t => { const p = $("p-"+t[0]); p.classList.toggle("on", S.tab === t[0]); p.innerHTML = S.tab === t[0] ? RENDER[t[0]]() : ""; });
+  $("whoBtn").textContent = me() ? "Not "+me().name+"?" : "";
+  const sel = document.querySelector(".tab[aria-selected=true]"); if(sel && sel.scrollIntoView) sel.scrollIntoView({block:"nearest", inline:"center"});
+}
+function remember(){ try{ localStorage.setItem("scot28who", S.who || ""); }catch(e){} }
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("[data-tab]"), w = e.target.closest("[data-who]"), o = e.target.closest("[data-slot]");
+  if(t){ S.tab = t.dataset.tab; S.x.msg = ""; history.replaceState(null, "", "#"+S.tab); window.scrollTo(0,0); }
+  else if(w){ S.who = w.dataset.who; remember(); }
+  else if(o){ S[o.dataset.slot] = o.dataset.id; }
+  else if(e.target.closest("[data-act]")){ const a = e.target.closest("[data-act]").dataset.act;
+    if(a === "splitAll" || a === "splitNone"){ document.querySelectorAll("#expForm [name=split]").forEach(c => c.checked = a === "splitAll"); return; }
+    const id = e.target.closest("[data-act]").dataset.id; S.x.msg = "";
+    if(a === "delExp"){ delExpense(id); return; }
+    if(a === "signOut") signOut();
+    else if(a === "editExp"){ S.x.edit = id; S.x.form = true; draw(); const el = $("entry"); if(el && el.scrollIntoView) el.scrollIntoView({block:"start"}); return; }
+    else { S.x.form = a === "openForm"; S.x.edit = null; } }
+  else if(e.target.id === "whoBtn"){ S.who = null; S.tab = "home"; remember(); }
+  else return;
+  draw();
+});
+
+(function init(){
+  const q = new URLSearchParams(location.search).get("g");
+  let saved = ""; try{ saved = localStorage.getItem("scot28who") || ""; }catch(e){}
+  const id = (q || saved).toLowerCase();
+  if(GOLFERS.some(g => g.id === id)){ S.who = id; if(q) remember(); }
+  const h = location.hash.slice(1); if(RENDER[h]) S.tab = h;
+  $("updated").textContent = TRIP.updated;
+  try{ S.x.code = sessionStorage.getItem("scot28code") || ""; S.x.role = sessionStorage.getItem("scot28role") || ""; }catch(e){}
+  draw();
+  loadExpenses();
+})();
+</script>
+</body>
+</html>
