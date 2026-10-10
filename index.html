@@ -340,6 +340,46 @@
   .hsf{margin-top:16px;padding:12px 16px 14px;border-top:1px solid var(--rule);font-size:14px;color:var(--muted)}
   .hsf span{display:block}
   .hsf .btn{display:inline-flex;align-items:center;text-decoration:none;margin-top:10px}
+
+  /* map */
+  .mchips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -20px 12px;padding:2px 20px}
+  .mchips::-webkit-scrollbar{display:none}
+  .mchips button{flex:none;min-height:44px;padding:0 15px;border:1px solid var(--rule);border-radius:99px;background:var(--paper);cursor:pointer;font-weight:600;font-size:14px;white-space:nowrap}
+  .mchips button[aria-pressed=true]{background:var(--btn);color:var(--btnink);border-color:var(--btn)}
+  #mapBox{height:min(56vh,460px);min-height:300px;border:1px solid var(--rule);border-radius:3px;background:var(--paper);position:relative;z-index:0;isolation:isolate;overflow:hidden}
+  #mapBox .mapmsg{padding:16px;color:var(--muted);font-size:15px}
+  #mapBox.leaflet-container{font-family:var(--body);background:var(--haar)}
+  #mapBox.leaflet-container a{color:inherit}
+  #mapBox .leaflet-popup-content-wrapper, #mapBox .leaflet-popup-tip{background:var(--paper);color:var(--ink);border-radius:3px}
+  #mapBox .leaflet-popup-content{font:14px/1.45 var(--body);margin:13px 16px 12px}
+  #mapBox .leaflet-popup-content b{display:block;font-family:var(--display);font-weight:400;font-size:19px;line-height:1.2}
+  #mapBox .leaflet-popup-content em{display:block;font-style:normal;font-weight:600;color:var(--green);font-size:13px;margin-bottom:2px}
+  #mapBox .leaflet-popup-content span{display:block;color:var(--muted);margin-top:4px}
+  #mapBox .leaflet-popup-content a{display:inline-block;margin-top:8px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+  .mkw{background:none;border:0}
+  .mk{width:30px;height:30px;border-radius:50%;background:#0e1e2b;border:2px solid #d6b877;color:#d6b877;display:grid;place-items:center;font:600 14px/1 var(--body);box-shadow:0 2px 6px rgba(0,0,0,.4)}
+  .mk svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .mk.house{background:#2e5a47;border-color:#fff;color:#fff}
+  .mk.air{background:#fafbf9;border-color:#0e1e2b;color:#0e1e2b}
+  .mk.pub{width:24px;height:24px;margin:3px;background:#6b4a6e;border-color:#fff;color:#fff}
+  .mk.pub svg{width:13px;height:13px}
+  .mk.cand{background:#fafbf9;border:2px dashed #6b4a6e;color:#6b4a6e}
+  .mk.n{background:#d6b877;border-color:#0e1e2b;color:#0e1e2b;font-family:var(--display);font-size:16px}
+  .mkey{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin:10px 0 0}
+  .mkey span{display:inline-flex;align-items:center;gap:6px}
+  .mkey .mk{width:18px;height:18px;margin:0;box-shadow:none;border-width:1.5px}
+  .mkey .mk svg{width:10px;height:10px}
+  .stop{display:flex;align-items:center;gap:8px;border-top:1px solid var(--rule);padding-right:12px}
+  .stop:first-child{border-top:0}
+  .stop .sb{flex:1;min-width:0;display:flex;gap:12px;align-items:flex-start;text-align:left;background:none;border:0;padding:13px 4px 13px 16px;cursor:pointer}
+  .stop .sb:active{background:var(--pressed)}
+  .stop .sb>i{flex:none;margin-top:1px;box-shadow:none}
+  .stop .sb b{display:block;font-weight:600}
+  .stop .sb small{display:block;font-size:14px;color:var(--muted)}
+  .stop .dir{flex:none;font-size:14px;font-weight:600;color:var(--ink);min-height:44px;display:inline-flex;align-items:center;padding:0 4px;text-underline-offset:3px}
+  .leg{border-top:1px solid var(--rule);padding:7px 16px 7px 58px;font-size:14px;color:var(--gold);font-weight:600}
+  .mgrp{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:22px 0 8px}
+  .mgrp:first-child{margin-top:0}
   footer{font-size:14px;color:var(--muted);text-align:center;padding:0 20px 40px}
 
   /* first-visit title page: put the site on the phone's home screen before anything else */
@@ -380,6 +420,7 @@
 <main class="wrap">
   <section class="panel" id="p-home"></section>
   <section class="panel" id="p-itinerary"></section>
+  <section class="panel" id="p-map"></section>
   <section class="panel" id="p-golf"></section>
   <section class="panel" id="p-flights"></section>
   <section class="panel" id="p-houses"></section>
@@ -398,7 +439,7 @@
    Money is GBP unless a name ends in USD. Leave a value as "" or null when not known yet.
    ========================================================================================== */
 const TRIP = {
-  updated: "Oct 5, 2026",
+  updated: "Oct 10, 2026",
   organiser: "Chris",
   rate: 1.33,                 // GBP to USD planning rate
   size: 8,
@@ -655,6 +696,50 @@ const OLD_PLAN = [
     how:"Anyone still without a time takes their certificate to the Old Pavilion or the Links Clubhouse the day before they want to play. Singles are drawn into leftover gaps and go out with other groups, so we would not play together."}
 ];
 
+/* MAP: where everything is. Course ids match COURSES; "fife" and "ayr" are the two houses.
+   at  = [latitude, longitude]. The two houses are pinned to their town until the hosts
+         release the addresses (three days before arrival): replace at and delete approx.
+   q   = what the Directions link searches for in Google Maps.
+   kind: course, house, air, pub.                                                             */
+const PLACES = {
+  edi:      {kind:"air",    name:"Edinburgh Airport", at:[55.9472,-3.3608], q:"Edinburgh Airport", region:"Airports", note:"Where we land on Saturday, Sep 9, and collect the van."},
+  gla:      {kind:"air",    name:"Glasgow Airport",   at:[55.8700,-4.4345], q:"Glasgow Airport",   region:"Airports", note:"A possible airport home. Half the drive from Tarbolton."},
+  fife:     {kind:"house",  house:0, at:[56.3404,-2.7985], approx:true, q:"St Andrews, Fife",       region:"Fife"},
+  balgove:  {kind:"course", at:[56.3490,-2.8191], q:"Balgove Course, St Andrews",                   region:"Fife"},
+  jubilee:  {kind:"course", at:[56.3458,-2.8084], q:"St Andrews Links Clubhouse",                   region:"Fife", note:"Starts from the Links Clubhouse."},
+  old:      {kind:"course", at:[56.3437,-2.8023], q:"Old Course, St Andrews",                       region:"Fife"},
+  balcomie: {kind:"course", at:[56.2807,-2.5946], q:"Crail Golfing Society, Balcomie Clubhouse",    region:"Fife"},
+  dunvegan: {kind:"pub",    name:"The Dunvegan",  at:[56.3422,-2.8018], q:"The Dunvegan Hotel, St Andrews", region:"Fife", note:"A wedge from the 18th green."},
+  jigger:   {kind:"pub",    name:"The Jigger Inn", at:[56.3441,-2.8108], q:"Jigger Inn, St Andrews",        region:"Fife", note:"Beside the 17th, the Road Hole."},
+  criterion:{kind:"pub",    name:"The Criterion", at:[56.3396,-2.7946], q:"The Criterion, South Street, St Andrews", region:"Fife", note:"The Crit, on South Street."},
+  ayr:      {kind:"house",  house:1, at:[55.5122,-4.4882], approx:true, q:"Tarbolton, South Ayrshire", region:"Ayrshire"},
+  turnberry:{kind:"course", at:[55.3153,-4.8327], q:"Trump Turnberry Ailsa Golf Course",            region:"Ayrshire"},
+  wgailes:  {kind:"course", at:[55.5834,-4.6623], q:"Western Gailes Golf Club, Irvine",             region:"Ayrshire"},
+  dundonald:{kind:"course", at:[55.5840,-4.6518], q:"Dundonald Links, Irvine",                      region:"Ayrshire"},
+  gailes:   {kind:"course", at:[55.5903,-4.6477], approx:true, q:"Glasgow Golf Club Gailes Links, Irvine", region:"Ayrshire"},
+  troon:    {kind:"course", at:[55.5328,-4.6504], q:"Royal Troon Golf Club",                        region:"Ayrshire"},
+  prestwick:{kind:"course", at:[55.5014,-4.6153], q:"Prestwick Golf Club",                          region:"Ayrshire"}
+};
+/* Each day's stops, in order, keyed by the date in DAYS. "@" is that day's round (so the two
+   Ayrshire days follow the vote). A list inside the list means "one of these".               */
+const ROUTES = {9:["edi","@","fife"], 10:["fife","@"], 11:["fife","@"], 12:["fife","@","ayr"], 13:["ayr","@","ayr"], 14:["ayr","@","ayr"], 15:["ayr",["gla","edi"]]};
+/* Time between two places, either direction. Keys are the two ids in alphabetical order.     */
+const LEGS = {"balgove|edi":"1 hr 15 min drive", "edi|fife":"1 hr 15 min drive", "balgove|fife":"5 min drive", "fife|jubilee":"About 15 min on foot", "fife|old":"5 min on foot",
+  "balcomie|fife":"25 min drive", "ayr|balcomie":"2 hr 30 min drive", "ayr|turnberry":"40 min drive", "ayr|troon":"15 to 20 min drive", "ayr|prestwick":"15 to 20 min drive",
+  "ayr|wgailes":"About 25 min drive", "ayr|dundonald":"About 25 min drive", "ayr|gailes":"About 25 min drive", "ayr|gla":"45 min drive", "ayr|edi":"1 hr 30 min drive"};
+/* Rough waypoints so the long drives bend along the real roads instead of crossing the sea.
+   Written in the direction of the key; the map reverses them when driving the other way.     */
+const M77 = [[55.60,-4.52],[55.66,-4.44],[55.77,-4.36],[55.83,-4.31]];           // Kilmarnock up to Glasgow
+const FORTH = [[56.085,-3.375],[56.005,-3.412]];                                 // Halbeath, Queensferry Crossing
+const VIA = {
+  "edi|fife":     [[56.005,-3.412],[56.085,-3.375],[56.19,-3.15],[56.318,-3.01],[56.36,-2.89]],
+  "balgove|edi":  [[56.36,-2.89],[56.318,-3.01],[56.19,-3.15],[56.085,-3.375],[56.005,-3.412]],
+  "ayr|balcomie": M77.concat([[55.845,-4.20],[55.86,-3.75],[55.94,-3.41]], FORTH.slice().reverse(), [[56.125,-3.20],[56.20,-3.00],[56.223,-2.70],[56.26,-2.63]]),
+  "ayr|edi":      M77.concat([[55.845,-4.20],[55.86,-3.75],[55.94,-3.41]]),
+  "ayr|gla":      M77,
+  "ayr|turnberry":[[55.46,-4.60],[55.355,-4.68]]
+};
+
 /* EXPENSES
    SUPABASE: paste the project URL and the publishable (anon) key from Supabase > Project
    Settings > API. Until both are filled in, the Expenses tab shows only the entries below
@@ -674,7 +759,7 @@ const SEED_EXPENSES = [
 /* ====================================== END OF DATA ====================================== */
 
 const $ = id => document.getElementById(id);
-const TABS = [["home","My trip"],["itinerary","Itinerary"],["golf","Golf"],["flights","Flights"],["houses","Houses and van"],["costs","Costs"],["expenses","Expenses"],["decisions","Decisions"],["guide","Field guide"]];
+const TABS = [["home","My trip"],["itinerary","Itinerary"],["map","Map"],["golf","Golf"],["flights","Flights"],["houses","Houses and van"],["costs","Costs"],["expenses","Expenses"],["decisions","Decisions"],["guide","Field guide"]];
 /* Phone navigation. BAR = the four sections on the bottom bar; MORE = the rest, behind the More button.
    To promote a section, move its id from MORE to BAR (keep BAR at four so the labels fit).   */
 const svg = d => `<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
@@ -685,6 +770,7 @@ const BAR = [
   ["decisions","Decisions", svg('<rect x="4.5" y="4.5" width="15" height="15" rx="2.5"/><path d="M8.3 12.3l2.6 2.6 4.8-5.4"/>')]
 ];
 const MORE = [
+  ["map","Map","Every course, house and drive, day by day"],
   ["costs","Costs","The full budget, round by round"],
   ["flights","Flights","Which flights to book, and when"],
   ["houses","Houses and van","Both houses, the van and the drives"],
@@ -692,7 +778,7 @@ const MORE = [
   ["guide","Field guide","Packing, weather, money and etiquette"]
 ];
 const MORE_ICON = svg('<circle cx="5.5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="18.5" cy="12" r="1.3" fill="currentColor"/>');
-const S = {tab:"home", who:null, more:false, welcome:false, wed:SLOTS.wed.pick, thu:SLOTS.thu.pick, touched:{},
+const S = {m:{day:"all"}, tab:"home", who:null, more:false, welcome:false, wed:SLOTS.wed.pick, thu:SLOTS.thu.pick, touched:{},
   x:{rows:[], loaded:false, error:"", code:"", role:"", form:false, edit:null, msg:"", busy:false},
   v:{rows:[], loaded:false, error:"", draft:{}, stale:[], fresh:[], note:"", msg:"", busy:false, checking:false},
   d:{status:{}, mine:{}, draft:{}, err:"", up:"", busy:false, admin:null, adminMsg:""}};
@@ -905,10 +991,10 @@ function itinerary(){
   const home = (g && g.flightBack ? ["Your flight: "+esc(g.flightBack)+"."] : [])
     .concat(["Flights home leave late morning to early afternoon: "+F.home.filter((f,i) => i !== 1).map(f => f.route+" at "+f.dep.replace("About ","about ")).join(", or ")+".", "You land in the US the same afternoon."]);
   return `<h2>Itinerary</h2><p class="lede">Dates are locked. Flights and tee times appear here as each one is booked.</p>
-  <div class="sheet">${out}${DAYS.map(d => { const id = roundOf(d), c = id && COURSES[id];
+  <div class="sheet">${out}${DAYS.map((d,i) => { const id = roundOf(d), c = id && COURSES[id];
     const plan = d.slot ? [(slotOpen(id) ? "Course pending the group vote. " : "") + c.about, c.rules].filter(Boolean).concat(d.plan) : d.base === "Homeward" ? d.plan.concat(home) : d.plan;
     return day(d.dow, d.d, d.base, c ? c.name : d.base === "Homeward" ? "Fly home" : "Travel day", c ? (c.tee ? "Tee time "+c.tee : "Tee time to be booked") : d.base === "Homeward" && g && g.flightBack ? "Booked: "+esc(g.flightBack) : "",
-      plan.concat(d.sleep ? ["Sleep: "+d.sleep] : [])); }).join("")}</div>
+      plan.concat(d.sleep ? ["Sleep: "+d.sleep] : [], [`<button class="link" data-tab="map" data-mday="${i}">See this day on the map</button>`])); }).join("")}</div>
 
   <div class="block" id="why"><h3>Why these dates</h3><p class="lede" style="margin-bottom:14px">Each date below is the day something has to happen, who does it, and the reason. No club has published 2028 dates yet, so the ones marked projected come from what that club did for 2026 and 2027, and will be replaced as they announce.</p>
   <div class="sheet">${TIMELINE.map(t => `<div class="tl"><p class="when">${t.when}${t.est ? " "+tag("wait","Projected") : ""}</p><b>${t.what}</b><span><em>${t.who}.</em> ${t.why}</span></div>`).join("")}</div></div>`;
@@ -1057,7 +1143,7 @@ function houses(){
   <div class="block"><h3>Drives</h3><div class="sheet">
     ${[["Edinburgh Airport to St Andrews","1 hr 15 min"],["St Andrews to Crail","25 min"],["Crail to Tarbolton","2 hr 30 min"],["Tarbolton to Turnberry","40 min"],["Tarbolton to Troon or Prestwick","15 to 20 min"],["Tarbolton to Glasgow Airport","45 min"],["Tarbolton to Edinburgh Airport","1 hr 30 min"]]
       .map(r => `<div class="row"><div class="l">${r[0]}</div><div class="r">${r[1]}</div></div>`).join("")}
-  </div><p class="note">Approximate, without traffic.</p></div>`;
+  </div><p class="note">Approximate, without traffic.</p><div class="acts"><button class="btn ghost sm" data-tab="map" data-mday="all">See the drives on the map</button></div></div>`;
 }
 
 function costs(){
@@ -1599,7 +1685,149 @@ function welcome(){
   </div>`;
 }
 
-const RENDER = {home, itinerary, golf, flights, houses, costs, expenses, decisions, guide};
+/* ---------- Map tab ----------
+   The map library (Leaflet) and its tiles are only fetched when someone opens this tab.
+   Everything drawn comes from PLACES, ROUTES, LEGS and VIA in the data block.                */
+const M = {map:null, layer:null, tiles:null, pins:{}, shown:null, view:null, loading:null};
+const GLYPH = {course:svg('<path d="M9.5 20V4l8 3.4-8 3.4"/><path d="M6 20h8"/>'), house:svg('<path d="M4 11.5l8-7 8 7"/><path d="M6.5 10v9.5h11V10"/>'),
+  air:svg('<path d="M3.5 13.5l17-8-5.5 15-3.2-6z"/>'), pub:svg('<path d="M7 4.5h10l-1.2 15.5H8.2z"/><path d="M7.4 9.5h9.2"/>')};
+const KIND = {course:"Golf", house:"House", air:"Airport", pub:"Pub"};
+function placeOf(id){ const p = PLACES[id], c = COURSES[id], h = p.kind === "house" ? HOUSES[p.house] : null;
+  return Object.assign({id, name:c ? c.name : h ? h.name : p.name}, p); }
+const legKey = (a,b) => [a,b].sort().join("|");
+const legOf = (a,b) => LEGS[legKey(a,b)] || "";
+function pathOf(a,b){ const k = legKey(a,b), v = VIA[k] || [], fwd = k === a+"|"+b;
+  return [PLACES[a].at].concat(fwd ? v : v.slice().reverse(), [PLACES[b].at]); }
+const dirLink = p => "https://www.google.com/maps/dir/?api=1&destination=" + encodeURIComponent(p.q || p.at.join(","));
+const dayLabel = d => d.dow+", Sep "+d.d;
+const slotOf = id => Object.keys(SLOTS).find(k => SLOTS[k].options.includes(id)) || "";
+/* what a place is to the trip, in a few words */
+function placeWhen(id){
+  const p = PLACES[id];
+  if(p.kind === "house"){ const h = HOUSES[p.house]; return h.inn.split(" from")[0]+" to "+h.out.split(" by")[0]; }
+  if(p.kind !== "course") return "";
+  const d = DAYS.find(x => roundOf(x) === id), k = slotOf(id);
+  if(d) return dayLabel(d) + (k && slotOpen(id) ? ", pencilled in until the vote settles" : "");
+  return k ? "An option for "+SLOTS[k].label.split(",")[0] : "";
+}
+function placeNote(id){
+  const p = PLACES[id], c = COURSES[id];
+  if(p.kind === "house"){ const h = HOUSES[p.house]; return "Check-in "+h.inn.replace(/^\w+, /, "")+". Check-out "+h.out.replace(/^\w+, /, "")+". Pinned to the town until the host sends the address."; }
+  if(c) return (c.tee ? "Tee time "+c.tee+"." : "Tee time to be booked.") + (p.note ? " "+p.note : "") + (p.approx ? " Pin is approximate." : "");
+  return p.note || "";
+}
+function popupHTML(id){ const p = placeOf(id), w = placeWhen(id);
+  return `<em>${KIND[p.kind]}${w ? " · "+w : ""}</em><b>${p.name}</b><span>${placeNote(id)}</span><a href="${dirLink(p)}" target="_blank" rel="noopener">Directions</a>`; }
+/* a day's stops; the last one may be a choice of two */
+function stopsOf(i){ const d = DAYS[i]; return (ROUTES[d.d] || []).map(x => x === "@" ? roundOf(d) : x); }
+const mDay = () => S.m.day === "all" || !DAYS[S.m.day] ? "all" : Number(S.m.day);
+
+function mapList(){
+  const day = mDay();
+  const stop = (id, badge, extra) => { const p = placeOf(id);
+    return `<div class="stop"><button class="sb" data-pin="${id}"><i class="mk ${badge.cls}">${badge.txt}</i><span><b>${p.name}</b><small>${extra || placeWhen(id) || p.note || ""}</small></span></button><a class="dir" href="${dirLink(p)}" target="_blank" rel="noopener">Directions</a></div>`; };
+  if(day === "all"){
+    const grp = r => { const ids = Object.keys(PLACES).filter(id => PLACES[id].region === r);
+      return `<div class="mgrp"><h3>${r}</h3>${r === "Airports" ? "" : `<button class="btn ghost sm" style="margin-top:0" data-zoom="${r}">Zoom to ${r}</button>`}</div>
+        <div class="sheet">${ids.map(id => { const k = PLACES[id].kind, c = k === "course", on = c && active().includes(id);
+          return stop(id, {cls:c && !on ? "cand" : k, txt:GLYPH[k]}); }).join("")}</div>`; };
+    return grp("Fife") + grp("Ayrshire") + grp("Airports");
+  }
+  const d = DAYS[day], stops = stopsOf(day); let out = "", n = 0, prev = null;
+  stops.forEach(x => {
+    if(Array.isArray(x)){ out += `<div class="leg">Then to the airport. Which one is still to be decided.</div>` + x.map(id => stop(id, {cls:"cand", txt:GLYPH.air}, legOf(prev, id)+" from the house")).join(""); return; }
+    if(prev){ const l = legOf(prev, x); if(l) out += `<div class="leg">${l}</div>`; }
+    n++; prev = x;
+    out += stop(x, {cls:"n", txt:n}, PLACES[x].kind === "course" ? ((COURSES[x].tee ? "Tee time "+COURSES[x].tee : "Tee time to be booked") + (slotOpen(x) ? ". Pencilled in until the vote settles" : "")) : placeNote(x).split(". Pinned")[0]);
+  });
+  const others = d.slot && !slotPick(d.slot) ? SLOTS[d.slot].options.filter(id => id !== S[d.slot]) : [];
+  return `<div class="mgrp"><h3>${dayLabel(d)}: ${d.base}</h3></div><div class="sheet">${out}</div>
+    ${others.length ? `<div class="mgrp"><h3>Also in the vote</h3></div><div class="sheet">${others.map(id => stop(id, {cls:"cand", txt:GLYPH.course}, legOf("ayr", id)+" from the house")).join("")}</div>` : ""}`;
+}
+function mapChips(){ const day = mDay();
+  return `<button data-mday="all" aria-pressed="${day === "all"}">Whole trip</button>` + DAYS.map((d,i) => `<button data-mday="${i}" aria-pressed="${day === i}">${d.dow} ${d.d}</button>`).join(""); }
+function mapTab(){
+  return `<h2>Map</h2><p class="lede">Every course, both houses and the drives between them. Pick a day to see just that day's route, or tap any stop to find it on the map.</p>
+  <div class="mchips" id="mapChips">${mapChips()}</div>
+  <div id="mapBox"></div>
+  <p class="mkey"><span><i class="mk">${GLYPH.course}</i>Round</span><span><i class="mk cand">${GLYPH.course}</i>Still in the vote</span><span><i class="mk house">${GLYPH.house}</i>House</span><span><i class="mk air">${GLYPH.air}</i>Airport</span><span><i class="mk pub">${GLYPH.pub}</i>Pub</span></p>
+  <div class="block" id="mapList" style="margin-top:22px">${mapList()}</div>
+  <p class="note">Route lines are sketched along the main roads, not turn by turn. Use Directions for the real thing. Drive times are approximate, without traffic.</p>`;
+}
+
+function loadLeaflet(){
+  if(window.L) return Promise.resolve();
+  if(!M.loading) M.loading = new Promise((ok, no) => {
+    const base = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/";
+    const c = document.createElement("link"); c.rel = "stylesheet"; c.href = base+"leaflet.min.css"; document.head.appendChild(c);
+    const j = document.createElement("script"); j.src = base+"leaflet.min.js"; j.onload = ok; j.onerror = () => { M.loading = null; j.remove(); no(); }; document.head.appendChild(j);
+  });
+  return M.loading;
+}
+const darkQ = window.matchMedia ? matchMedia("(prefers-color-scheme:dark)") : {matches:false};
+const tileURL = () => "https://{s}.basemaps.cartocdn.com/" + (darkQ.matches ? "dark_all" : "rastertiles/voyager") + "/{z}/{x}/{y}{r}.png";
+if(darkQ.addEventListener) darkQ.addEventListener("change", () => { if(M.tiles) M.tiles.setUrl(tileURL()); });
+function mapUnmount(){ if(!M.map) return; try{ M.view = {c:M.map.getCenter(), z:M.map.getZoom()}; M.map.remove(); }catch(_){} M.map = null; M.tiles = null; }
+/* called after every draw: builds the map if its tab is showing, clears it away if not */
+function mapMount(){
+  const box = $("mapBox"), keep = M.shown === String(S.m.day) ? M.view : null;
+  mapUnmount(); if(S.tab !== "map") M.view = null;
+  if(!box) return;
+  if(!window.L){ box.innerHTML = `<p class="mapmsg">Loading the map…</p>`;
+    loadLeaflet().then(() => { if(S.tab === "map") mapMount(); }, () => { const b = $("mapBox"); if(b) b.innerHTML = `<p class="mapmsg">The map couldn't load. Check your connection, then <button class="link" data-tab="map">try again</button>. Every stop is still listed below, with directions.</p>`; });
+    return; }
+  box.innerHTML = "";
+  M.map = L.map(box, {scrollWheelZoom:false, zoomSnap:0.5});
+  M.map.attributionControl.setPrefix(false);
+  M.tiles = L.tileLayer(tileURL(), {subdomains:"abcd", maxZoom:18, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'}).addTo(M.map);
+  M.layer = L.layerGroup().addTo(M.map);
+  mapPaint(!keep); if(keep) M.map.setView(keep.c, keep.z, {animate:false});
+}
+function mapPaint(fit){
+  if(!M.map) return;
+  M.layer.clearLayers(); M.pins = {}; M.shown = String(S.m.day);
+  const day = mDay(), pts = [];
+  const line = (a, b, dashed) => L.polyline(pathOf(a,b), {color:darkQ.matches ? "#d6b877" : "#8a6b29", weight:3, opacity:.9, dashArray:dashed ? "2 8" : null, interactive:false}).addTo(M.layer);
+  const pin = (id, cls, txt, inFit, z) => { const p = PLACES[id]; if(M.pins[id]) return;
+    M.pins[id] = L.marker(p.at, {title:placeOf(id).name, zIndexOffset:z || 0, icon:L.divIcon({className:"mkw", html:`<i class="mk ${cls}">${txt}</i>`, iconSize:[30,30], iconAnchor:[15,15], popupAnchor:[0,-14]})})
+      .bindPopup(() => popupHTML(id), {maxWidth:260}).addTo(M.layer);
+    if(inFit !== false) pts.push(p.at); };
+  if(day === "all"){
+    line("edi","fife"); line("fife","balcomie"); line("balcomie","ayr"); line("ayr","gla",true); line("ayr","edi",true);
+    Object.keys(PLACES).forEach(id => { const k = PLACES[id].kind, c = k === "course", on = c && active().includes(id);
+      pin(id, c && !on ? "cand" : k, GLYPH[k], true, k === "pub" ? -200 : c && on ? 200 : 0); });
+  } else {
+    const d = DAYS[day], stops = stopsOf(day), drawn = {}; let n = 0, prev = null;
+    stops.forEach(x => {
+      if(Array.isArray(x)){ x.forEach(id => { line(prev, id, true); pin(id, "cand", GLYPH.air); }); return; }
+      if(prev && prev !== x && !drawn[legKey(prev, x)]){ drawn[legKey(prev, x)] = 1; line(prev, x); }
+      n++; pin(x, "n", n, true, 300); prev = x;
+    });
+    if(d.slot && !slotPick(d.slot)) SLOTS[d.slot].options.forEach(id => pin(id, "cand", GLYPH.course));
+    if(stops.includes("fife")) ["dunvegan","jigger","criterion"].forEach(id => pin(id, "pub", GLYPH.pub, false, -200));
+  }
+  if(fit && pts.length) M.map.fitBounds(L.latLngBounds(pts), {padding:[38,38], maxZoom:15, animate:false});
+}
+/* a chip, a stop in the list, or a Zoom button: update the map in place, without redrawing the page */
+function mapRefresh(){
+  const c = $("mapChips"), l = $("mapList"); if(c) c.innerHTML = mapChips(); if(l) l.innerHTML = mapList();
+  const on = c && c.querySelector("[aria-pressed=true]"); if(on && on.scrollIntoView) on.scrollIntoView({block:"nearest", inline:"center"});
+  M.view = null; mapPaint(true);
+}
+function mapFocus(id){
+  const mk = M.pins[id], box = $("mapBox"); if(!M.map || !mk) return;
+  if(box && box.scrollIntoView && box.getBoundingClientRect().top < 0) box.scrollIntoView({block:"start"});
+  M.map.setView(PLACES[id].at, Math.max(M.map.getZoom(), PLACES[id].region === "Airports" ? 10 : 13), {animate:false}); mk.openPopup();
+}
+document.addEventListener("click", e => {
+  const c = e.target.closest("[data-mday]"), p = e.target.closest("[data-pin]"), z = e.target.closest("[data-zoom]");
+  if(c){ S.m.day = c.dataset.mday; M.view = null; M.shown = null; if(!c.dataset.tab) mapRefresh(); }
+  else if(p) mapFocus(p.dataset.pin);
+  else if(z && M.map){ const ids = Object.keys(PLACES).filter(id => PLACES[id].region === z.dataset.zoom && M.pins[id]);
+    M.map.fitBounds(L.latLngBounds(ids.map(id => PLACES[id].at)), {padding:[38,38], animate:false}); const box = $("mapBox"); if(box.getBoundingClientRect().top < 0) box.scrollIntoView({block:"start"}); }
+}, true);
+
+const RENDER = {home, itinerary, map:mapTab, golf, flights, houses, costs, expenses, decisions, guide};
 function nav(){
   const inMore = MORE.some(m => m[0] === S.tab), left = me() && V.loaded && !V.error ? progress().left : 0;
   return (S.more ? `<div class="scrim" data-more></div><div class="more" id="moreSheet">${MORE.map(m =>
@@ -1618,6 +1846,7 @@ function draw(){
   TABS.forEach(t => { const p = $("p-"+t[0]); p.classList.toggle("on", S.tab === t[0]); p.innerHTML = S.tab === t[0] ? RENDER[t[0]]() : ""; });
   $("whoBtn").textContent = me() ? "Not "+me().name+"?" : "";
   const sel = document.querySelector(".tab[aria-selected=true]"); if(sel && sel.offsetParent && sel.scrollIntoView) sel.scrollIntoView({block:"nearest", inline:"center"});
+  mapMount();
 }
 function remember(){ try{ localStorage.setItem("scot28who", S.who || ""); }catch(e){} }
 
