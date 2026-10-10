@@ -544,7 +544,7 @@ const DAYS = [
    page, read Oct 5, 2026; a few Smithfield items come from the owner's other listings of the
    same house. rooms = [room, beds]. fit = how eight golfers sleep there.                      */
 const HOUSES = [
-  {name:"4-Bedroom Townhouse", town:"St Andrews, Fife", inn:"Sat, Sep 9 from 4:00 PM", out:"Tue, Sep 12 by 10:00 AM",
+  {name:"4-Bedroom Townhouse", town:"St Andrews, Fife", address:"1b Kinburn Terrace, St Andrews KY16 9DU", inn:"Sat, Sep 9 from 4:00 PM", out:"Tue, Sep 12 by 10:00 AM",
     total:2028.44, paid:678.44, balance:1350, balanceDate:"Jul 11, 2028", cancel:"Full refund until Jul 11, 2028", roomKey:"roomFife",
     host:"Debbie Kilpatrick", link:"https://www.vrbo.com/en-gb/p6716034",
     about:"A townhouse in the middle of St Andrews with a games room, a garden and its own parking. We walk to the first tee, to the pubs and to dinner.",
@@ -553,7 +553,7 @@ const HOUSES = [
     fit:"Seven proper beds for eight of us: one king and six singles. Two share the king, or one of us takes a futon in that room. The room draw settles it.",
     has:["Games room with a pool table","South-facing garden","Private parking for two to three cars","Wi-Fi, Sky TV and Apple TV","Full kitchen with a dishwasher","Washer and dryer"],
     rules:["No smoking and no pets.","Eight guests at most.","The listing rules out stag parties, so keep it civil late at night."]},
-  {name:"Smithfield House", town:"Tarbolton, Ayrshire", inn:"Tue, Sep 12 from 4:00 PM", out:"Fri, Sep 15 by 10:00 AM",
+  {name:"Smithfield House", town:"Tarbolton, Ayrshire", address:"Smithfield House, Tarbolton KA5 5LX", inn:"Tue, Sep 12 from 4:00 PM", out:"Fri, Sep 15 by 10:00 AM",
     total:1926, paid:736, balance:1190, balanceDate:"Jul 14, 2028", cancel:"Full refund until Jul 14, 2028, then 50% until Aug 13", roomKey:"roomAyr",
     host:"Drew", link:"https://www.vrbo.com/en-gb/p10426902",
     about:"A renovated farmhouse in the Ayrshire countryside, set up for big groups: a games room, a cinema room and a covered barbecue pavilion around a private courtyard.",
@@ -701,14 +701,14 @@ const OLD_PLAN = [
 ];
 
 /* MAP: where everything is. Course ids match COURSES; "fife" and "ayr" are the two houses.
-   at  = [latitude, longitude]. The two houses are pinned to their town until the hosts
-         release the addresses (three days before arrival): replace at and delete approx.
+   at  = [latitude, longitude]. approx:true marks a pin that is only roughly placed.
+         The house pins sit on the addresses in HOUSES.
    q   = what the Directions link searches for in Google Maps.
    kind: course, house, air, pub.                                                             */
 const PLACES = {
   edi:      {kind:"air",    name:"Edinburgh Airport", at:[55.9472,-3.3608], q:"Edinburgh Airport", region:"Airports", note:"Where we land on Saturday, Sep 9, and collect the van."},
   gla:      {kind:"air",    name:"Glasgow Airport",   at:[55.8700,-4.4345], q:"Glasgow Airport",   region:"Airports", note:"A possible airport home. Half the drive from Tarbolton."},
-  fife:     {kind:"house",  house:0, at:[56.3404,-2.7985], approx:true, q:"St Andrews, Fife",       region:"Fife"},
+  fife:     {kind:"house",  house:0, at:[56.33956,-2.80334], q:"1b Kinburn Terrace, St Andrews KY16 9DU", region:"Fife"},
   balgove:  {kind:"course", at:[56.3490,-2.8191], q:"Balgove Course, St Andrews",                   region:"Fife"},
   jubilee:  {kind:"course", at:[56.3458,-2.8084], q:"St Andrews Links Clubhouse",                   region:"Fife", note:"Starts from the Links Clubhouse."},
   old:      {kind:"course", at:[56.3437,-2.8023], q:"Old Course, St Andrews",                       region:"Fife"},
@@ -716,7 +716,7 @@ const PLACES = {
   dunvegan: {kind:"pub",    name:"The Dunvegan",  at:[56.3422,-2.8018], q:"The Dunvegan Hotel, St Andrews", region:"Fife", note:"A wedge from the 18th green."},
   jigger:   {kind:"pub",    name:"The Jigger Inn", at:[56.3441,-2.8108], q:"Jigger Inn, St Andrews",        region:"Fife", note:"Beside the 17th, the Road Hole."},
   criterion:{kind:"pub",    name:"The Criterion", at:[56.3396,-2.7946], q:"The Criterion, South Street, St Andrews", region:"Fife", note:"The Crit, on South Street."},
-  ayr:      {kind:"house",  house:1, at:[55.5122,-4.4882], approx:true, q:"Tarbolton, South Ayrshire", region:"Ayrshire"},
+  ayr:      {kind:"house",  house:1, at:[55.51529,-4.48063], q:"Smithfield House, Tarbolton KA5 5LX",     region:"Ayrshire"},
   turnberry:{kind:"course", at:[55.3153,-4.8327], q:"Trump Turnberry Ailsa Golf Course",            region:"Ayrshire"},
   wgailes:  {kind:"course", at:[55.5834,-4.6623], q:"Western Gailes Golf Club, Irvine",             region:"Ayrshire"},
   dundonald:{kind:"course", at:[55.5840,-4.6518], q:"Dundonald Links, Irvine",                      region:"Ayrshire"},
@@ -1121,7 +1121,7 @@ function flights(){
 function houses(){
   const drivers = (tally("driver").by.yes || []).map(nameOf);
   const house = h => `<div class="sheet hs">
-      <div class="hsh"><div><div class="when">${h.inn.split(" from")[0]} to ${h.out.split(" by")[0]}</div><h3>${h.name}</h3><p class="town">${h.town}</p></div>${tag("ok","Confirmed")}</div>
+      <div class="hsh"><div><div class="when">${h.inn.split(" from")[0]} to ${h.out.split(" by")[0]}</div><h3>${h.name}</h3><p class="town">${h.address || h.town}</p></div>${tag("ok","Confirmed")}</div>
       <p class="rtp">${h.about}</p>
       <div class="fees">${h.facts.map(f => `<div><b>${f[0]}</b><span>${f[1]}</span></div>`).join("")}
         <div><b>Check-in</b><span>${h.inn}</span></div><div><b>Check-out</b><span>${h.out}</span></div></div>
@@ -1131,11 +1131,11 @@ function houses(){
       <h4>In the house</h4><ul class="pts">${h.has.map(x => `<li>${x}</li>`).join("")}</ul>
       <h4>House rules</h4><ul class="pts">${h.rules.map(x => `<li>${x}</li>`).join("")}</ul>
       <div class="hsf"><span>${$g(h.total)} for the house, ${$u(usd(h.total / TRIP.size))} each. Balance of ${$g(h.balance)} charges ${h.balanceDate}. ${h.cancel}. Hosted by ${h.host}.</span>
-        <a class="btn ghost sm" href="${h.link}" target="_blank" rel="noopener">See the photos on VRBO</a></div>
+        <a class="btn ghost sm" href="${h.link}" target="_blank" rel="noopener">See the photos on VRBO</a> <button class="btn ghost sm" data-tab="map" data-mday="all">See it on the map</button></div>
     </div>`;
   return `<h2>Houses and van</h2><p class="lede">Three nights in St Andrews, three in Ayrshire. Both houses are booked and the deposits are paid.</p>
   ${HOUSES.map(house).join("")}
-  <p class="note">Addresses and check-in instructions are released three days before arrival and will be posted here. Room assignments are drawn before the trip.</p>
+  <p class="note">Check-in instructions are released three days before arrival and will be posted here. Room assignments are drawn before the trip.</p>
 
   <div class="block"><h3>The van</h3><div class="sheet">
     <div class="row"><div class="l"><b>Nine-seat van</b><span>Sep 9 to 15, National preferred, Edinburgh pickup assumed</span></div><div class="r">${tag("wait","Not booked")}</div></div>
@@ -1716,7 +1716,7 @@ function placeWhen(id){
 }
 function placeNote(id){
   const p = PLACES[id], c = COURSES[id];
-  if(p.kind === "house"){ const h = HOUSES[p.house]; return "Check-in "+h.inn.replace(/^\w+, /, "")+". Check-out "+h.out.replace(/^\w+, /, "")+". Pinned to the town until the host sends the address."; }
+  if(p.kind === "house"){ const h = HOUSES[p.house]; return "Check-in "+h.inn.replace(/^\w+, /, "")+". Check-out "+h.out.replace(/^\w+, /, "")+"."+(h.address ? " "+h.address+"." : ""); }
   if(c) return (c.tee ? "Tee time "+c.tee+"." : "Tee time to be booked.") + (p.note ? " "+p.note : "") + (p.approx ? " Pin is approximate." : "");
   return p.note || "";
 }
@@ -1742,7 +1742,7 @@ function mapList(){
     if(Array.isArray(x)){ out += `<div class="leg">Then to the airport. Which one is still to be decided.</div>` + x.map(id => stop(id, {cls:"cand", txt:GLYPH.air}, legOf(prev, id)+" from the house")).join(""); return; }
     if(prev){ const l = legOf(prev, x); if(l) out += `<div class="leg">${l}</div>`; }
     n++; prev = x;
-    out += stop(x, {cls:"n", txt:n}, PLACES[x].kind === "course" ? ((COURSES[x].tee ? "Tee time "+COURSES[x].tee : "Tee time to be booked") + (slotOpen(x) ? ". Pencilled in until the vote settles" : "")) : placeNote(x).split(". Pinned")[0]);
+    out += stop(x, {cls:"n", txt:n}, PLACES[x].kind === "course" ? ((COURSES[x].tee ? "Tee time "+COURSES[x].tee : "Tee time to be booked") + (slotOpen(x) ? ". Pencilled in until the vote settles" : "")) : placeNote(x));
   });
   const others = d.slot && !slotPick(d.slot) ? SLOTS[d.slot].options.filter(id => id !== S[d.slot]) : [];
   return `<div class="mgrp"><h3>${dayLabel(d)}: ${d.base}</h3></div><div class="sheet">${out}</div>
