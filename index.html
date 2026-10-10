@@ -356,6 +356,10 @@
   #mapBox .leaflet-popup-content em{display:block;font-style:normal;font-weight:600;color:var(--green);font-size:13px;margin-bottom:2px}
   #mapBox .leaflet-popup-content span{display:block;color:var(--muted);margin-top:4px}
   #mapBox .leaflet-popup-content a{display:inline-block;margin-top:8px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+  @media(prefers-color-scheme:dark){#mapBox .leaflet-layer.osm{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.88) saturate(.6)}}
+  #mapBox .leaflet-control-layers{border-radius:3px;font:600 14px/1.3 var(--body);color:#14212b;padding:4px 10px}
+  #mapBox .leaflet-control-layers label{display:flex;align-items:center;min-height:30px;cursor:pointer}
+  #mapBox .leaflet-control-layers input{width:16px;height:16px;min-height:0;padding:0;margin:0 7px 0 0;accent-color:#2e5a47}
   .mkw{background:none;border:0}
   .mk{width:30px;height:30px;border-radius:50%;background:#0e1e2b;border:2px solid #d6b877;color:#d6b877;display:grid;place-items:center;font:600 14px/1 var(--body);box-shadow:0 2px 6px rgba(0,0,0,.4)}
   .mk svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
@@ -778,7 +782,7 @@ const MORE = [
   ["guide","Field guide","Packing, weather, money and etiquette"]
 ];
 const MORE_ICON = svg('<circle cx="5.5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="18.5" cy="12" r="1.3" fill="currentColor"/>');
-const S = {m:{day:"all"}, tab:"home", who:null, more:false, welcome:false, wed:SLOTS.wed.pick, thu:SLOTS.thu.pick, touched:{},
+const S = {m:{day:"all", base:"Map"}, tab:"home", who:null, more:false, welcome:false, wed:SLOTS.wed.pick, thu:SLOTS.thu.pick, touched:{},
   x:{rows:[], loaded:false, error:"", code:"", role:"", form:false, edit:null, msg:"", busy:false},
   v:{rows:[], loaded:false, error:"", draft:{}, stale:[], fresh:[], note:"", msg:"", busy:false, checking:false},
   d:{status:{}, mine:{}, draft:{}, err:"", up:"", busy:false, admin:null, adminMsg:""}};
@@ -1765,8 +1769,13 @@ function loadLeaflet(){
   return M.loading;
 }
 const darkQ = window.matchMedia ? matchMedia("(prefers-color-scheme:dark)") : {matches:false};
-const tileURL = () => "https://{s}.basemaps.cartocdn.com/" + (darkQ.matches ? "dark_all" : "rastertiles/voyager") + "/{z}/{x}/{y}{r}.png";
-if(darkQ.addEventListener) darkQ.addEventListener("change", () => { if(M.tiles) M.tiles.setUrl(tileURL()); });
+/* Map backgrounds. Neither needs an account or an API key.
+   Map = OpenStreetMap's own tiles (darkened with a filter in dark mode). Satellite = Esri World Imagery. */
+const BASES = {
+  Map:       {url:"https://tile.openstreetmap.org/{z}/{x}/{y}.png", cls:"osm", max:19, by:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'},
+  Satellite: {url:"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", cls:"sat", max:18, by:'Imagery &copy; Esri, Maxar, Earthstar Geographics'}
+};
+if(darkQ.addEventListener) darkQ.addEventListener("change", () => mapPaint(false));
 function mapUnmount(){ if(!M.map) return; try{ M.view = {c:M.map.getCenter(), z:M.map.getZoom()}; M.map.remove(); }catch(_){} M.map = null; M.tiles = null; }
 /* called after every draw: builds the map if its tab is showing, clears it away if not */
 function mapMount(){
@@ -1779,7 +1788,10 @@ function mapMount(){
   box.innerHTML = "";
   M.map = L.map(box, {scrollWheelZoom:false, zoomSnap:0.5});
   M.map.attributionControl.setPrefix(false);
-  M.tiles = L.tileLayer(tileURL(), {subdomains:"abcd", maxZoom:18, attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'}).addTo(M.map);
+  const bases = {}; Object.keys(BASES).forEach(k => { const b = BASES[k]; bases[k] = L.tileLayer(b.url, {maxZoom:b.max, className:b.cls, attribution:b.by}); });
+  M.tiles = bases[S.m.base] || bases.Map; M.tiles.addTo(M.map);
+  L.control.layers(bases, null, {collapsed:false, position:"topright"}).addTo(M.map);
+  M.map.on("baselayerchange", e => { S.m.base = e.name; mapPaint(false); });
   M.layer = L.layerGroup().addTo(M.map);
   mapPaint(!keep); if(keep) M.map.setView(keep.c, keep.z, {animate:false});
 }
@@ -1787,7 +1799,7 @@ function mapPaint(fit){
   if(!M.map) return;
   M.layer.clearLayers(); M.pins = {}; M.shown = String(S.m.day);
   const day = mDay(), pts = [];
-  const line = (a, b, dashed) => L.polyline(pathOf(a,b), {color:darkQ.matches ? "#d6b877" : "#8a6b29", weight:3, opacity:.9, dashArray:dashed ? "2 8" : null, interactive:false}).addTo(M.layer);
+  const line = (a, b, dashed) => L.polyline(pathOf(a,b), {color:darkQ.matches || S.m.base === "Satellite" ? "#d6b877" : "#8a6b29", weight:S.m.base === "Satellite" ? 4 : 3, opacity:.9, dashArray:dashed ? "2 8" : null, interactive:false}).addTo(M.layer);
   const pin = (id, cls, txt, inFit, z) => { const p = PLACES[id]; if(M.pins[id]) return;
     M.pins[id] = L.marker(p.at, {title:placeOf(id).name, zIndexOffset:z || 0, icon:L.divIcon({className:"mkw", html:`<i class="mk ${cls}">${txt}</i>`, iconSize:[30,30], iconAnchor:[15,15], popupAnchor:[0,-14]})})
       .bindPopup(() => popupHTML(id), {maxWidth:260}).addTo(M.layer);
