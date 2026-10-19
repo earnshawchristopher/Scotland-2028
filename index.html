@@ -443,7 +443,7 @@
    Money is GBP unless a name ends in USD. Leave a value as "" or null when not known yet.
    ========================================================================================== */
 const TRIP = {
-  updated: "Oct 10, 2026",
+  updated: "Oct 18, 2026",
   organiser: "Chris",
   rate: 1.33,                 // GBP to USD planning rate
   size: 8,
@@ -497,21 +497,18 @@ const COURSES = {
   balcomie: {name:"Balcomie Links", where:"Crail", green:187.425, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
     rules:"", caddieNote:"Optional. Single caddie, or a forecaddie for a fourball at about £200. Request in advance.",
     about:"A morning round on the way out of Fife, then the drive west."},
-  turnberry:{name:"Turnberry (Ailsa)", where:"Ayrshire", green:600.8625, caddie:85, tip:40, trolley:35, budgetCaddie:true, tee:"", booked:false,
-    rules:"Budgeted at the afternoon rate, after 1 PM. Morning times run about £1,000.", caddieNote:"Must be pre-booked; availability not guaranteed.",
-    about:"The marquee Ayrshire round, and the most expensive of the trip."},
-  wgailes:  {name:"Western Gailes", where:"Ayrshire", green:341.775, caddie:75, tip:40, trolley:0, budgetCaddie:false, tee:"", booked:false,
-    rules:"Handicap limit 24. Wednesday visitor times 9:00 to 12:00 and 2:00 to 4:30.", caddieNote:"Optional.",
-    about:"Classic links squeezed between the railway and the sea. Lunch is included."},
-  dundonald:{name:"Dundonald Links", where:"Ayrshire", green:270.1125, caddie:0, tip:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
-    rules:"", caddieNote:"No caddie fee published; we would ask the club.",
-    about:"A modern championship links and Scottish Open host."},
+  krb:      {name:"King Robert the Bruce", where:"Turnberry", green:275.625, caddie:85, tip:40, trolley:35, budgetCaddie:false, tee:"", booked:false,
+    rules:"Visitors welcome daily; the 2028 sheet opens about a year ahead.", caddieNote:"Optional. Turnberry caddies must be pre-booked.",
+    about:"Turnberry's second course: the same clubhouse, range and lighthouse, with the cliff-top holes at 8 and 9, for about a quarter of the Ailsa's afternoon fee. Budgeted at the 2026 peak rate of £250."},
   gailes:   {name:"Gailes Links", where:"Ayrshire", green:176.4, caddie:0, tip:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
     rules:"", caddieNote:"No caddie information published.",
-    about:"The lowest-cost option. Cheaper still as a weekday fourball after 2 PM."},
-  troon:    {name:"Royal Troon (Old Course)", where:"Ayrshire", green:451.5, caddie:75, tip:40, trolley:0, budgetCaddie:true, tee:"", booked:false,
+    about:"Glasgow Golf Club's seaside links, an Open qualifying course. £160 a round, or £120 each as a weekday fourball after 2 PM."},
+  lochgreen:{name:"Troon Links (Lochgreen)", where:"Troon", green:38.5875, caddie:0, tip:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
+    rules:"Municipal. Visitor times 10 to 11 AM and 1 to 2 PM, bookable a year ahead.", caddieNote:"Not offered. Trolleys at the clubhouse.",
+    about:"Troon's municipal links beside Royal Troon, once an Open qualifier, for about £35. The cheapest round of the week, which is the point."},
+  portland: {name:"Royal Troon (Portland)", where:"Ayrshire", green:137.8125, caddie:75, tip:40, trolley:0, budgetCaddie:false, tee:"", booked:false,
     rules:"Men's handicap limit 20. Visitors on Monday, Tuesday and Thursday only.", caddieNote:"Advance request, subject to availability.",
-    about:"Open Championship venue. All eight of us need to be at 20 or better to play."},
+    about:"Royal Troon's second course, redesigned by Alister MacKenzie: the same clubhouse and visitor days as the Open venue at about a third of its fee. Budgeted at about £125; confirming with the club."},
   prestwick:{name:"Prestwick", where:"Ayrshire", green:378, caddie:70, tip:40, trolley:0, budgetCaddie:true, tee:"", booked:false,
     rules:"Thursday visitor times 10:10 to 11:30 and 2:44 to 3:32.", caddieNote:"Book at least a week ahead.",
     about:"The birthplace of the Open, about fifteen minutes from the house."}
@@ -521,8 +518,8 @@ const COURSES = {
    pencilled in until the vote settles. When a round is BOOKED, set pick to the booked course
    and decided to true: that closes the vote for good, whatever anyone changes afterwards.     */
 const SLOTS = {
-  wed: {label:"Wednesday, Sep 13", options:["turnberry","wgailes","dundonald","gailes"], pick:"turnberry", decided:false},
-  thu: {label:"Thursday, Sep 14",  options:["troon","prestwick"],                        pick:"troon",     decided:false}
+  wed: {label:"Wednesday, Sep 13", options:["krb","gailes","lochgreen"], pick:"gailes",   decided:false},
+  thu: {label:"Thursday, Sep 14",  options:["prestwick","portland"],      pick:"portland", decided:false}
 };
 
 const DAYS = [
@@ -612,9 +609,9 @@ const FLIGHTS = {
    Do not rename an id once people have voted: answers are stored under it.                    */
 const VOTES = [
   {id:"wed", kind:"poll", slot:"wed", title:"Wednesday's round, Sep 13", by:"2027-01-31",
-    text:"The biggest swing in cost. Western Gailes books by enquiry with a 50% non-refundable deposit, and Turnberry opens about a year out, so we settle this with Thursday's round and enquire straight away."},
+    text:"Turnberry's Ailsa (£545 after 1 PM, £1,000 before) came off the ballot on cost: on its own it costs more than the three options here put together. King Robert the Bruce is Turnberry's second course and its sheet opens about a year out; Gailes Links and Troon Links book by phone or email, so we settle this with Thursday's round and enquire straight away."},
   {id:"thu", kind:"poll", slot:"thu", title:"Thursday's round, Sep 14", by:"2027-01-31",
-    text:"The earliest booking window of the trip. Royal Troon's 2028 visitor diary should open in March or April 2027 and most times go within a month, so our request has to be ready before it opens."},
+    text:"Royal Troon's Old Course (£430 in 2027) came off the ballot on cost; the Portland shares its clubhouse, visitor days and handicap limit. Royal Troon's 2028 visitor diary should open in March or April 2027 and most times go within a month, so our request has to be ready before it opens. Prestwick is paid in full at booking."},
   {id:"rules", kind:"poll", title:"Drop-out and cost-sharing rules", by:"2027-01-31", closed:false, pick:"", outcome:"",
     text:"Proposal: houses and van are split equally by eight, golf is paid per player, and anyone who drops out covers their own non-refundable costs unless a replacement takes the spot. Needs settling before the first non-refundable golf deposit.",
     options:[
@@ -642,7 +639,7 @@ const DETAILS = { handicap:"2027-01-31", passport:"2027-09-01" };
 
 /* Decisions the organiser makes and reports. by = YYYY-MM-DD. status: "Open" or "Decided".  */
 const DECISIONS = [
-  {title:"Tee time targets", text:"Morning at Balcomie before the drive west; after 1 PM at Turnberry if it is chosen.", by:"2027-01-31", status:"Open", outcome:""},
+  {title:"Tee time targets", text:"Morning at Balcomie before the drive west. Prestwick's Thursday visitor windows are 10:10 to 11:30 and 2:44 to 3:32; Troon Links takes visitors 10 to 11 AM and 1 to 2 PM.", by:"2027-01-31", status:"Open", outcome:""},
   {title:"Deposits and paying back", text:"One person fronts the bookings; a reimbursement schedule and method will follow before the first golf deposit.", by:"2027-01-31", status:"Open", outcome:""},
   {title:"Old Course booking route", text:"Two applications of four in the autumn 2027 window, then the daily ballot and the singles draw. The step-by-step plan is at the top of the Golf tab.", by:"2027-08-15", status:"Open", outcome:""},
   {title:"Old Course fourballs", text:"The application takes four golfers at a time, so one four could win and the other miss. How the two fours are picked, and what we do if only one gets a time, will be set before we apply.", by:"2027-08-15", status:"Open", outcome:""},
@@ -660,11 +657,11 @@ const DECISIONS = [
    when = the day or date range. who = who has to act. what = the action. why = the reason.    */
 const TIMELINE = [
   {when:"By Jan 31, 2027", who:"Everyone", est:false, what:"Lock in your votes on both Ayrshire rounds and the drop-out rules, and enter your handicap index.",
-    why:"Royal Troon is the first tee sheet to open, and its limit of 20 means we need every index before choosing it. Chris needs the group's Thursday choice, and agreed rules on who covers what, before paying any deposit we can't get back."},
+    why:"Royal Troon is the first tee sheet to open, and its limit of 20 (Portland included) means we need every index before choosing it. Chris needs the group's Thursday choice, and agreed rules on who covers what, before paying any deposit we can't get back."},
   {when:"Feb 1 to Feb 12, 2027", who:"Chris", est:false, what:"Email the two Ayrshire clubs the group chose.",
-    why:"Royal Troon is asked for the exact day its 2028 visitor diary opens. Western Gailes and Dundonald have no opening day and take requests by email, so asking early gets the best pick of times. Western Gailes then wants a 50% non-refundable deposit within three weeks of holding a time."},
+    why:"Royal Troon is asked for the exact day its 2028 visitor diary opens. Turnberry opens its sheet about a year ahead, and Gailes Links and Troon Links take requests by phone or email, so asking early gets the best pick of times."},
   {when:"Mar 22 to Apr 30, 2027", who:"Chris", est:true, what:"Book Thursday's round on the day the tee sheet opens.",
-    why:"Royal Troon has opened the following year's diary between late March and late April, and most times are gone within a month. If the group picks Prestwick instead, the same window is used; it is paid in full at booking."},
+    why:"Royal Troon has opened the following year's diary between late March and late April, and most times are gone within a month; the Portland is on the same diary. If the group picks Prestwick instead, the same window is used; it is paid in full at booking."},
   {when:"By Aug 1, 2027", who:"Everyone", est:false, what:"Check that the handicap index, home club and certificate you entered on the Decisions tab are current.",
     why:"The Old Course application needs an index and home club for every golfer, the window lasts about two weeks, and its dates are only announced a few weeks ahead."},
   {when:"By Aug 31, 2027", who:"Everyone", est:false, what:"Answer the driver question.",
@@ -717,11 +714,10 @@ const PLACES = {
   jigger:   {kind:"pub",    name:"The Jigger Inn", at:[56.3441,-2.8108], q:"Jigger Inn, St Andrews",        region:"Fife", note:"Beside the 17th, the Road Hole."},
   criterion:{kind:"pub",    name:"The Criterion", at:[56.3396,-2.7946], q:"The Criterion, South Street, St Andrews", region:"Fife", note:"The Crit, on South Street."},
   ayr:      {kind:"house",  house:1, at:[55.51529,-4.48063], q:"Smithfield House, Tarbolton KA5 5LX",     region:"Ayrshire"},
-  turnberry:{kind:"course", at:[55.3153,-4.8327], q:"Trump Turnberry Ailsa Golf Course",            region:"Ayrshire"},
-  wgailes:  {kind:"course", at:[55.5834,-4.6623], q:"Western Gailes Golf Club, Irvine",             region:"Ayrshire"},
-  dundonald:{kind:"course", at:[55.5840,-4.6518], q:"Dundonald Links, Irvine",                      region:"Ayrshire"},
+  krb:      {kind:"course", at:[55.3153,-4.8327], q:"Trump Turnberry King Robert the Bruce Course", region:"Ayrshire"},
   gailes:   {kind:"course", at:[55.5903,-4.6477], approx:true, q:"Glasgow Golf Club Gailes Links, Irvine", region:"Ayrshire"},
-  troon:    {kind:"course", at:[55.5328,-4.6504], q:"Royal Troon Golf Club",                        region:"Ayrshire"},
+  lochgreen:{kind:"course", at:[55.5362,-4.6428], approx:true, q:"Troon Links, Harling Drive, Troon",       region:"Ayrshire"},
+  portland: {kind:"course", at:[55.5328,-4.6504], q:"Royal Troon Golf Club",                        region:"Ayrshire"},
   prestwick:{kind:"course", at:[55.5014,-4.6153], q:"Prestwick Golf Club",                          region:"Ayrshire"}
 };
 /* Each day's stops, in order, keyed by the date in DAYS. "@" is that day's round (so the two
@@ -729,8 +725,8 @@ const PLACES = {
 const ROUTES = {9:["edi","@","fife"], 10:["fife","@"], 11:["fife","@"], 12:["fife","@","ayr"], 13:["ayr","@","ayr"], 14:["ayr","@","ayr"], 15:["ayr",["gla","edi"]]};
 /* Time between two places, either direction. Keys are the two ids in alphabetical order.     */
 const LEGS = {"balgove|edi":"1 hr 15 min drive", "edi|fife":"1 hr 15 min drive", "balgove|fife":"5 min drive", "fife|jubilee":"About 15 min on foot", "fife|old":"5 min on foot",
-  "balcomie|fife":"25 min drive", "ayr|balcomie":"2 hr 30 min drive", "ayr|turnberry":"40 min drive", "ayr|troon":"15 to 20 min drive", "ayr|prestwick":"15 to 20 min drive",
-  "ayr|wgailes":"About 25 min drive", "ayr|dundonald":"About 25 min drive", "ayr|gailes":"About 25 min drive", "ayr|gla":"45 min drive", "ayr|edi":"1 hr 30 min drive"};
+  "balcomie|fife":"25 min drive", "ayr|balcomie":"2 hr 30 min drive", "ayr|krb":"40 min drive", "ayr|portland":"15 to 20 min drive", "ayr|prestwick":"15 to 20 min drive",
+  "ayr|lochgreen":"15 to 20 min drive", "ayr|gailes":"About 25 min drive", "ayr|gla":"45 min drive", "ayr|edi":"1 hr 30 min drive"};
 /* Rough waypoints so the long drives bend along the real roads instead of crossing the sea.
    Written in the direction of the key; the map reverses them when driving the other way.     */
 const M77 = [[55.60,-4.52],[55.66,-4.44],[55.77,-4.36],[55.83,-4.31]];           // Kilmarnock up to Glasgow
@@ -741,7 +737,7 @@ const VIA = {
   "ayr|balcomie": M77.concat([[55.845,-4.20],[55.86,-3.75],[55.94,-3.41]], FORTH.slice().reverse(), [[56.125,-3.20],[56.20,-3.00],[56.223,-2.70],[56.26,-2.63]]),
   "ayr|edi":      M77.concat([[55.845,-4.20],[55.86,-3.75],[55.94,-3.41]]),
   "ayr|gla":      M77,
-  "ayr|turnberry":[[55.46,-4.60],[55.355,-4.68]]
+  "ayr|krb":      [[55.46,-4.60],[55.355,-4.68]]
 };
 
 /* EXPENSES
@@ -883,8 +879,7 @@ function hcpFlag(){
   if(!raw) return onFile("hcp") ? `<span class="pos">On file: ${stat(S.who).handicap_index}. Type a new number to replace it.</span>` : "";
   if(isNaN(n)) return `<span class="neg">Enter a number, like 12.4.</span>`;
   if(n > 36) return `<span class="neg">Above the Old Course limit of 36. Tell ${TRIP.organiser}.</span>`;
-  if(n > 24) return `<span class="neg">Fine for the Old Course, but above Western Gailes (24) and Royal Troon (20). Keep that in mind when you vote.</span>`;
-  if(n > 20) return `<span class="neg">Fine everywhere except Royal Troon, which caps men at 20. Keep that in mind for Thursday's vote.</span>`;
+  if(n > 20) return `<span class="neg">Fine everywhere except Royal Troon, which caps men at 20 on the Portland too. Keep that in mind for Thursday's vote.</span>`;
   return `<span class="pos">Within the limit at every course on the list.</span>`;
 }
 function dobFlag(){
@@ -950,7 +945,7 @@ function home(){
   ];
   const open = todo.filter(t => !t[0]).length;
   const golf = usd(golfGBP(g)), total = TRIP.flightUSD + sharedUSD() + golf;
-  const warn = (idx !== null && idx > 20 && S.thu === "troon")
+  const warn = (idx !== null && idx > 20 && S.thu === "portland")
     ? `<p class="note" style="color:var(--heather)">Your index is above Royal Troon's limit of 20. Tell ${TRIP.organiser} before the Ayrshire vote.</p>` : "";
 
   const pr = progress(), ask = V.loaded && !V.error && (pr.left || pr.dirty);
@@ -1051,8 +1046,7 @@ function golf(){
 
   <div class="block"><h3>Handicaps</h3><div class="sheet">
     <div class="row"><div class="l"><b>Old Course</b><span>Certificate required at the starter</span></div><div class="r">36 or better</div></div>
-    <div class="row"><div class="l"><b>Royal Troon</b><span>If chosen for Thursday</span></div><div class="r">20 or better</div></div>
-    <div class="row"><div class="l"><b>Western Gailes</b><span>If chosen for Wednesday</span></div><div class="r">24 or better</div></div>
+    <div class="row"><div class="l"><b>Royal Troon (Portland)</b><span>If chosen for Thursday</span></div><div class="r">20 or better</div></div>
   </div><p class="note">Limits can change; each is confirmed again when we book.</p></div>`;
 }
 
@@ -1172,7 +1166,7 @@ function costs(){
 
   <div class="block"><h3>When money moves</h3><div class="sheet">
     <div class="row"><div class="l"><b>House deposits</b><span>Paid Oct 5, 2026. ${$u(usd(paid/TRIP.size))} each, fronted by ${TRIP.organiser}.</span></div><div class="r num">${$g(paid)}</div></div>
-    <div class="row"><div class="l"><b>Ayrshire green fees</b><span>From spring 2027. Western Gailes takes a 50% non-refundable deposit; Prestwick and Gailes Links are paid in full at booking.</span></div><div class="r">2027</div></div>
+    <div class="row"><div class="l"><b>Ayrshire green fees</b><span>From spring 2027. Prestwick and Gailes Links are paid in full at booking; Turnberry, Royal Troon and Troon Links confirm their terms when a time is held.</span></div><div class="r">2027</div></div>
     <div class="row"><div class="l"><b>Old Course and Jubilee</b><span>Paid in full within about two weeks of a successful application, around November 2027.</span></div><div class="r num">${$g(OLD_COURSE.packageGBP)}<small>each</small></div></div>
     <div class="row"><div class="l"><b>St Andrews house balance</b><span>Charges automatically ${HOUSES[0].balanceDate}; last day to cancel free</span></div><div class="r num">${$g(HOUSES[0].balance)}</div></div>
     <div class="row"><div class="l"><b>Tarbolton house balance</b><span>Charges automatically ${HOUSES[1].balanceDate}; last day to cancel free</span></div><div class="r num">${$g(HOUSES[1].balance)}</div></div>
@@ -1257,7 +1251,7 @@ function handicapCard(){
   const off = !S.who, all = GOLFERS.filter(x => stat(x.id).handicap_index != null), certs = GOLFERS.filter(x => stat(x.id).has_certificate).length;
   const v = {by:DETAILS.handicap};
   return `<div class="sheet votebox vcard" id="q-hcp"><div class="head"><div><h3>Handicap index and certificate</h3>${dueLine(v)}</div>${all.length === TRIP.size && certs === TRIP.size ? tag("ok","Complete") : tag("vote",all.length+" of "+TRIP.size+" in")}</div>
-    <p class="why">The Old Course wants an official index of 36 or better and proof of it at the starter. Royal Troon caps men at 20 and Western Gailes at 24, so the group needs everyone's index before the Ayrshire vote closes.</p>
+    <p class="why">The Old Course wants an official index of 36 or better and proof of it at the starter. Royal Troon caps men at 20 on both of its courses, so the group needs everyone's index before Thursday's vote closes.</p>
     <div class="vbody">
       <div class="two"><label class="field"><span>Your handicap index</span><input data-det="hcp" value="${esc(D.draft.hcp)}" inputmode="decimal" autocomplete="off" maxlength="5" placeholder="12.4" ${off ? "disabled" : ""}></label>
       <label class="field"><span>Home club or golf association</span><input data-det="club" value="${esc(D.draft.club)}" autocomplete="off" maxlength="80" placeholder="As it appears in GHIN" ${off ? "disabled" : ""}></label></div>
