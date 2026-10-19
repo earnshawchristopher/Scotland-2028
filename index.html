@@ -487,16 +487,31 @@ const GOLFERS = [
 const COURSES = {
   balgove:  {name:"Balgove", where:"St Andrews Links", green:16.5375, caddie:0, tip:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
     rules:"", caddieNote:"Not needed. Nine holes, carry a few clubs.",
-    about:"A nine-hole par 3 to shake off the flight on arrival day."},
+    about:"A nine-hole short course to shake off the flight. £15 and no booking rush."},
+  strathtyrum:{name:"Strathtyrum Course", where:"St Andrews Links", green:66.15, caddie:0, tip:0, trolley:6, budgetCaddie:false, tee:"", booked:false,
+    rules:"", caddieNote:"Not offered as standard; take a trolley.",
+    about:"Eighteen holes on the gentlest of the St Andrews courses: wide fairways, few bunkers, proper greens. £60, and a real round after the flight."},
+  eden:     {name:"Eden Course", where:"St Andrews Links", green:88.2, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
+    rules:"Pairs with the Old Course in the advance application.", caddieNote:"Optional. Most visitors take a trolley here.",
+    about:"Harry Colt's 1914 links, a local favourite with fast, contoured greens. £80, about half the Jubilee, and it qualifies as the second course in the Old Course application."},
   jubilee:  {name:"Jubilee Course", where:"St Andrews Links", green:170.8875, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
-    rules:"", caddieNote:"Optional. Most visitors take a trolley here.",
-    about:"Sunday's round, because the Old Course is closed on Sundays. It is also the second course in our Old Course application."},
+    rules:"Pairs with the Old Course in the advance application.", caddieNote:"Optional. Most visitors take a trolley here.",
+    about:"The hardest of the St Andrews courses, out by the beach and exposed to every breeze. £155, the same as the New."},
+  newc:     {name:"New Course", where:"St Andrews Links", green:170.8875, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
+    rules:"Pairs with the Old Course in the advance application.", caddieNote:"Optional. Most visitors take a trolley here.",
+    about:"Old Tom Morris's 1895 links next door to the Old Course, with the same firm, running turf and a double green of its own. £155."},
   old:      {name:"Old Course", where:"St Andrews Links", green:391.3875, caddie:80, tip:40, trolley:6, budgetCaddie:true, tee:"", booked:false,
     rules:"Handicap certificate of 36 or better. Closed Sundays.", caddieNote:"Strongly recommended. Book ahead.",
     about:"The one round that isn't up for debate. Tee times come by advance application or the daily ballot, so this is not guaranteed until we hold a time."},
-  balcomie: {name:"Balcomie Links", where:"Crail", green:187.425, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
+  balcomie: {name:"Balcomie Links", where:"Crail", green:189, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
     rules:"", caddieNote:"Optional. Single caddie, or a forecaddie for a fourball at about £200. Request in advance.",
-    about:"A morning round on the way out of Fife, then the drive west."},
+    about:"The 2024 favourite: Old Tom Morris's 1895 clifftop links, seventh oldest club in the world. £180 in 2027. A morning round, then the drive west."},
+  craighead:{name:"Craighead Links", where:"Crail", green:126, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
+    rules:"", caddieNote:"Optional. Same caddie arrangements as Balcomie.",
+    about:"Crail's second course, Gil Hanse's first design (1998), on the headland above Balcomie. £120 in 2027, a third less than Balcomie, same clubhouse."},
+  anstruther:{name:"Anstruther", where:"East Neuk", green:55.125, caddie:0, tip:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
+    rules:"Nine holes, played twice for eighteen.", caddieNote:"Not offered.",
+    about:"A nine-hole seaside course ten minutes from Crail with one of Scotland's most famous short holes, the Rockies. £50 for eighteen and a quick morning before the drive."},
   krb:      {name:"King Robert the Bruce", where:"Turnberry", green:275.625, caddie:85, tip:40, trolley:35, budgetCaddie:false, tee:"", booked:false,
     rules:"Visitors welcome daily; the 2028 sheet opens about a year ahead.", caddieNote:"Optional. Turnberry caddies must be pre-booked.",
     about:"Turnberry's second course: the same clubhouse, range and lighthouse, with the cliff-top holes at 8 and 9, for about a quarter of the Ailsa's afternoon fee. Budgeted at the 2026 peak rate of £250."},
@@ -514,23 +529,28 @@ const COURSES = {
     about:"The birthplace of the Open, about fifteen minutes from the house."}
 };
 
-/* The two Ayrshire rounds are a group vote on the Decisions tab. "pick" is only what is
-   pencilled in until the vote settles. When a round is BOOKED, set pick to the booked course
-   and decided to true: that closes the vote for good, whatever anyone changes afterwards.     */
+/* Every round except the Old Course is a group vote on the Decisions tab. "pick" is only what
+   is pencilled in until the vote settles. When a round is BOOKED, set pick to the booked course
+   and decided to true: that closes the vote for good, whatever anyone changes afterwards.
+   cad = the key each golfer's caddie answer for that day is stored under (null: no caddies).
+   Sunday's options are limited to courses that pair with the Old Course in the application.  */
 const SLOTS = {
-  wed: {label:"Wednesday, Sep 13", options:["krb","gailes","lochgreen"], pick:"gailes",   decided:false},
-  thu: {label:"Thursday, Sep 14",  options:["prestwick","portland"],      pick:"portland", decided:false}
+  sat: {label:"Saturday, Sep 9",   region:"Fife",     options:["balgove","strathtyrum","eden"], pick:"balgove",  cad:null,      decided:false},
+  sun: {label:"Sunday, Sep 10",    region:"Fife",     options:["jubilee","newc","eden"],        pick:"jubilee",  cad:"cad_sun", decided:false},
+  tue: {label:"Tuesday, Sep 12",   region:"Fife",     options:["balcomie","craighead","anstruther"], pick:"balcomie", cad:"cad_tue", decided:false},
+  wed: {label:"Wednesday, Sep 13", region:"Ayrshire", options:["krb","gailes","lochgreen"],     pick:"gailes",   cad:"cad_wed", decided:false},
+  thu: {label:"Thursday, Sep 14",  region:"Ayrshire", options:["prestwick","portland"],         pick:"portland", cad:"cad_thu", decided:false}
 };
 
 const DAYS = [
-  {dow:"Sat", d:9,  base:"St Andrews",       round:"balgove",  sleep:"Townhouse, St Andrews",
+  {dow:"Sat", d:9,  base:"St Andrews",       slot:"sat",       sleep:"Townhouse, St Andrews",
     plan:["Land at Edinburgh by about 9:30 AM. United 118 from Chicago is due at 8:25 AM.","Collect the van.","About 1 hr 15 min from Edinburgh Airport to St Andrews.","House check-in from 4:00 PM."]},
-  {dow:"Sun", d:10, base:"St Andrews",       round:"jubilee",  sleep:"Townhouse, St Andrews",
+  {dow:"Sun", d:10, base:"St Andrews",       slot:"sun",       sleep:"Townhouse, St Andrews",
     plan:["The Old Course is closed on Sundays, and open to walk as a public park."]},
   {dow:"Mon", d:11, base:"St Andrews",       round:"old",      sleep:"Townhouse, St Andrews",
     plan:["Subject to getting a tee time.","Bring your handicap certificate to the starter."]},
-  {dow:"Tue", d:12, base:"Fife to Ayrshire", round:"balcomie", sleep:"Smithfield House, Tarbolton",
-    plan:["Check out of the townhouse by 10:00 AM, bags in the van.","About 25 min to Crail for a morning tee time.","About 2 hr 30 min drive to Tarbolton after the round.","House check-in from 4:00 PM."]},
+  {dow:"Tue", d:12, base:"Fife to Ayrshire", slot:"tue",       sleep:"Smithfield House, Tarbolton",
+    plan:["Check out of the townhouse by 10:00 AM, bags in the van.","A morning tee time, then the long drive.","About 2 hr 30 min drive to Tarbolton after the round.","House check-in from 4:00 PM."]},
   {dow:"Wed", d:13, base:"Tarbolton",        slot:"wed",       sleep:"Smithfield House, Tarbolton", plan:[]},
   {dow:"Thu", d:14, base:"Tarbolton",        slot:"thu",       sleep:"Smithfield House, Tarbolton", plan:["Last night. Settle up the games."]},
   {dow:"Fri", d:15, base:"Homeward",         round:null,       sleep:"",
@@ -608,6 +628,12 @@ const FLIGHTS = {
              settled for good. For the two course votes use SLOTS[...].decided instead.
    Do not rename an id once people have voted: answers are stored under it.                    */
 const VOTES = [
+  {id:"sat", kind:"poll", slot:"sat", title:"Saturday's round, Sep 9", by:"2027-01-31",
+    text:"Arrival day, after an overnight flight and the drive from Edinburgh. Balgove is nine short holes; Strathtyrum and the Eden are full rounds for golfers who land ready to go. None of these needs a season-ahead booking."},
+  {id:"sun", kind:"poll", slot:"sun", title:"Sunday's round, Sep 10", by:"2027-01-31",
+    text:"The Old Course is closed on Sundays. This round is also the second course in our Old Course application, and the application is one price whichever of these we name, so the saving on the Eden only shows up if we end up in the daily ballot. It still halves the day's cost on the ballot route."},
+  {id:"tue", kind:"poll", slot:"tue", title:"Tuesday's round, Sep 12", by:"2027-01-31",
+    text:"A morning round in the East Neuk before the two-and-a-half-hour drive west. Balcomie is the course we loved in 2024; Craighead is Crail's second course at a third less; Anstruther is a quick, cheap nine twice round. Crail sells 2028 by autumn 2027 and groups over four book by email."},
   {id:"wed", kind:"poll", slot:"wed", title:"Wednesday's round, Sep 13", by:"2027-01-31",
     text:"Turnberry's Ailsa (£545 after 1 PM, £1,000 before) came off the ballot on cost: on its own it costs more than the three options here put together. King Robert the Bruce is Turnberry's second course and its sheet opens about a year out; Gailes Links and Troon Links book by phone or email, so we settle this with Thursday's round and enquire straight away."},
   {id:"thu", kind:"poll", slot:"thu", title:"Thursday's round, Sep 14", by:"2027-01-31",
@@ -619,7 +645,7 @@ const VOTES = [
       {id:"disagree", label:"Disagree", note:""}
     ]},
   {id:"caddie", kind:"own", title:"Caddies, round by round", by:"2027-11-15", closed:false,
-    keys:["cad_jubilee","cad_old","cad_balcomie","cad_wed","cad_thu"],
+    keys:["cad_sun","cad_old","cad_tue","cad_wed","cad_thu"],
     text:"Your call for each round, and it sets your golf budget. Caddies are requested once the last tee time is booked. Fee and tip are paid in cash on the day."},
   {id:"driver", kind:"own", title:"Volunteer drivers", by:"2027-08-31", closed:false,
     text:"We need at least two people willing to drive a large van on the left, more if we take two vehicles. Named before the van is booked, about a year out.",
@@ -648,7 +674,7 @@ const DECISIONS = [
   {title:"Vehicle setup", text:"Everyone is bringing their own clubs, so eight golfers and eight bags need a nine-seater plus a second vehicle. National preferred.", by:"2027-09-30", status:"Open", outcome:""},
   {title:"Room assignments", text:"Assigned or drawn for each house.", by:"2028-07-01", status:"Open", outcome:""},
   {title:"Foursomes and games", text:"Pairings rotate daily, with one trip-long game.", by:"2028-08-01", status:"Open", outcome:""},
-  {title:"Arrival-day par 3", text:"Balgove is pencilled in. It needs no season-ahead booking, just a call a few days before.", by:"2028-09-01", status:"Open", outcome:""}
+  {title:"Arrival-day tee time", text:"Whichever course wins Saturday's vote is booked a few weeks out; none of the three needs a season-ahead booking.", by:"2028-08-01", status:"Open", outcome:""}
 ];
 
 /* WHY THESE DATES: the booking calendar, in order. No club has published 2028 dates yet, so
@@ -656,7 +682,7 @@ const DECISIONS = [
    the dates and set est:false as each club announces.
    when = the day or date range. who = who has to act. what = the action. why = the reason.    */
 const TIMELINE = [
-  {when:"By Jan 31, 2027", who:"Everyone", est:false, what:"Lock in your votes on both Ayrshire rounds and the drop-out rules, and enter your handicap index.",
+  {when:"By Jan 31, 2027", who:"Everyone", est:false, what:"Lock in your votes on all five open rounds and the drop-out rules, and enter your handicap index.",
     why:"Royal Troon is the first tee sheet to open, and its limit of 20 (Portland included) means we need every index before choosing it. Chris needs the group's Thursday choice, and agreed rules on who covers what, before paying any deposit we can't get back."},
   {when:"Feb 1 to Feb 12, 2027", who:"Chris", est:false, what:"Email the two Ayrshire clubs the group chose.",
     why:"Royal Troon is asked for the exact day its 2028 visitor diary opens. Turnberry opens its sheet about a year ahead, and Gailes Links and Troon Links take requests by phone or email, so asking early gets the best pick of times."},
@@ -670,7 +696,7 @@ const TIMELINE = [
     why:"Chris sets the arrival window and books the group in mid-October. A passport that runs out before March 15, 2029 needs renewing first, because the ticket has to match the passport you travel on."},
   {when:"Aug 23 to Oct 6, 2027", who:"Chris", est:true, what:"Submit two Old Course applications of four golfers each.",
     why:"The window has moved later each year: Aug 26 to Sep 4 in 2024, Sep 10 to 22 in 2025, Sep 23 to Oct 6 in 2026. It is a draw, so being first earns nothing, but an entry after the closing minute is not counted."},
-  {when:"Sep 9 to Sep 30, 2027", who:"Chris", est:true, what:"Book Wednesday's round, Balcomie and the van.",
+  {when:"Sep 9 to Sep 30, 2027", who:"Chris", est:true, what:"Book Wednesday's round, Tuesday's Crail round and the van.",
     why:"Turnberry and van hire open about twelve months before the date. Crail has the next season on sale by autumn; groups over four book by email and pay within five days."},
   {when:"By Oct 31, 2027", who:"St Andrews Links", est:true, what:"Application results arrive by email. Winners pay in full within about two weeks.",
     why:"A missed payment loses the tee time. This is also the day we know whether anyone needs the ballot plan on the Golf tab."},
@@ -688,9 +714,9 @@ const OLD_PLAN = [
   {when:"Before Aug 1, 2027", what:"Make all eight of us eligible.",
     how:"Every golfer needs an official handicap index of 36 or better and the certificate to prove it at the starter. Enter your index and home club and upload your certificate on the Decisions tab. One missing golfer holds up a whole fourball's entry."},
   {when:"Aug 23 to Oct 6, 2027 (projected)", what:"Enter the advance draw twice, as two fourballs.",
-    how:"An application takes four golfers at most, so eight of us means two separate entries, each asking for Jubilee on Sunday, Sep 10 and the Old Course on Monday, Sep 11. Both go in during the first days of the window so there is time to fix a rejected detail. The draw happens after the window closes."},
+    how:"An application takes four golfers at most, so eight of us means two separate entries, each asking for Sunday's course (whichever of the New, Jubilee or Eden wins the vote) on Sep 10 and the Old Course on Monday, Sep 11. Both go in during the first days of the window so there is time to fix a rejected detail. The draw happens after the window closes."},
   {when:"By Oct 31, 2027", what:"Act on the result the same week.",
-    how:"Both fours win: we pay and the Old Course is done. One four wins: they pay, and the other four move to the ballot. Neither wins: all eight move to the ballot, and Chris books Jubilee for Sunday directly. The budget assumes the application succeeds; a ballot time costs about £220 less per golfer."},
+    how:"Both fours win: we pay and the Old Course is done. One four wins: they pay, and the other four move to the ballot. Neither wins: all eight move to the ballot, and Chris books Sunday's course directly. The budget assumes the application succeeds; a ballot time costs about £220 less per golfer."},
   {when:"Sep 7, 9 and 10, 2028, by 2 PM UK time (8 AM Central)", what:"Enter the daily ballot for every day we could play.",
     how:"Entries close two days before play and results post after 4:30 PM. Thursday, Sep 7 is for Saturday, Sep 9, entered online from home and only if flights land early enough. Saturday, Sep 9 is for Monday, Sep 11, the day we keep clear. Sunday, Sep 10 is for Tuesday, Sep 12, which would replace Balcomie. Each fourball without a time enters separately. About one entry in ten won on an average day in 2024, so three tries give a fourball a little better than one chance in four."},
   {when:"Sep 10 and 11, 2028, 9 AM to 4 PM", what:"Last resort: the singles draw, in person.",
@@ -707,9 +733,14 @@ const PLACES = {
   gla:      {kind:"air",    name:"Glasgow Airport",   at:[55.8700,-4.4345], q:"Glasgow Airport",   region:"Airports", note:"A possible airport home. Half the drive from Tarbolton."},
   fife:     {kind:"house",  house:0, at:[56.33956,-2.80334], q:"1b Kinburn Terrace, St Andrews KY16 9DU", region:"Fife"},
   balgove:  {kind:"course", at:[56.3490,-2.8191], q:"Balgove Course, St Andrews",                   region:"Fife"},
+  strathtyrum:{kind:"course", at:[56.3505,-2.8230], q:"Strathtyrum Course, St Andrews",             region:"Fife", note:"Starts from the Eden Clubhouse."},
+  eden:     {kind:"course", at:[56.3505,-2.8230], q:"Eden Course, St Andrews",                      region:"Fife", note:"Starts from the Eden Clubhouse."},
   jubilee:  {kind:"course", at:[56.3458,-2.8084], q:"St Andrews Links Clubhouse",                   region:"Fife", note:"Starts from the Links Clubhouse."},
+  newc:     {kind:"course", at:[56.3458,-2.8084], q:"New Course, St Andrews",                       region:"Fife", note:"Starts from the Links Clubhouse."},
   old:      {kind:"course", at:[56.3437,-2.8023], q:"Old Course, St Andrews",                       region:"Fife"},
   balcomie: {kind:"course", at:[56.2807,-2.5946], q:"Crail Golfing Society, Balcomie Clubhouse",    region:"Fife"},
+  craighead:{kind:"course", at:[56.2770,-2.5990], q:"Crail Golfing Society, Craighead Links",        region:"Fife"},
+  anstruther:{kind:"course", at:[56.2205,-2.7120], approx:true, q:"Anstruther Golf Club",            region:"Fife"},
   dunvegan: {kind:"pub",    name:"The Dunvegan",  at:[56.3422,-2.8018], q:"The Dunvegan Hotel, St Andrews", region:"Fife", note:"A wedge from the 18th green."},
   jigger:   {kind:"pub",    name:"The Jigger Inn", at:[56.3441,-2.8108], q:"Jigger Inn, St Andrews",        region:"Fife", note:"Beside the 17th, the Road Hole."},
   criterion:{kind:"pub",    name:"The Criterion", at:[56.3396,-2.7946], q:"The Criterion, South Street, St Andrews", region:"Fife", note:"The Crit, on South Street."},
@@ -724,8 +755,9 @@ const PLACES = {
    Ayrshire days follow the vote). A list inside the list means "one of these".               */
 const ROUTES = {9:["edi","@","fife"], 10:["fife","@"], 11:["fife","@"], 12:["fife","@","ayr"], 13:["ayr","@","ayr"], 14:["ayr","@","ayr"], 15:["ayr",["gla","edi"]]};
 /* Time between two places, either direction. Keys are the two ids in alphabetical order.     */
-const LEGS = {"balgove|edi":"1 hr 15 min drive", "edi|fife":"1 hr 15 min drive", "balgove|fife":"5 min drive", "fife|jubilee":"About 15 min on foot", "fife|old":"5 min on foot",
-  "balcomie|fife":"25 min drive", "ayr|balcomie":"2 hr 30 min drive", "ayr|krb":"40 min drive", "ayr|portland":"15 to 20 min drive", "ayr|prestwick":"15 to 20 min drive",
+const LEGS = {"balgove|edi":"1 hr 15 min drive", "edi|strathtyrum":"1 hr 15 min drive", "eden|edi":"1 hr 15 min drive", "edi|fife":"1 hr 15 min drive",
+  "balgove|fife":"5 min drive", "fife|strathtyrum":"5 min drive", "eden|fife":"5 min drive", "fife|jubilee":"About 15 min on foot", "fife|newc":"About 15 min on foot", "fife|old":"5 min on foot",
+  "balcomie|fife":"25 min drive", "craighead|fife":"25 min drive", "anstruther|fife":"20 min drive", "ayr|balcomie":"2 hr 30 min drive", "ayr|craighead":"2 hr 30 min drive", "anstruther|ayr":"2 hr 25 min drive", "ayr|krb":"40 min drive", "ayr|portland":"15 to 20 min drive", "ayr|prestwick":"15 to 20 min drive",
   "ayr|lochgreen":"15 to 20 min drive", "ayr|gailes":"About 25 min drive", "ayr|gla":"45 min drive", "ayr|edi":"1 hr 30 min drive"};
 /* Rough waypoints so the long drives bend along the real roads instead of crossing the sea.
    Written in the direction of the key; the map reverses them when driving the other way.     */
@@ -735,6 +767,10 @@ const VIA = {
   "edi|fife":     [[56.005,-3.412],[56.085,-3.375],[56.19,-3.15],[56.318,-3.01],[56.36,-2.89]],
   "balgove|edi":  [[56.36,-2.89],[56.318,-3.01],[56.19,-3.15],[56.085,-3.375],[56.005,-3.412]],
   "ayr|balcomie": M77.concat([[55.845,-4.20],[55.86,-3.75],[55.94,-3.41]], FORTH.slice().reverse(), [[56.125,-3.20],[56.20,-3.00],[56.223,-2.70],[56.26,-2.63]]),
+  "ayr|craighead":M77.concat([[55.845,-4.20],[55.86,-3.75],[55.94,-3.41]], FORTH.slice().reverse(), [[56.125,-3.20],[56.20,-3.00],[56.223,-2.70],[56.26,-2.63]]),
+  "anstruther|ayr":[[56.215,-2.78],[56.20,-3.00],[56.125,-3.20]].concat(FORTH, [[55.94,-3.41],[55.86,-3.75],[55.845,-4.20]], M77.slice().reverse()),
+  "edi|strathtyrum":[[56.005,-3.412],[56.085,-3.375],[56.19,-3.15],[56.318,-3.01],[56.36,-2.89]],
+  "eden|edi":     [[56.36,-2.89],[56.318,-3.01],[56.19,-3.15],[56.085,-3.375],[56.005,-3.412]],
   "ayr|edi":      M77.concat([[55.845,-4.20],[55.86,-3.75],[55.94,-3.41]]),
   "ayr|gla":      M77,
   "ayr|krb":      [[55.46,-4.60],[55.355,-4.68]]
@@ -778,11 +814,12 @@ const MORE = [
   ["guide","Field guide","Packing, weather, money and etiquette"]
 ];
 const MORE_ICON = svg('<circle cx="5.5" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="18.5" cy="12" r="1.3" fill="currentColor"/>');
-const S = {m:{day:"all", base:"Map"}, tab:"home", who:null, more:false, welcome:false, wed:SLOTS.wed.pick, thu:SLOTS.thu.pick, touched:{},
+const S = {m:{day:"all", base:"Map"}, tab:"home", who:null, more:false, welcome:false, touched:{},
   x:{rows:[], loaded:false, error:"", code:"", role:"", form:false, edit:null, msg:"", busy:false},
   v:{rows:[], loaded:false, error:"", draft:{}, stale:[], fresh:[], note:"", msg:"", busy:false, checking:false},
   d:{status:{}, mine:{}, draft:{}, err:"", up:"", busy:false, admin:null, adminMsg:""}};
 const V = S.v, D = S.d;
+Object.keys(SLOTS).forEach(k => S[k] = SLOTS[k].pick);
 
 const usd = gbp => gbp * TRIP.rate;
 const $u = n => "$" + Math.round(n).toLocaleString("en-US");
@@ -791,7 +828,7 @@ const esc = t => String(t == null ? "" : t).replace(/[&<>"']/g, c => ({"&":"&amp
 const nameOf = id => (GOLFERS.find(g => g.id === id) || {name:id}).name;
 const listOf = a => a.length < 2 ? a.join("") : a.slice(0,-1).join(", ") + " and " + a[a.length-1];
 const allIn = (c, cad) => c.green + (cad ? c.caddie + (c.caddie ? c.tip : 0) : c.trolley);
-const active = () => ["balgove","jubilee","old","balcomie",S.wed,S.thu];
+const active = () => DAYS.map(roundOf).filter(Boolean);
 const roundOf = day => day.slot ? S[day.slot] : day.round;
 const me = () => GOLFERS.find(g => g.id === S.who) || null;
 const tag = (cls, t) => `<span class="tag ${cls}">${t}</span>`;
@@ -809,10 +846,13 @@ const submitted = () => { const r = myRow(); return (r && r.choices) || {}; };
 const dirtyKeys = () => { const s = submitted(); return S.who ? KEYS.filter(k => (V.draft[k] || "") !== (s[k] || "")) : []; };
 /* a golfer's answers: the signed-in golfer sees their own unsaved edits, everyone else's are as submitted */
 function choicesOf(g){ if(!g) return {}; if(g.id === S.who) return V.draft; const r = V.rows.find(x => x.golfer_id === g.id); return (r && r.choices) || {}; }
-const cadKey = id => ["jubilee","old","balcomie"].includes(id) ? "cad_"+id : SLOTS.wed.options.includes(id) ? "cad_wed" : SLOTS.thu.options.includes(id) ? "cad_thu" : null;
+const cadKey = id => id === "old" ? "cad_old" : (SLOTS[slotOf(id)] || {}).cad || null;
+/* answers locked in before Oct 19, 2026 stored Sunday and Tuesday caddies under the course names */
+const LEGACY = {cad_jubilee:"cad_sun", cad_balcomie:"cad_tue"};
+const normChoices = c => { c = c || {}; Object.keys(LEGACY).forEach(k => { if(c[k] && !c[LEGACY[k]]) c[LEGACY[k]] = c[k]; delete c[k]; }); return c; };
 const cadSaid = (g, id) => { const k = cadKey(id), c = k && choicesOf(g)[k]; return c === "yes" ? true : c === "no" ? false : null; };
 const wantsCaddie = (g, id) => { const c = cadSaid(g, id); return c === null ? COURSES[id].budgetCaddie : c; };
-const packagePremium = () => OLD_COURSE.route === "package" ? OLD_COURSE.packageGBP - COURSES.old.green - COURSES.jubilee.green : 0;
+const packagePremium = () => OLD_COURSE.route === "package" ? OLD_COURSE.packageGBP - COURSES.old.green - COURSES[S.sun].green : 0;
 const golfGBP = g => active().reduce((s,id) => s + allIn(COURSES[id], wantsCaddie(g,id)), 0) + packagePremium();
 const sharedUSD = () => usd((HOUSES[0].total + HOUSES[1].total + TRIP.vanHire + TRIP.vanFuel) / TRIP.size);
 
@@ -846,7 +886,7 @@ function verdict(v){
 const frozen = v => v.kind === "poll" ? verdict(v).frozen : (v.closed || pastDue(v.by));
 const slotPick = k => verdict(VOTES.find(v => v.slot === k)).pick;
 const slotOpen = id => Object.keys(SLOTS).some(k => !slotPick(k) && SLOTS[k].options.includes(id));
-/* Which Ayrshire courses the site shows: the settled one if there is one, otherwise the
+/* Which course the site shows for each open day: the settled one if there is one, otherwise the
    golfer's own what-if from the Golf tab, their own vote, or the pencilled-in pick.           */
 function syncSlots(){
   Object.keys(SLOTS).forEach(k => { const p = slotPick(k);
@@ -1014,12 +1054,11 @@ function courseCard(id, when){
 function oldCourseRoutes(){
   const o = OLD_COURSE;
   return `<div class="sheet">
-    <div class="row stack"><div class="l"><b>Advance application ${o.route === "package" ? "(our plan, in the budget)" : ""}</b><span>St Andrews Links sells the Old Course and a second course on consecutive days as one package, by a draw each autumn for the following year. ${$g(o.package2027)} each in 2027, including ${$g(o.credits)} of food and shop credit. Four golfers per application, so we enter as two fourballs and could win one, both or neither.</span></div><div class="r num">${$g(o.packageGBP)}<small>${$u(usd(o.packageGBP))} for Jubilee and Old</small></div></div>
+    <div class="row stack"><div class="l"><b>Advance application ${o.route === "package" ? "(our plan, in the budget)" : ""}</b><span>St Andrews Links sells the Old Course and a second course on consecutive days as one package, by a draw each autumn for the following year. ${$g(o.package2027)} each in 2027, including ${$g(o.credits)} of food and shop credit. Four golfers per application, so we enter as two fourballs and could win one, both or neither.</span></div><div class="r num">${$g(o.packageGBP)}<small>${$u(usd(o.packageGBP))} for ${COURSES[S.sun].name.replace(" Course","")} and Old</small></div></div>
     <div class="row stack"><div class="l"><b>Daily ballot (the backup)</b><span>Drawn two days ahead, in groups of two to four, at the standard green fee. Roughly one in ten entries succeeded on an average day in 2024.</span></div><div class="r num">${$g(COURSES.old.green)}<small>${$u(usd(COURSES.old.green))} green fee</small></div></div>
   </div>`;
 }
 function golf(){
-  const fixed = DAYS.filter(d => d.round);
   const slot = k => { const s = SLOTS[k], v = VOTES.find(x => x.slot === k), d = verdict(v);
     return `<div class="sheet votebox" style="margin-bottom:14px"><div class="head"><h3>${s.label}</h3>${d.state === "closed" ? tag("ok","Booked") : d.state === "final" ? tag("ok","Final") : tag("vote","Group vote")}</div>
     ${s.options.map(id => { const c = COURSES[id], n = (d.t.by[id] || []).length;
@@ -1034,14 +1073,15 @@ function golf(){
   ${oldCourseRoutes()}
   <p class="note">2028 figures are 2027 prices plus 5%.</p></div>
 
-  <div class="block"><h3>The rounds</h3>
+  <div class="block"><h3>The Old Course, Monday, Sep 11</h3>
   <p class="lede" style="margin-bottom:14px">Prices are per person, all-in for 2028: green fee plus caddie and tip where the budget assumes one, or trolley hire where it doesn't.</p>
-  <div class="sheet">${fixed.map(d => courseCard(d.round, `${d.dow}, Sep ${d.d}`)).join("")}</div></div>
+  <div class="sheet">${courseCard("old", "Mon, Sep 11")}</div></div>
 
-  <div class="block"><h3>The Ayrshire rounds</h3>
-  <p class="lede" style="margin-bottom:14px">These two are for all eight of us to decide. Tapping an option here is only a what-if, to see what it does to the itinerary and your cost. Your actual vote goes on the Decisions tab.</p>
-  ${slot("wed")}${slot("thu")}
-  <div class="sheet"><div class="row total"><div class="l"><b>Golf with this pairing</b></div><div class="r num">${$u(usd(golfGBP(null)))}</div></div></div>
+  <div class="block"><h3>The other five rounds</h3>
+  <p class="lede" style="margin-bottom:14px">Every other day is for all eight of us to decide, and every day has a lower-cost option. Tapping an option here is only a what-if, to see what it does to the itinerary and your cost. Your actual vote goes on the Decisions tab.</p>
+  <h4 style="font:600 14px/1.3 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin:0 0 10px">Fife</h4>${slot("sat")}${slot("sun")}${slot("tue")}
+  <h4 style="font:600 14px/1.3 var(--body);letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin:18px 0 10px">Ayrshire</h4>${slot("wed")}${slot("thu")}
+  <div class="sheet"><div class="row total"><div class="l"><b>Golf with these picks</b><span>Green fees, the Old Course package premium, and trolleys or caddies as budgeted</span></div><div class="r num">${$u(usd(golfGBP(null)))}</div></div></div>
   <p class="note"><button class="btn sm" data-tab="decisions">Vote on the Decisions tab</button></p></div>
 
   <div class="block"><h3>Handicaps</h3><div class="sheet">
@@ -1152,14 +1192,14 @@ function costs(){
     <div class="row"><div class="l"><b>Flights</b><span>Rough estimate. Yours will vary by city.</span></div><div class="r num">${$u(TRIP.flightUSD)}<small>Estimate</small></div></div>
     <div class="row"><div class="l"><b>Houses</b><span>Six nights across two houses, split by eight</span></div><div class="r num">${$u(lodging)}<small>Confirmed</small></div></div>
     <div class="row"><div class="l"><b>Van and fuel</b><span>Likely to rise with a second vehicle</span></div><div class="r num">${$u(van)}<small>Estimate</small></div></div>
-    <div class="row"><div class="l"><b>Golf</b><span>${COURSES[S.wed].name} and ${COURSES[S.thu].name} in Ayrshire</span></div><div class="r num">${$u(golf)}<small>Estimate</small></div></div>
+    <div class="row"><div class="l"><b>Golf</b><span>Six rounds with the courses currently picked; see the Golf tab</span></div><div class="r num">${$u(golf)}<small>Estimate</small></div></div>
     <div class="row total"><div class="l"><b>Estimated total</b></div><div class="r num">${$u(TRIP.flightUSD + lodging + van + golf)}</div></div>
   </div>
   <p class="note">Not included: food and drink, travel insurance, souvenirs. Green fees assume a 5% rise each year from today's published prices.</p>
 
   <div class="block"><h3>Golf, round by round</h3><div class="sheet">
     ${active().map(id => { const c = COURSES[id]; return `<div class="row"><div class="l"><b>${c.name}</b><span>${c.budgetCaddie ? "With caddie and tip" : (c.trolley ? "With trolley hire" : "Green fee only")}</span></div><div class="r num">${$u(usd(allIn(c,c.budgetCaddie)))}<small>${$g(allIn(c,c.budgetCaddie))}</small></div></div>`; }).join("")}
-    ${prem ? `<div class="row"><div class="l"><b>Old Course advance package</b><span>The application sells Jubilee and the Old Course together for about ${$g(OLD_COURSE.packageGBP)}. This is the amount over the two standard green fees above. It drops out if we end up in the daily ballot.</span></div><div class="r num">${$u(usd(prem))}<small>${$g(prem)}</small></div></div>` : ""}
+    ${prem ? `<div class="row"><div class="l"><b>Old Course advance package</b><span>The application sells ${COURSES[S.sun].name.replace(" Course","")} and the Old Course together for about ${$g(OLD_COURSE.packageGBP)}, whichever Sunday course we name. This is the amount over the two standard green fees above. It drops out if we end up in the daily ballot.</span></div><div class="r num">${$u(usd(prem))}<small>${$g(prem)}</small></div></div>` : ""}
   </div></div>
 
   <div class="block"><h3>What an Old Course time costs</h3>${oldCourseRoutes()}</div>
@@ -1167,7 +1207,7 @@ function costs(){
   <div class="block"><h3>When money moves</h3><div class="sheet">
     <div class="row"><div class="l"><b>House deposits</b><span>Paid Oct 5, 2026. ${$u(usd(paid/TRIP.size))} each, fronted by ${TRIP.organiser}.</span></div><div class="r num">${$g(paid)}</div></div>
     <div class="row"><div class="l"><b>Ayrshire green fees</b><span>From spring 2027. Prestwick and Gailes Links are paid in full at booking; Turnberry, Royal Troon and Troon Links confirm their terms when a time is held.</span></div><div class="r">2027</div></div>
-    <div class="row"><div class="l"><b>Old Course and Jubilee</b><span>Paid in full within about two weeks of a successful application, around November 2027.</span></div><div class="r num">${$g(OLD_COURSE.packageGBP)}<small>each</small></div></div>
+    <div class="row"><div class="l"><b>Old Course and Sunday's course</b><span>Paid in full within about two weeks of a successful application, around November 2027.</span></div><div class="r num">${$g(OLD_COURSE.packageGBP)}<small>each</small></div></div>
     <div class="row"><div class="l"><b>St Andrews house balance</b><span>Charges automatically ${HOUSES[0].balanceDate}; last day to cancel free</span></div><div class="r num">${$g(HOUSES[0].balance)}</div></div>
     <div class="row"><div class="l"><b>Tarbolton house balance</b><span>Charges automatically ${HOUSES[1].balanceDate}; last day to cancel free</span></div><div class="r num">${$g(HOUSES[1].balance)}</div></div>
     <div class="row"><div class="l"><b>Caddies</b><span>Fee and tip, paid in cash on the day</span></div><div class="r">Cash</div></div>
@@ -1209,7 +1249,7 @@ function pollCard(v){
 }
 function caddieCard(v){
   const g = me(), off = frozen(v) || !S.who;
-  const rounds = [["cad_jubilee","jubilee","Sun, Sep 10"],["cad_old","old","Mon, Sep 11"],["cad_balcomie","balcomie","Tue, Sep 12"],["cad_wed",S.wed,"Wed, Sep 13"],["cad_thu",S.thu,"Thu, Sep 14"]];
+  const rounds = DAYS.filter(d => roundOf(d) && cadKey(roundOf(d))).map(d => [cadKey(roundOf(d)), roundOf(d), `${d.dow}, Sep ${d.d}`]);
   const answered = GOLFERS.filter(x => { const r = V.rows.find(y => y.golfer_id === x.id); return r && v.keys.every(k => r.choices && r.choices[k]); }).length;
   return `<div class="sheet votebox vcard"><div class="head"><div><h3>${v.title}</h3>${dueLine(v)}</div>${answered === TRIP.size ? tag("ok","Complete") : tag("vote",answered+" of "+TRIP.size+" in")}</div>
     <p class="why">${v.text}</p>
@@ -1294,7 +1334,7 @@ function adminBlock(){
 function lockBlock(){
   const g = me(); if(!g) return "";
   const row = myRow(), sub = submitted(), dirty = dirtyKeys(), dd = dirtyDetails(), nd = dirty.length + dd.length, p = progress();
-  const items = [["wed","Wednesday's round"],["thu","Thursday's round"],["rules","Drop-out rules"],["cad_jubilee","Jubilee"],["cad_old","Old Course"],["cad_balcomie","Balcomie"],["cad_wed","Wednesday"],["cad_thu","Thursday"],["driver","Driving"],["flights","Flights"]];
+  const items = [["sat","Saturday's round"],["sun","Sunday's round"],["tue","Tuesday's round"],["wed","Wednesday's round"],["thu","Thursday's round"],["rules","Drop-out rules"],["cad_sun","Sunday"],["cad_old","Old Course"],["cad_tue","Tuesday"],["cad_wed","Wednesday"],["cad_thu","Thursday"],["driver","Driving"],["flights","Flights"]];
   const det = [["hcp","Handicap index", (D.draft.hcp || "").trim() || (onFile("hcp") ? "On file" : "")],["cert","Handicap certificate", D.draft.cert ? "Uploaded" : (onFile("cert") ? "On file" : "")],["passport","Passport expires", D.draft.passport ? fmtDay(D.draft.passport)+(D.draft.passport < TRIP.passportMin ? " (too soon)" : "") : (onFile("passport") ? "On file" : "")]];
   if(V.draft.flights === "group") det.push(["fname","Name on passport", [D.draft.fname, D.draft.mname, D.draft.lname].map(x => (x || "").trim()).filter(Boolean).join(" ") || (stat(g.id).has_name ? "On file" : "")], ["dob","Date of birth", D.draft.dob ? fmtDay(D.draft.dob) : (stat(g.id).has_dob ? "On file" : "")], ["ktn","Known Traveler Number", (D.draft.ktn || "").trim() ? "Entered" : (stat(g.id).has_ktn ? "On file" : "")], ["airlines","Airline numbers", (D.draft.airlines || "").trim() ? "Entered" : (stat(g.id).has_airlines ? "On file" : "")]);
   const when = row ? new Date(row.locked_at).toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"}) : "";
@@ -1438,7 +1478,7 @@ function loadDraft(){
   try{
     const d = JSON.parse(localStorage.getItem(draftKey()) || "null"), r = myRow();
     if(!d) return;
-    if(d.base === (r ? r.updated_at : "")){ KEYS.forEach(k => { const v = voteById(k); if(d.choices[k] && !frozen(v)) V.draft[k] = d.choices[k]; }); }
+    if(d.base === (r ? r.updated_at : "")){ normChoices(d.choices); KEYS.forEach(k => { const v = voteById(k); if(d.choices[k] && !frozen(v)) V.draft[k] = d.choices[k]; }); }
     else { localStorage.removeItem(draftKey()); V.note = "Your selections were changed from another device after you started editing here, so this shows the latest ones."; }
   }catch(_){}
 }
@@ -1453,7 +1493,7 @@ function setVote(key, val){
 }
 async function loadBallots(){
   if(!sbOn()) return;
-  try{ V.rows = await sb("decision_ballots?select=golfer_id,choices,locked_at,updated_at"); V.error = ""; }
+  try{ V.rows = await sb("decision_ballots?select=golfer_id,choices,locked_at,updated_at"); V.rows.forEach(r => r.choices = normChoices(r.choices)); V.error = ""; }
   catch(e){ V.rows = []; V.error = "Couldn't load the group's answers ("+e.message+"). Check your connection and try again."; }
   try{ const st = await sb("rpc/traveler_status", {method:"POST", body:"{}"}); D.status = {}; (st || []).forEach(r => D.status[r.golfer_id] = r); D.err = ""; }
   catch(e){ D.status = {}; D.err = V.error ? "" : "Handicap, passport and flight details can't be saved yet: the database needs the latest supabase-decisions.sql run once."; }
