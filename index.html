@@ -215,6 +215,7 @@
   .vfoot b{color:var(--ink);font-weight:600}
   .vbody{padding:14px 16px}
   .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .seg.three{grid-template-columns:1fr 1fr 1fr}
   .seg button{background:var(--field);border:1px solid var(--rule);border-radius:3px;min-height:54px;padding:8px 10px;cursor:pointer;text-align:center;line-height:1.3}
   .seg button b{display:block;font-weight:600}
   .seg button small{display:block;color:var(--muted);font-size:14px}
@@ -443,7 +444,7 @@
    Money is GBP unless a name ends in USD. Leave a value as "" or null when not known yet.
    ========================================================================================== */
 const TRIP = {
-  updated: "Oct 18, 2026",
+  updated: "Oct 19, 2026",
   organiser: "Chris",
   rate: 1.33,                 // GBP to USD planning rate
   size: 8,
@@ -482,50 +483,53 @@ const GOLFERS = [
   {id:"russ",    name:"Russ",    home:"Bend, OR",    airport:"RDM", flightOut:"", flightBack:"", roomFife:"", roomAyr:"", paidUSD:0}
 ];
 
-/* green = estimated 2028 green fee. caddie/tip = per bag. trolley = hire if no caddie.
-   budgetCaddie = what the group budget assumes until a golfer answers. tee = "" until booked. */
+/* green = estimated 2028 green fee. caddie/tip = per bag. fore = a forecaddie's fee for the whole
+   group (0 where the club doesn't offer one); the budget shares it, plus a £40 tip, by four.
+   trolley = hire if no caddie. cad: "yes" = caddies are the norm here and the budget assumes one;
+   "opt" = available on request, the budget assumes a trolley; "none" = not offered, so the
+   Decisions tab doesn't ask. budgetCaddie = the default until a golfer answers.                */
 const COURSES = {
-  balgove:  {name:"Balgove", where:"St Andrews Links", green:16.5375, caddie:0, tip:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
-    rules:"", caddieNote:"Not needed. Nine holes, carry a few clubs.",
+  balgove:  {name:"Balgove", where:"St Andrews Links", green:16.5375, cad:"none", caddie:0, tip:0, fore:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
+    rules:"", caddieNote:"None. Nine short holes; carry a few clubs.",
     about:"A nine-hole short course to shake off the flight. £15 and no booking rush."},
-  strathtyrum:{name:"Strathtyrum Course", where:"St Andrews Links", green:66.15, caddie:0, tip:0, trolley:6, budgetCaddie:false, tee:"", booked:false,
-    rules:"", caddieNote:"Not offered as standard; take a trolley.",
+  strathtyrum:{name:"Strathtyrum Course", where:"St Andrews Links", green:66.15, cad:"none", caddie:0, tip:0, fore:0, trolley:6, budgetCaddie:false, tee:"", booked:false,
+    rules:"", caddieNote:"Not used here. Push trolley £6.",
     about:"Eighteen holes on the gentlest of the St Andrews courses: wide fairways, few bunkers, proper greens. £60, and a real round after the flight."},
-  eden:     {name:"Eden Course", where:"St Andrews Links", green:88.2, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
-    rules:"Pairs with the Old Course in the advance application.", caddieNote:"Optional. Most visitors take a trolley here.",
+  eden:     {name:"Eden Course", where:"St Andrews Links", green:88.2, cad:"opt", caddie:80, tip:40, fore:0, trolley:6, budgetCaddie:false, tee:"", booked:false,
+    rules:"Pairs with the Old Course in the advance application.", caddieNote:"St Andrews Links caddies can be booked for the Eden, but the Old Course gets first call and almost every visitor takes a trolley.",
     about:"Harry Colt's 1914 links, a local favourite with fast, contoured greens. £80, about half the Jubilee, and it qualifies as the second course in the Old Course application."},
-  jubilee:  {name:"Jubilee Course", where:"St Andrews Links", green:170.8875, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
-    rules:"Pairs with the Old Course in the advance application.", caddieNote:"Optional. Most visitors take a trolley here.",
+  jubilee:  {name:"Jubilee Course", where:"St Andrews Links", green:170.8875, cad:"opt", caddie:80, tip:40, fore:0, trolley:6, budgetCaddie:false, tee:"", booked:false,
+    rules:"Pairs with the Old Course in the advance application.", caddieNote:"St Andrews Links caddies can be booked for the Jubilee, but the Old Course gets first call and most visitors take a trolley.",
     about:"The hardest of the St Andrews courses, out by the beach and exposed to every breeze. £155, the same as the New."},
-  newc:     {name:"New Course", where:"St Andrews Links", green:170.8875, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
-    rules:"Pairs with the Old Course in the advance application.", caddieNote:"Optional. Most visitors take a trolley here.",
+  newc:     {name:"New Course", where:"St Andrews Links", green:170.8875, cad:"opt", caddie:80, tip:40, fore:0, trolley:6, budgetCaddie:false, tee:"", booked:false,
+    rules:"Pairs with the Old Course in the advance application.", caddieNote:"St Andrews Links caddies can be booked for the New, but the Old Course gets first call and most visitors take a trolley.",
     about:"Old Tom Morris's 1895 links next door to the Old Course, with the same firm, running turf and a double green of its own. £155."},
-  old:      {name:"Old Course", where:"St Andrews Links", green:391.3875, caddie:80, tip:40, trolley:6, budgetCaddie:true, tee:"", booked:false,
-    rules:"Handicap certificate of 36 or better. Closed Sundays.", caddieNote:"Strongly recommended. Book ahead.",
+  old:      {name:"Old Course", where:"St Andrews Links", green:391.3875, cad:"yes", caddie:80, tip:40, fore:0, trolley:6, budgetCaddie:true, tee:"", booked:false,
+    rules:"Handicap certificate of 36 or better. Closed Sundays.", caddieNote:"Expected. £80 plus about £40 cash tip. Requested through the Links caddie pavilion once the tee time is confirmed; demand is high in September.",
     about:"The one round that isn't up for debate. Tee times come by advance application or the daily ballot, so this is not guaranteed until we hold a time."},
-  balcomie: {name:"Balcomie Links", where:"Crail", green:189, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
-    rules:"", caddieNote:"Optional. Single caddie, or a forecaddie for a fourball at about £200. Request in advance.",
+  balcomie: {name:"Balcomie Links", where:"Crail", green:189, cad:"opt", caddie:80, tip:40, fore:200, trolley:6, budgetCaddie:false, tee:"", booked:false,
+    rules:"", caddieNote:"Single-bag caddie £80 plus tip, or a forecaddie for a fourball at £200. Request in advance; most visitors take a trolley.",
     about:"The 2024 favourite: Old Tom Morris's 1895 clifftop links, seventh oldest club in the world. £180 in 2027. A morning round, then the drive west."},
-  craighead:{name:"Craighead Links", where:"Crail", green:126, caddie:80, tip:40, trolley:6, budgetCaddie:false, tee:"", booked:false,
-    rules:"", caddieNote:"Optional. Same caddie arrangements as Balcomie.",
+  craighead:{name:"Craighead Links", where:"Crail", green:126, cad:"opt", caddie:80, tip:40, fore:200, trolley:6, budgetCaddie:false, tee:"", booked:false,
+    rules:"", caddieNote:"Same caddie arrangements as Balcomie: £80 a bag or a £200 forecaddie per fourball. Most visitors take a trolley.",
     about:"Crail's second course, Gil Hanse's first design (1998), on the headland above Balcomie. £120 in 2027, a third less than Balcomie, same clubhouse."},
-  anstruther:{name:"Anstruther", where:"East Neuk", green:55.125, caddie:0, tip:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
-    rules:"Nine holes, played twice for eighteen.", caddieNote:"Not offered.",
+  anstruther:{name:"Anstruther", where:"East Neuk", green:55.125, cad:"none", caddie:0, tip:0, fore:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
+    rules:"Nine holes, played twice for eighteen.", caddieNote:"None. Carry or push.",
     about:"A nine-hole seaside course ten minutes from Crail with one of Scotland's most famous short holes, the Rockies. £50 for eighteen and a quick morning before the drive."},
-  krb:      {name:"King Robert the Bruce", where:"Turnberry", green:275.625, caddie:85, tip:40, trolley:35, budgetCaddie:false, tee:"", booked:false,
-    rules:"Visitors welcome daily; the 2028 sheet opens about a year ahead.", caddieNote:"Optional. Turnberry caddies must be pre-booked.",
+  krb:      {name:"King Robert the Bruce", where:"Turnberry", green:275.625, cad:"opt", caddie:85, tip:40, fore:0, trolley:35, budgetCaddie:false, tee:"", booked:false,
+    rules:"Visitors welcome daily; the 2028 sheet opens about a year ahead.", caddieNote:"Turnberry caddies (from £85, via Caddiemaster) can carry or forecaddie on King Robert the Bruce, but must be booked ahead and the Ailsa gets priority.",
     about:"Turnberry's second course: the same clubhouse, range and lighthouse, with the cliff-top holes at 8 and 9, for about a quarter of the Ailsa's afternoon fee. Budgeted at the 2026 peak rate of £250."},
-  gailes:   {name:"Gailes Links", where:"Ayrshire", green:176.4, caddie:0, tip:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
-    rules:"", caddieNote:"No caddie information published.",
+  gailes:   {name:"Gailes Links", where:"Ayrshire", green:176.4, cad:"none", caddie:0, tip:0, fore:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
+    rules:"", caddieNote:"No caddie programme published. Trolley.",
     about:"Glasgow Golf Club's seaside links, an Open qualifying course. £160 a round, or £120 each as a weekday fourball after 2 PM."},
-  lochgreen:{name:"Troon Links (Lochgreen)", where:"Troon", green:38.5875, caddie:0, tip:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
-    rules:"Municipal. Visitor times 10 to 11 AM and 1 to 2 PM, bookable a year ahead.", caddieNote:"Not offered. Trolleys at the clubhouse.",
+  lochgreen:{name:"Troon Links (Lochgreen)", where:"Troon", green:38.5875, cad:"none", caddie:0, tip:0, fore:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
+    rules:"Municipal. Visitor times 10 to 11 AM and 1 to 2 PM, bookable a year ahead.", caddieNote:"None. Municipal course: carry or push.",
     about:"Troon's municipal links beside Royal Troon, once an Open qualifier, for about £35. The cheapest round of the week, which is the point."},
-  portland: {name:"Royal Troon (Portland)", where:"Ayrshire", green:137.8125, caddie:75, tip:40, trolley:0, budgetCaddie:false, tee:"", booked:false,
-    rules:"Men's handicap limit 20. Visitors on Monday, Tuesday and Thursday only.", caddieNote:"Advance request, subject to availability.",
+  portland: {name:"Royal Troon (Portland)", where:"Ayrshire", green:137.8125, cad:"opt", caddie:70, tip:40, fore:0, trolley:0, budgetCaddie:false, tee:"", booked:false,
+    rules:"Men's handicap limit 20. Visitors on Monday, Tuesday and Thursday only.", caddieNote:"Royal Troon's caddies (about £65 to £75 plus tip) can be requested for the Portland, subject to availability. Not the norm on the second course.",
     about:"Royal Troon's second course, redesigned by Alister MacKenzie: the same clubhouse and visitor days as the Open venue at about a third of its fee. Budgeted at about £125; confirming with the club."},
-  prestwick:{name:"Prestwick", where:"Ayrshire", green:378, caddie:70, tip:40, trolley:0, budgetCaddie:true, tee:"", booked:false,
-    rules:"Thursday visitor times 10:10 to 11:30 and 2:44 to 3:32.", caddieNote:"Book at least a week ahead.",
+  prestwick:{name:"Prestwick", where:"Ayrshire", green:378, cad:"yes", caddie:70, tip:40, fore:100, trolley:0, budgetCaddie:true, tee:"", booked:false,
+    rules:"Thursday visitor times 10:10 to 11:30 and 2:44 to 3:32.", caddieNote:"Strongly recommended by the club for first-timers: blind shots everywhere. £70 plus gratuity, or a £100 forecaddie per group who spots but doesn't carry. Book through the club.",
     about:"The birthplace of the Open, about fifteen minutes from the house."}
 };
 
@@ -646,7 +650,7 @@ const VOTES = [
     ]},
   {id:"caddie", kind:"own", title:"Caddies, round by round", by:"2027-11-15", closed:false,
     keys:["cad_sun","cad_old","cad_tue","cad_wed","cad_thu"],
-    text:"Your call for each round, and it sets your golf budget. Caddies are requested once the last tee time is booked. Fee and tip are paid in cash on the day."},
+    text:"Realistically, caddies are an Old Course thing, and a Prestwick thing if Prestwick wins Thursday: both clubs expect them and the budget assumes one there. Everywhere else they are bookable but unusual, and a trolley is the norm, so the default is no caddie. Crail and Prestwick also offer a forecaddie shared by a fourball, the cheap middle ground. Courses with no caddie programme aren't asked. Requested once the last tee time is booked; fee and tip are cash on the day."},
   {id:"driver", kind:"own", title:"Volunteer drivers", by:"2027-08-31", closed:false,
     text:"We need at least two people willing to drive a large van on the left, more if we take two vehicles. Named before the van is booked, about a year out.",
     options:[
@@ -703,7 +707,7 @@ const TIMELINE = [
   {when:"Oct 10 to Oct 31, 2027", who:"Everyone", est:true, what:"Flights are booked: your own, or by Chris for the group.",
     why:"Airlines release seats about 330 days out, so flights for early September 2028 go on sale in mid-October 2027."},
   {when:"By Nov 15, 2027", who:"Everyone", est:false, what:"Lock in caddie or no caddie for each round.",
-    why:"Every tee time is confirmed by now. Caddies are requested through each club and are limited at the Old Course and Turnberry."},
+    why:"Every tee time is confirmed by now. Caddies are requested through each club; the Old Course and Prestwick are the two where we expect to take them, and Old Course caddies are limited in September."},
   {when:"Jul 11 and Jul 14, 2028", who:"Automatic", est:false, what:"The two house balances are charged.",
     why:"These are also the last days to cancel either house for a full refund."},
   {when:"Sep 7 to Sep 10, 2028", who:"Chris", est:false, what:"Daily ballot entries, only for golfers still without an Old Course time.",
@@ -827,7 +831,11 @@ const $g = n => "£" + Math.round(n).toLocaleString("en-US");
 const esc = t => String(t == null ? "" : t).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const nameOf = id => (GOLFERS.find(g => g.id === id) || {name:id}).name;
 const listOf = a => a.length < 2 ? a.join("") : a.slice(0,-1).join(", ") + " and " + a[a.length-1];
-const allIn = (c, cad) => c.green + (cad ? c.caddie + (c.caddie ? c.tip : 0) : c.trolley);
+const FORE_TIP = 40;                                             // group tip for a forecaddie
+const cadMode = m => m === true ? "yes" : m === false || !m ? "no" : m;
+const allIn = (c, m) => { m = cadMode(m); if(m === "yes" && c.caddie) return c.green + c.caddie + c.tip;
+  if(m === "fore" && c.fore) return c.green + (c.fore + FORE_TIP) / 4 + c.trolley; return c.green + c.trolley; };
+const cadLabel = m => m === "yes" ? "Caddie" : m === "fore" ? "Shared forecaddie" : "No caddie";
 const active = () => DAYS.map(roundOf).filter(Boolean);
 const roundOf = day => day.slot ? S[day.slot] : day.round;
 const me = () => GOLFERS.find(g => g.id === S.who) || null;
@@ -846,12 +854,14 @@ const submitted = () => { const r = myRow(); return (r && r.choices) || {}; };
 const dirtyKeys = () => { const s = submitted(); return S.who ? KEYS.filter(k => (V.draft[k] || "") !== (s[k] || "")) : []; };
 /* a golfer's answers: the signed-in golfer sees their own unsaved edits, everyone else's are as submitted */
 function choicesOf(g){ if(!g) return {}; if(g.id === S.who) return V.draft; const r = V.rows.find(x => x.golfer_id === g.id); return (r && r.choices) || {}; }
-const cadKey = id => id === "old" ? "cad_old" : (SLOTS[slotOf(id)] || {}).cad || null;
+const cadKey = id => !COURSES[id] || COURSES[id].cad === "none" ? null : id === "old" ? "cad_old" : (SLOTS[slotOf(id)] || {}).cad || null;
+/* the caddie questions actually asked, given the courses currently picked */
+const cadAsked = () => DAYS.map(d => roundOf(d) && cadKey(roundOf(d))).filter(Boolean);
 /* answers locked in before Oct 19, 2026 stored Sunday and Tuesday caddies under the course names */
 const LEGACY = {cad_jubilee:"cad_sun", cad_balcomie:"cad_tue"};
 const normChoices = c => { c = c || {}; Object.keys(LEGACY).forEach(k => { if(c[k] && !c[LEGACY[k]]) c[LEGACY[k]] = c[k]; delete c[k]; }); return c; };
-const cadSaid = (g, id) => { const k = cadKey(id), c = k && choicesOf(g)[k]; return c === "yes" ? true : c === "no" ? false : null; };
-const wantsCaddie = (g, id) => { const c = cadSaid(g, id); return c === null ? COURSES[id].budgetCaddie : c; };
+const cadSaid = (g, id) => { const k = cadKey(id), c = k && choicesOf(g)[k]; return c === "yes" || c === "no" ? c : (c === "fore" && COURSES[id].fore ? "fore" : null); };
+const wantsCaddie = (g, id) => { const c = cadSaid(g, id); return c || (COURSES[id].budgetCaddie ? "yes" : "no"); };
 const packagePremium = () => OLD_COURSE.route === "package" ? OLD_COURSE.packageGBP - COURSES.old.green - COURSES[S.sun].green : 0;
 const golfGBP = g => active().reduce((s,id) => s + allIn(COURSES[id], wantsCaddie(g,id)), 0) + packagePremium();
 const sharedUSD = () => usd((HOUSES[0].total + HOUSES[1].total + TRIP.vanHire + TRIP.vanFuel) / TRIP.size);
@@ -937,12 +947,12 @@ function passportFlag(){
 /* How far through the questions this golfer is. Counts what is on screen (including answers
    not locked in yet); anything already closed and never answered is left out of the total.   */
 function progress(){
-  const keys = KEYS.filter(k => !frozen(voteById(k)) || V.draft[k]), dc = dcount(), made = keys.filter(k => V.draft[k]).length + dc.filter(hasDetail).length, total = keys.length + dc.length;
+  const asked = cadAsked(), keys = KEYS.filter(k => (!k.startsWith("cad_") || asked.includes(k)) && (!frozen(voteById(k)) || V.draft[k])), dc = dcount(), made = keys.filter(k => V.draft[k]).length + dc.filter(hasDetail).length, total = keys.length + dc.length;
   return {total, made, left:total - made, dirty:allDirty(), locked:!!myRow() || !!stat(S.who).golfer_id, next:keys.find(k => !V.draft[k]) || dc.find(f => !hasDetail(f)) || ""};
 }
 function labelOf(key, val){
   if(!val) return "";
-  if(key.startsWith("cad_")) return val === "yes" ? "Caddie" : "No caddie";
+  if(key.startsWith("cad_")) return cadLabel(val);
   const o = voteOptions(voteById(key)).find(x => x.id === val); return o ? o.label : val;
 }
 
@@ -1004,7 +1014,7 @@ function home(){
 
     <div class="block"><h3>Your rounds</h3><div class="sheet">
       ${DAYS.filter(d => roundOf(d)).map(d => { const id = roundOf(d), c = COURSES[id], cad = wantsCaddie(g,id), said = cadSaid(g,id);
-        return `<div class="row"><div class="l"><b>${c.name}</b><span>${d.dow}, Sep ${d.d}. ${c.tee || "Tee time to come"}. ${!cadKey(id) ? "No caddie" : (said !== null ? (cad?"Caddie":"No caddie") : (cad?"Caddie assumed":"No caddie assumed"))}.${slotOpen(id) ? " Still to be voted on." : ""}</span></div>
+        return `<div class="row"><div class="l"><b>${c.name}</b><span>${d.dow}, Sep ${d.d}. ${c.tee || "Tee time to come"}. ${!cadKey(id) ? "No caddies here" : (said !== null ? cadLabel(cad) : cadLabel(cad)+" assumed")}.${slotOpen(id) ? " Still to be voted on." : ""}</span></div>
         <div class="r num">${$u(usd(allIn(c,cad)))}</div></div>`; }).join("")}
       ${packagePremium() ? `<div class="row"><div class="l"><b>Old Course advance package</b><span>What the application route costs over the two standard green fees</span></div><div class="r num">${$u(usd(packagePremium()))}</div></div>` : ""}
     </div>${warn}</div>
@@ -1049,6 +1059,7 @@ function courseCard(id, when){
       <div><b>${c.booked ? "Booked" : "Not booked"}</b><span>${c.tee || "Tee time to come"}</span></div>
       <div><b class="num">${$g(allIn(c,false))} / ${$u(usd(allIn(c,false)))}</b><span>All-in without a caddie</span></div>
       <div><b class="num">${c.caddie ? $g(allIn(c,true))+" / "+$u(usd(allIn(c,true))) : "n/a"}</b><span>All-in with caddie and tip</span></div>
+      ${c.fore ? `<div><b class="num">${$g(allIn(c,"fore"))} / ${$u(usd(allIn(c,"fore")))}</b><span>All-in with a forecaddie shared by four</span></div>` : ""}
     </div><p>Caddies: ${c.caddieNote}</p></div>`;
 }
 function oldCourseRoutes(){
@@ -1198,7 +1209,7 @@ function costs(){
   <p class="note">Not included: food and drink, travel insurance, souvenirs. Green fees assume a 5% rise each year from today's published prices.</p>
 
   <div class="block"><h3>Golf, round by round</h3><div class="sheet">
-    ${active().map(id => { const c = COURSES[id]; return `<div class="row"><div class="l"><b>${c.name}</b><span>${c.budgetCaddie ? "With caddie and tip" : (c.trolley ? "With trolley hire" : "Green fee only")}</span></div><div class="r num">${$u(usd(allIn(c,c.budgetCaddie)))}<small>${$g(allIn(c,c.budgetCaddie))}</small></div></div>`; }).join("")}
+    ${active().map(id => { const c = COURSES[id]; return `<div class="row"><div class="l"><b>${c.name}</b><span>${c.budgetCaddie ? "With caddie and tip" : (c.trolley ? "With trolley hire" : "Green fee only")}${c.cad === "none" ? ", no caddies offered" : ""}</span></div><div class="r num">${$u(usd(allIn(c,c.budgetCaddie)))}<small>${$g(allIn(c,c.budgetCaddie))}</small></div></div>`; }).join("")}
     ${prem ? `<div class="row"><div class="l"><b>Old Course advance package</b><span>The application sells ${COURSES[S.sun].name.replace(" Course","")} and the Old Course together for about ${$g(OLD_COURSE.packageGBP)}, whichever Sunday course we name. This is the amount over the two standard green fees above. It drops out if we end up in the daily ballot.</span></div><div class="r num">${$u(usd(prem))}<small>${$g(prem)}</small></div></div>` : ""}
   </div></div>
 
@@ -1253,13 +1264,15 @@ function caddieCard(v){
   const answered = GOLFERS.filter(x => { const r = V.rows.find(y => y.golfer_id === x.id); return r && v.keys.every(k => r.choices && r.choices[k]); }).length;
   return `<div class="sheet votebox vcard"><div class="head"><div><h3>${v.title}</h3>${dueLine(v)}</div>${answered === TRIP.size ? tag("ok","Complete") : tag("vote",answered+" of "+TRIP.size+" in")}</div>
     <p class="why">${v.text}</p>
-    ${rounds.map(r => { const c = COURSES[r[1]], t = tally(r[0]), yes = t.by.yes || [], mine = V.draft[r[0]], pending = slotOpen(r[1]);
-      return `<div class="rnd" id="q-${r[0]}"><div class="t"><b>${c.name}</b><span>${r[2]}${pending ? ", course pending" : ""}</span></div>
-        <div class="seg">
-          <button data-vote="${r[0]}" data-val="yes" aria-pressed="${mine === "yes"}" ${off ? "disabled" : ""}><b>Caddie</b><small class="num">${c.caddie ? $u(usd(allIn(c,true)))+" all-in" : "Fee not published"}</small></button>
-          <button data-vote="${r[0]}" data-val="no" aria-pressed="${mine === "no"}" ${off ? "disabled" : ""}><b>No caddie</b><small class="num">${$u(usd(allIn(c,false)))} all-in</small></button>
+    ${rounds.map(r => { const c = COURSES[r[1]], t = tally(r[0]), yes = t.by.yes || [], fore = t.by.fore || [], mine = V.draft[r[0]], pending = slotOpen(r[1]);
+      return `<div class="rnd" id="q-${r[0]}"><div class="t"><b>${c.name}</b><span>${r[2]}${pending ? ", course pending" : ""}${c.cad === "yes" ? ". Caddies are the norm here" : ". Optional; most visitors take a trolley"}</span></div>
+        <div class="seg${c.fore ? " three" : ""}">
+          <button data-vote="${r[0]}" data-val="yes" aria-pressed="${mine === "yes"}" ${off ? "disabled" : ""}><b>Caddie${c.cad === "yes" ? " (recommended)" : ""}</b><small class="num">${$u(usd(allIn(c,"yes")))} all-in</small></button>
+          ${c.fore ? `<button data-vote="${r[0]}" data-val="fore" aria-pressed="${mine === "fore"}" ${off ? "disabled" : ""}><b>Shared forecaddie</b><small class="num">${$u(usd(allIn(c,"fore")))} all-in, four per caddie</small></button>` : ""}
+          <button data-vote="${r[0]}" data-val="no" aria-pressed="${mine === "no"}" ${off ? "disabled" : ""}><b>No caddie</b><small class="num">${$u(usd(allIn(c,"no")))} all-in</small></button>
         </div>
-        <p class="tally">${yes.length ? yes.length+" caddie"+(yes.length>1?"s":"")+" wanted: "+yes.map(nameOf).join(", ")+"." : "No caddies requested yet."} ${t.n} of ${TRIP.size} answered.${pending ? " Your answer carries over to whichever course wins the vote." : ""}${c.caddie ? "" : " "+c.caddieNote}</p></div>`; }).join("")}
+        <p class="tally">${yes.length ? yes.length+" caddie"+(yes.length>1?"s":"")+" wanted: "+yes.map(nameOf).join(", ")+"." : ""}${fore.length ? " Forecaddie: "+fore.map(nameOf).join(", ")+"." : ""}${!yes.length && !fore.length ? "No caddies requested yet." : ""} ${t.n} of ${TRIP.size} answered.${pending ? " Your answer carries over to whichever course wins the vote." : ""} ${c.caddieNote}</p></div>`; }).join("")}
+    ${DAYS.filter(d => roundOf(d) && !cadKey(roundOf(d))).map(d => `<div class="rnd"><div class="t"><b>${COURSES[roundOf(d)].name}</b><span>${d.dow}, Sep ${d.d}. No caddies offered, nothing to answer.</span></div></div>`).join("")}
     ${g ? `<div class="row total"><div class="l"><b>Your golf with these choices</b></div><div class="r num">${$u(usd(golfGBP(g)))}</div></div>` : ""}</div>`;
 }
 function ownCard(v){
@@ -1346,7 +1359,8 @@ function lockBlock(){
   return `<div class="block" id="lock"><h3>Lock in your selections</h3>
     <form class="sheet" id="voteForm">
       ${items.map(i => { const val = V.draft[i[0]], changed = dirty.includes(i[0]);
-        return `<div class="row"><div class="l"><b>${i[0].startsWith("cad_") ? "Caddie: "+i[1] : i[1]}</b>${changed ? `<span>${sub[i[0]] ? "Was "+labelOf(i[0], sub[i[0]])+". Not locked in yet." : "Not locked in yet."}</span>` : ""}</div><div class="r ${val ? "" : "muted"}">${val ? labelOf(i[0], val) : "Not answered"}</div></div>`; }).join("")}
+        const skip = i[0].startsWith("cad_") && !cadAsked().includes(i[0]);
+        return `<div class="row"><div class="l"><b>${i[0].startsWith("cad_") ? "Caddie: "+i[1] : i[1]}</b>${changed && !skip ? `<span>${sub[i[0]] ? "Was "+labelOf(i[0], sub[i[0]])+". Not locked in yet." : "Not locked in yet."}</span>` : ""}</div><div class="r ${val || skip ? "" : "muted"}">${skip ? "None offered" : val ? labelOf(i[0], val) : "Not answered"}</div></div>`; }).join("")}
       ${det.map(i => `<div class="row"><div class="l"><b>${i[1]}</b>${dd.includes(i[0]) || (i[0] === "fname" && (dd.includes("lname") || dd.includes("mname"))) ? `<span>Not locked in yet.</span>` : ""}</div><div class="r ${i[2] ? "" : "muted"}">${esc(i[2]) || (i[0] === "ktn" || i[0] === "airlines" ? "None given" : "Not answered")}</div></div>`).join("")}
       <div class="pad" style="border-top:1px solid var(--rule)">
         ${state}
