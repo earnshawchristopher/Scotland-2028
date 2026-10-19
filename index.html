@@ -423,16 +423,16 @@
 <div class="tabs"><div class="wrap" role="tablist" id="tabs"></div></div>
 
 <main class="wrap">
-  <section class="panel" id="p-home"></section>
-  <section class="panel" id="p-itinerary"></section>
-  <section class="panel" id="p-map"></section>
-  <section class="panel" id="p-golf"></section>
-  <section class="panel" id="p-flights"></section>
-  <section class="panel" id="p-houses"></section>
-  <section class="panel" id="p-costs"></section>
-  <section class="panel" id="p-expenses"></section>
-  <section class="panel" id="p-decisions"></section>
-  <section class="panel" id="p-guide"></section>
+  <section class="panel" id="p-home" role="tabpanel" aria-labelledby="tab-home"></section>
+  <section class="panel" id="p-itinerary" role="tabpanel" aria-labelledby="tab-itinerary"></section>
+  <section class="panel" id="p-map" role="tabpanel" aria-labelledby="tab-map"></section>
+  <section class="panel" id="p-golf" role="tabpanel" aria-labelledby="tab-golf"></section>
+  <section class="panel" id="p-flights" role="tabpanel" aria-labelledby="tab-flights"></section>
+  <section class="panel" id="p-houses" role="tabpanel" aria-labelledby="tab-houses"></section>
+  <section class="panel" id="p-costs" role="tabpanel" aria-labelledby="tab-costs"></section>
+  <section class="panel" id="p-expenses" role="tabpanel" aria-labelledby="tab-expenses"></section>
+  <section class="panel" id="p-decisions" role="tabpanel" aria-labelledby="tab-decisions"></section>
+  <section class="panel" id="p-guide" role="tabpanel" aria-labelledby="tab-guide"></section>
 </main>
 <footer>Last updated <span id="updated"></span>. Prices are estimates until booked.<br><button class="link" data-act="showWelcome" id="installLink">Put this on your phone's home screen</button></footer>
 <button id="staleToast" data-act="refreshVotes">Decisions have changed. View the latest</button>
@@ -1822,8 +1822,12 @@ function loadLeaflet(){
   if(window.L) return Promise.resolve();
   if(!M.loading) M.loading = new Promise((ok, no) => {
     const base = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/";
-    const c = document.createElement("link"); c.rel = "stylesheet"; c.href = base+"leaflet.min.css"; document.head.appendChild(c);
-    const j = document.createElement("script"); j.src = base+"leaflet.min.js"; j.onload = ok; j.onerror = () => { M.loading = null; j.remove(); no(); }; document.head.appendChild(j);
+    /* integrity hashes computed from the cdnjs files on Oct 19, 2026; the browser refuses a file that doesn't match */
+    const c = document.createElement("link"); c.rel = "stylesheet"; c.href = base+"leaflet.min.css"; c.crossOrigin = "anonymous";
+    c.integrity = "sha512-h9FcoyWjHcOcmEVkxOfTLnmZFWIH0iZhZT1H2TbOq55xssQGEJHEaIm+PgoUaZbRvQTNTluNOEfb1ZRy6D3BOw=="; document.head.appendChild(c);
+    const j = document.createElement("script"); j.src = base+"leaflet.min.js"; j.crossOrigin = "anonymous";
+    j.integrity = "sha512-puJW3E/qXDqYp9IfhAI54BJEaWIfloJ7JWs7OeD5i6ruC9JZL1gERT1wjtwXFlh7CjE7ZJ+/vcRZRkIYIb6p4g==";
+    j.onload = ok; j.onerror = () => { M.loading = null; j.remove(); no(); }; document.head.appendChild(j);
   });
   return M.loading;
 }
@@ -1912,7 +1916,7 @@ function draw(){
   $("installLink").hidden = standalone();
   syncSlots();
   document.body.dataset.view = S.tab;
-  $("tabs").innerHTML = TABS.map(t => `<button class="tab" role="tab" aria-selected="${S.tab===t[0]}" data-tab="${t[0]}">${t[0]==="home" && me() ? me().name+"'s trip" : t[1]}${t[0]==="decisions" && me() && V.loaded && !V.error && progress().left ? " ("+progress().left+")" : ""}</button>`).join("");
+  $("tabs").innerHTML = TABS.map(t => `<button class="tab" role="tab" id="tab-${t[0]}" aria-selected="${S.tab===t[0]}" aria-controls="p-${t[0]}" data-tab="${t[0]}">${t[0]==="home" && me() ? me().name+"'s trip" : t[1]}${t[0]==="decisions" && me() && V.loaded && !V.error && progress().left ? " ("+progress().left+")" : ""}</button>`).join("");
   $("nav").innerHTML = nav();
   TABS.forEach(t => { const p = $("p-"+t[0]); p.classList.toggle("on", S.tab === t[0]); p.innerHTML = S.tab === t[0] ? RENDER[t[0]]() : ""; });
   $("whoBtn").textContent = me() ? "Not "+me().name+"?" : "";
