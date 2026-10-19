@@ -859,7 +859,16 @@ const cadKey = id => !COURSES[id] || COURSES[id].cad === "none" ? null : id === 
 const cadAsked = () => DAYS.map(d => roundOf(d) && cadKey(roundOf(d))).filter(Boolean);
 /* answers locked in before Oct 19, 2026 stored Sunday and Tuesday caddies under the course names */
 const LEGACY = {cad_jubilee:"cad_sun", cad_balcomie:"cad_tue"};
-const normChoices = c => { c = c || {}; Object.keys(LEGACY).forEach(k => { if(c[k] && !c[LEGACY[k]]) c[LEGACY[k]] = c[k]; delete c[k]; }); return c; };
+const normChoices = c => { c = c || {}; Object.keys(LEGACY).forEach(k => { if(c[k] && !c[LEGACY[k]]) c[LEGACY[k]] = c[k]; delete c[k]; });
+  Object.keys(SLOTS).forEach(k => { if(c[k] && !SLOTS[k].options.includes(c[k])){ c["was_"+k] = c[k]; delete c[k]; } });   // a course that left the ballot
+  return c; };
+/* Questions added or changed after some golfers had already locked in. Shown to anyone whose
+   lock-in predates the change, so they know to come back.                                     */
+const CHANGES = [
+  {on:"2026-10-19", text:"Added Oct 19: votes for Saturday, Sunday and Tuesday, new Wednesday and Thursday options, and caddie questions only where a club offers caddies. Turnberry's Ailsa, Royal Troon's Old Course, Western Gailes and Dundonald came off the ballot on cost, so a Wednesday vote for one of those needs recasting. Your other answers are kept."}
+];
+const RETIRED = {turnberry:"Turnberry (Ailsa)", wgailes:"Western Gailes", dundonald:"Dundonald Links", troon:"Royal Troon (Old Course)"};
+const newsFor = row => row ? CHANGES.filter(c => new Date(row.locked_at) < new Date(c.on + "T00:00:00")) : [];
 const cadSaid = (g, id) => { const k = cadKey(id), c = k && choicesOf(g)[k]; return c === "yes" || c === "no" ? c : (c === "fore" && COURSES[id].fore ? "fore" : null); };
 const wantsCaddie = (g, id) => { const c = cadSaid(g, id); return c || (COURSES[id].budgetCaddie ? "yes" : "no"); };
 const packagePremium = () => OLD_COURSE.route === "package" ? OLD_COURSE.packageGBP - COURSES.old.green - COURSES[S.sun].green : 0;
@@ -987,7 +996,7 @@ function home(){
   const cad = VOTES.find(v => v.id === "caddie"), drv = VOTES.find(v => v.id === "driver");
   const todo = [
     [pollsDone, "Vote on the group decisions and lock in", dirty ? "You have "+dirty+" change"+(dirty>1?"s":"")+" not locked in yet. Nobody else can see them until you do." : pollsDone ? "Locked in. You can change your answers until each deadline." : "Due "+(nextDue ? fmtDay(nextDue) : "soon")+". "+openPolls.filter(v => !sub[v.id]).length+" of "+openPolls.length+" still to answer."],
-    [cad.keys.every(k => sub[k]), "Choose caddie or no caddie for each round", "Due "+fmtDay(cad.by)+". Your picks set your golf estimate below."],
+    [cadAsked().every(k => sub[k]), "Choose caddie or no caddie where they're offered", "Due "+fmtDay(cad.by)+". Asked for "+cadAsked().length+" of the six rounds; your picks set your golf estimate below."],
     [!!sub.driver, "Say whether you'll drive", sub.driver ? (sub.driver === "yes" ? "You're a volunteer driver." : "You're not driving.") : "Due "+fmtDay(drv.by)+". We need at least two volunteers for a large van on the left."],
     [st.handicap_index != null && st.has_certificate, "Enter your handicap index and upload your certificate", st.handicap_index != null ? "Index on file: "+st.handicap_index+"."+(st.has_certificate ? "" : " Certificate still to upload.") : "Due "+fmtDay(DETAILS.handicap)+". The Old Course needs 36 or better; Royal Troon caps men at 20."],
     [!!st.passport_ok, "Enter your passport expiry date", st.has_passport && !st.passport_ok ? "The date on file is before "+fmtDay(TRIP.passportMin)+". Renew it, then enter the new date." : st.passport_ok ? "On file, and it runs long enough." : "Due "+fmtDay(DETAILS.passport)+". It has to run past "+fmtDay(TRIP.passportMin)+"."],
@@ -1396,12 +1405,13 @@ function softRefresh(){
   if(a) a.innerHTML = hcpFlag(); if(b) b.innerHTML = passportFlag();
 }
 function decisions(){
-  const g = me(), bar = progBar(), nq = KEYS.length + dcount().length;
+  const g = me(), bar = progBar(), nq = progress().total, news = g ? newsFor(myRow()) : [], was = g ? Object.keys(submitted()).filter(k => k.startsWith("was_")) : [];
   const exec = d => `<div class="row"><div class="l"><b>${d.title}</b><span>${d.outcome || d.text}</span></div><div class="r">${d.status === "Decided" ? tag("ok","Decided") : tag("wait","By "+fmtDay(d.by))}</div></div>`;
   const out = `<h2>Decisions</h2><p class="lede">${g && !myRow() && !stat(g.id).golfer_id ? g.name+", "+nq+" quick answers are needed from you. " : "Everything the group needs to settle, in one place. "}Tap your answer on each card, then lock in. A vote is final once ${NEED} of ${TRIP.size} have locked in the same option.</p>
   <div id="staleBox">${staleHTML()}</div>
   ${!sbOn() ? `<div class="banner"><p>Voting isn't switched on yet.</p></div>` : V.error ? `<div class="banner"><p>${esc(V.error)}</p><button class="btn sm" data-act="refreshVotes">Try again</button></div>` : !V.loaded ? `<p class="note" style="margin:0 0 16px">Loading everyone's answers…</p>` : ""}
   ${V.note ? `<div class="banner" role="status"><p>${esc(V.note)}</p></div>` : ""}
+  ${news.length && V.loaded ? `<div class="banner" role="status"><p><b>New since you locked in.</b> ${news.map(n => n.text).join(" ")}${was.length ? " Your earlier pick"+(was.length>1?"s":"")+": "+was.map(k => SLOTS[k.slice(4)].label.split(",")[0]+" was "+esc(RETIRED[submitted()[k]] || submitted()[k])).join("; ")+"." : ""} ${progress().left ? progress().left+" question"+(progress().left>1?"s":"")+" to answer below." : ""}</p></div>` : ""}
   ${V.fresh.length ? `<div class="banner" role="status"><p>New since you last looked: ${listOf(V.fresh.map(nameOf))} changed selections.</p></div>` : ""}
   ${!g ? `<div class="block" style="margin-top:0"><h3>Who's voting?</h3><p class="lede" style="margin-bottom:12px">Pick your name to enter your answers. You can read the results without it.</p>
       <div class="pick" style="margin-bottom:26px">${GOLFERS.map(x => `<button data-who="${x.id}"><b>${x.name}</b><span>${x.home}</span></button>`).join("")}</div></div>`
