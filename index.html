@@ -700,8 +700,8 @@ const TIMELINE = [
     why:"Chris sets the arrival window and books the group in mid-October. A passport that runs out before March 15, 2029 needs renewing first, because the ticket has to match the passport you travel on."},
   {when:"Aug 23 to Oct 6, 2027", who:"Chris", est:true, what:"Submit two Old Course applications of four golfers each.",
     why:"The window has moved later each year: Aug 26 to Sep 4 in 2024, Sep 10 to 22 in 2025, Sep 23 to Oct 6 in 2026. It is a draw, so being first earns nothing, but an entry after the closing minute is not counted."},
-  {when:"Sep 9 to Sep 30, 2027", who:"Chris", est:true, what:"Book Wednesday's round, Tuesday's Crail round and the van.",
-    why:"Turnberry and van hire open about twelve months before the date. Crail has the next season on sale by autumn; groups over four book by email and pay within five days."},
+  {when:"Sep 9 to Sep 30, 2027", who:"Chris", est:true, what:"Book Wednesday's round, Tuesday's round and the van.",
+    why:"Turnberry and van hire open about twelve months before the date. Crail has the next season on sale by autumn and groups over four book by email and pay within five days; Anstruther and the St Andrews courses outside the package need only a few weeks."},
   {when:"By Oct 31, 2027", who:"St Andrews Links", est:true, what:"Application results arrive by email. Winners pay in full within about two weeks.",
     why:"A missed payment loses the tee time. This is also the day we know whether anyone needs the ballot plan on the Golf tab."},
   {when:"Oct 10 to Oct 31, 2027", who:"Everyone", est:true, what:"Flights are booked: your own, or by Chris for the group.",
@@ -720,7 +720,7 @@ const OLD_PLAN = [
   {when:"Aug 23 to Oct 6, 2027 (projected)", what:"Enter the advance draw twice, as two fourballs.",
     how:"An application takes four golfers at most, so eight of us means two separate entries, each asking for Sunday's course (whichever of the New, Jubilee or Eden wins the vote) on Sep 10 and the Old Course on Monday, Sep 11. Both go in during the first days of the window so there is time to fix a rejected detail. The draw happens after the window closes."},
   {when:"By Oct 31, 2027", what:"Act on the result the same week.",
-    how:"Both fours win: we pay and the Old Course is done. One four wins: they pay, and the other four move to the ballot. Neither wins: all eight move to the ballot, and Chris books Sunday's course directly. The budget assumes the application succeeds; a ballot time costs about £220 less per golfer."},
+    how:"Both fours win: we pay and the Old Course is done. One four wins: they pay, and the other four move to the ballot. Neither wins: all eight move to the ballot, and Chris books Sunday's course directly. The budget assumes the application succeeds; a ballot time saves the package premium shown on the Costs tab, about £220 per golfer with the Jubilee."},
   {when:"Sep 7, 9 and 10, 2028, by 2 PM UK time (8 AM Central)", what:"Enter the daily ballot for every day we could play.",
     how:"Entries close two days before play and results post after 4:30 PM. Thursday, Sep 7 is for Saturday, Sep 9, entered online from home and only if flights land early enough. Saturday, Sep 9 is for Monday, Sep 11, the day we keep clear. Sunday, Sep 10 is for Tuesday, Sep 12, which would replace Balcomie. Each fourball without a time enters separately. About one entry in ten won on an average day in 2024, so three tries give a fourball a little better than one chance in four."},
   {when:"Sep 10 and 11, 2028, 9 AM to 4 PM", what:"Last resort: the singles draw, in person.",
@@ -1029,7 +1029,7 @@ function home(){
     </div>${warn}</div>
 
     <div class="block"><h3>Your estimated cost</h3><div class="sheet">
-      <div class="row"><div class="l"><b>Flights</b><span>Rough estimate; you book your own</span></div><div class="r num">${$u(TRIP.flightUSD)}</div></div>
+      <div class="row"><div class="l"><b>Flights</b><span>Rough estimate${sub.flights === "group" ? "; "+TRIP.organiser+" books you with the group" : sub.flights === "own" ? "; you book your own" : ""}</span></div><div class="r num">${$u(TRIP.flightUSD)}</div></div>
       <div class="row"><div class="l"><b>Houses and van</b><span>Your one-eighth share</span></div><div class="r num">${$u(sharedUSD())}</div></div>
       <div class="row"><div class="l"><b>Golf</b><span>Six rounds with your caddie choices</span></div><div class="r num">${$u(golf)}</div></div>
       <div class="row total"><div class="l"><b>Estimated total</b></div><div class="r num">${$u(total)}</div></div>
@@ -1091,7 +1091,7 @@ function golf(){
   <p class="note">Ballot and singles rules are the ones St Andrews Links ran in 2026; they are checked again before we travel.</p>
   <h3 style="margin:26px 0 10px">What each way costs</h3><p class="lede" style="margin-bottom:14px">Per golfer. The budget assumes the advance application succeeds.</p>
   ${oldCourseRoutes()}
-  <p class="note">2028 figures are 2027 prices plus 5%.</p></div>
+  <p class="note">2028 figures are the latest published prices plus 5% a year.</p></div>
 
   <div class="block"><h3>The Old Course, Monday, Sep 11</h3>
   <p class="lede" style="margin-bottom:14px">Prices are per person, all-in for 2028: green fee plus caddie and tip where the budget assumes one, or trolley hire where it doesn't.</p>
@@ -1129,7 +1129,7 @@ function flights(){
     <div><span>Fly home</span><b>Fri, Sep 15</b><span>${TRIP.departWindow || "Airport still to be set"}</span></div>
     <div><span>Stops</span><b>As few as possible</b><span>None from Chicago, one from Kansas City</span></div>
   </div></div>
-  <p class="note">Why 9:30: passports, bags and the van take about an hour, and St Andrews is 1 hr 15 min from the airport. Landing by 9:30 puts us in town around noon, with the afternoon free for the par 3 before the house opens at 4:00 PM.</p>
+  <p class="note">Why 9:30: passports, bags and the van take about an hour, and St Andrews is 1 hr 15 min from the airport. Landing by 9:30 puts us in town around noon, with the afternoon free for Saturday's round before the house opens at 4:00 PM.</p>
 
   <div class="block"><h3>The date trap</h3><div class="sheet">
     <div class="row stack"><div class="l"><b>You leave on Friday and land on Saturday</b><span>Every flight to Scotland is overnight. Search for a departure on <em>Friday, Sep 8</em>. If you search for Sep 9 you will land on Sunday and miss the first round.</span></div></div>
@@ -1139,7 +1139,7 @@ function flights(){
   <div class="sheet" style="margin-top:14px">
     <div class="row"><div class="l"><b>Kansas City and Chicago</b><span>Central time</span></div><div class="r">6 hours behind<small>8:25 AM there is ${hrs(6)} at home</small></div></div>
     <div class="row"><div class="l"><b>Bend</b><span>Pacific time</span></div><div class="r">8 hours behind<small>8:25 AM there is ${hrs(8)} at home</small></div></div>
-  </div><p class="note">We land in the small hours by our body clocks. Sleep on the plane, stay up on Saturday, and nine easy holes in daylight is the best cure there is.</p></div>
+  </div><p class="note">We land in the small hours by our body clocks. Sleep on the plane, stay up on Saturday, and an easy round in daylight is the best cure there is.</p></div>
 
   <div class="block"><h3>Nonstops to Edinburgh</h3>
   <p class="lede" style="margin-bottom:14px">Every US nonstop that could work, with the time it lands on Saturday morning. Glasgow has one US flight, from Newark, and it lands after 10:00 AM.</p>
@@ -1199,7 +1199,7 @@ function houses(){
   </div></div>
 
   <div class="block"><h3>Drives</h3><div class="sheet">
-    ${[["Edinburgh Airport to St Andrews","1 hr 15 min"],["St Andrews to Crail","25 min"],["Crail to Tarbolton","2 hr 30 min"],["Tarbolton to Turnberry","40 min"],["Tarbolton to Troon or Prestwick","15 to 20 min"],["Tarbolton to Glasgow Airport","45 min"],["Tarbolton to Edinburgh Airport","1 hr 30 min"]]
+    ${[["Edinburgh Airport to St Andrews","1 hr 15 min"],["St Andrews to Crail","25 min"],["St Andrews to Anstruther","20 min"],["Crail to Tarbolton","2 hr 30 min"],["Tarbolton to Turnberry","40 min"],["Tarbolton to the Gailes courses","About 25 min"],["Tarbolton to Troon or Prestwick","15 to 20 min"],["Tarbolton to Glasgow Airport","45 min"],["Tarbolton to Edinburgh Airport","1 hr 30 min"]]
       .map(r => `<div class="row"><div class="l">${r[0]}</div><div class="r">${r[1]}</div></div>`).join("")}
   </div><p class="note">Approximate, without traffic.</p><div class="acts"><button class="btn ghost sm" data-tab="map" data-mday="all">See the drives on the map</button></div></div>`;
 }
@@ -1227,6 +1227,7 @@ function costs(){
   <div class="block"><h3>When money moves</h3><div class="sheet">
     <div class="row"><div class="l"><b>House deposits</b><span>Paid Oct 5, 2026. ${$u(usd(paid/TRIP.size))} each, fronted by ${TRIP.organiser}.</span></div><div class="r num">${$g(paid)}</div></div>
     <div class="row"><div class="l"><b>Ayrshire green fees</b><span>From spring 2027. Prestwick and Gailes Links are paid in full at booking; Turnberry, Royal Troon and Troon Links confirm their terms when a time is held.</span></div><div class="r">2027</div></div>
+    <div class="row"><div class="l"><b>Fife rounds outside the package</b><span>Crail is paid within five days of booking, from autumn 2027. Saturday's course and Anstruther are paid a few weeks out.</span></div><div class="r">2027 to 2028</div></div>
     <div class="row"><div class="l"><b>Old Course and Sunday's course</b><span>Paid in full within about two weeks of a successful application, around November 2027.</span></div><div class="r num">${$g(OLD_COURSE.packageGBP)}<small>each</small></div></div>
     <div class="row"><div class="l"><b>St Andrews house balance</b><span>Charges automatically ${HOUSES[0].balanceDate}; last day to cancel free</span></div><div class="r num">${$g(HOUSES[0].balance)}</div></div>
     <div class="row"><div class="l"><b>Tarbolton house balance</b><span>Charges automatically ${HOUSES[1].balanceDate}; last day to cancel free</span></div><div class="r num">${$g(HOUSES[1].balance)}</div></div>
@@ -1458,7 +1459,6 @@ function guide(){
     <li>UK plugs are three-pin type G. Bring an adapter.</li></ul></div>`;
 }
 
-const niceDate = d => new Date(d+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
 const toUSD = e => e.currency === "GBP" ? Number(e.amount) * TRIP.rate : Number(e.amount);
 const money = e => (e.currency === "GBP" ? "£" : "$") + Number(e.amount).toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2});
 const sbOn = () => !!(SUPABASE.url && SUPABASE.key);
@@ -1591,7 +1591,7 @@ function expenses(){
 
   <div class="block"><h3>Every expense</h3><div class="sheet">
     ${list.map(e => { const n = (e.split_among||[]).length;
-      return `<div class="row"><div class="l"><b>${esc(e.description)}</b><span>${niceDate(e.spent_on)}. Paid by ${esc(nameOf(e.paid_by))}. ${n === GOLFERS.length ? "Split between all eight" : "Split between "+e.split_among.map(nameOf).map(esc).join(", ")}.</span></div>
+      return `<div class="row"><div class="l"><b>${esc(e.description)}</b><span>${fmtDay(e.spent_on)}. Paid by ${esc(nameOf(e.paid_by))}. ${n === GOLFERS.length ? "Split between all eight" : "Split between "+e.split_among.map(nameOf).map(esc).join(", ")}.</span></div>
       <div class="r num">${money(e)}<small>${e.currency === "GBP" ? $u(toUSD(e))+", " : ""}${$u(toUSD(e)/Math.max(n,1))} each</small>${admin && S.x.rows.includes(e) ? `<small><button class="btn ghost sm" data-act="editExp" data-id="${e.id}">Edit</button> <button class="btn ghost sm" data-act="delExp" data-id="${e.id}">Delete</button></small>` : ""}</div></div>`; }).join("")}
   </div></div>
 
@@ -1803,8 +1803,9 @@ function mapList(){
     out += stop(x, {cls:"n", txt:n}, PLACES[x].kind === "course" ? ((COURSES[x].tee ? "Tee time "+COURSES[x].tee : "Tee time to be booked") + (slotOpen(x) ? ". Pencilled in until the vote settles" : "")) : placeNote(x));
   });
   const others = d.slot && !slotPick(d.slot) ? SLOTS[d.slot].options.filter(id => id !== S[d.slot]) : [];
+  const route = ROUTES[d.d] || [], from = route[route.indexOf("@") - 1] || "fife", fromName = PLACES[from].kind === "air" ? "the airport" : "the house";
   return `<div class="mgrp"><h3>${dayLabel(d)}: ${d.base}</h3></div><div class="sheet">${out}</div>
-    ${others.length ? `<div class="mgrp"><h3>Also in the vote</h3></div><div class="sheet">${others.map(id => stop(id, {cls:"cand", txt:GLYPH.course}, legOf("ayr", id)+" from the house")).join("")}</div>` : ""}`;
+    ${others.length ? `<div class="mgrp"><h3>Also in the vote</h3></div><div class="sheet">${others.map(id => stop(id, {cls:"cand", txt:GLYPH.course}, legOf(from, id)+" from "+fromName)).join("")}</div>` : ""}`;
 }
 function mapChips(){ const day = mDay();
   return `<button data-mday="all" aria-pressed="${day === "all"}">Whole trip</button>` + DAYS.map((d,i) => `<button data-mday="${i}" aria-pressed="${day === i}">${d.dow} ${d.d}</button>`).join(""); }
@@ -1863,7 +1864,7 @@ function mapPaint(fit){
       .bindPopup(() => popupHTML(id), {maxWidth:260}).addTo(M.layer);
     if(inFit !== false) pts.push(p.at); };
   if(day === "all"){
-    line("edi","fife"); line("fife","balcomie"); line("balcomie","ayr"); line("ayr","gla",true); line("ayr","edi",true);
+    const tue = roundOf(DAYS[3]); line("edi","fife"); line("fife",tue); line(tue,"ayr"); line("ayr","gla",true); line("ayr","edi",true);
     Object.keys(PLACES).forEach(id => { const k = PLACES[id].kind, c = k === "course", on = c && active().includes(id);
       pin(id, c && !on ? "cand" : k, GLYPH[k], true, k === "pub" ? -200 : c && on ? 200 : 0); });
   } else {
